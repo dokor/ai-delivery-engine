@@ -1,4 +1,8 @@
 import type { ParsedBrief } from '../briefs/brief.types.ts';
+import {
+  buildPoPmOutputJsonShapeExample,
+  PO_PM_OUTPUT_CONTRACT
+} from '../contracts/poPmOutputContract.ts';
 
 function renderList(items: string[], emptyFallback: string): string {
   if (items.length === 0) {
@@ -10,8 +14,10 @@ function renderList(items: string[], emptyFallback: string): string {
 
 function buildOutputGuidance(): string {
   return [
-    '- Return a structured backlog draft in Markdown.',
-    '- Group the output by epics, then stories, then tasks.',
+    '- Return exactly one structured JSON object.',
+    '- Wrap that JSON object in a single fenced Markdown block using a `json` code fence.',
+    '- Do not return a prose-only answer.',
+    '- Do not return Markdown sections outside the JSON fence except for the fence itself.',
     '- For every story, include acceptance criteria.',
     '- For every task, suggest the most relevant owner role: `po_pm`, `ux_ui`, `frontend`, `backend`, `qa`, or `tech_lead`.',
     '- Keep the scope realistic for a first MVP.',
@@ -22,8 +28,8 @@ function buildOutputGuidance(): string {
 
 function buildBacklogModelSummary(): string {
   return [
-    '- Backlog item types: `epic`, `story`, `task`, `risk`.',
-    '- Each item should have a clear title, a useful description, a priority (`low`, `medium`, `high`), and a status (`draft`, `review`, `ready`, `done`).',
+    `- Backlog item types: \`${PO_PM_OUTPUT_CONTRACT.allowedItemTypes.join('`, `')}\`.`,
+    `- Each item should have a clear title, a useful description, a priority (\`${PO_PM_OUTPUT_CONTRACT.allowedPriorities.join('`, `')}\`), and a status (\`${PO_PM_OUTPUT_CONTRACT.allowedStatuses.join('`, `')}\`).`,
     '- Stories should include acceptance criteria.',
     '- Use assumptions and notes when information is missing or uncertain.',
     '- Prefer a backlog that is reviewable and implementation-ready over a long speculative document.'
@@ -37,7 +43,8 @@ function buildRoleRules(brief: ParsedBrief): string {
     '- Keep the output provider-agnostic and local-first in spirit.',
     '- Ask useful open questions, but do not block the backlog draft when information is missing.',
     '- State assumptions explicitly whenever the brief leaves gaps.',
-    '- Do not implement code, architecture, APIs, or UI screens in detail.'
+    '- Do not implement code, architecture, APIs, UI screens, or GitHub issue payloads.',
+    '- Use only the contract fields described below.'
   ];
 
   if (brief.constraints.length > 0) {
@@ -70,12 +77,25 @@ ${buildBacklogModelSummary()}
 
 ${buildOutputGuidance()}
 
-## Required Extra Sections
+## Required Output Contract
 
-- Start with a short project summary.
-- Add a section called \`Assumptions\`.
-- Add a section called \`Open Questions\`.
-- Then provide the backlog draft grouped by epics, stories, and tasks.
+Return a single JSON object with these required root fields:
+
+\`${PO_PM_OUTPUT_CONTRACT.rootRequiredFields.join('`, `')}\`
+
+Every item in \`items\` must include these required fields:
+
+\`${PO_PM_OUTPUT_CONTRACT.backlogItemRequiredFields.join('`, `')}\`
+
+Optional backlog item fields:
+
+\`${PO_PM_OUTPUT_CONTRACT.backlogItemOptionalFields.join('`, `')}\`
+
+## JSON Shape Example
+
+\`\`\`json
+${buildPoPmOutputJsonShapeExample()}
+\`\`\`
 
 ## Brief Highlights
 
@@ -115,6 +135,6 @@ ${brief.raw.trim()}
 
 ## Final Instruction
 
-Produce the best possible PO/PM backlog draft for this MVP. Be concise, structured, explicit about assumptions, and careful not to drift into code implementation.
+Produce the best possible PO/PM backlog draft for this MVP. Return only one fenced \`json\` block that follows the contract exactly, be explicit about assumptions and open questions, and do not drift into code implementation or prose-only explanation.
 `;
 }

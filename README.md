@@ -35,6 +35,7 @@ V1 is a manual, documentation-driven operating model for turning a project brief
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
+- [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
 
 ## Recommended First Implementation Approach
@@ -85,6 +86,8 @@ pnpm prompt:po
 ```
 
 This command writes a provider-agnostic Markdown prompt under `outputs/`, ready to copy into ChatGPT, Codex, Claude, or another assistant manually.
+
+The prompt now asks for a fenced importable JSON response aligned with [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md). A sample valid response lives at [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json).
 
 You can also pass a custom brief path and optional output directory:
 
