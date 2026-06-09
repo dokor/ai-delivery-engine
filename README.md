@@ -210,6 +210,14 @@ The command also writes:
 outputs/project-status.json
 ```
 
+### 7. Validate the demo workflow
+
+```bash
+pnpm demo:validate
+```
+
+This command runs the full local workflow against `examples/demo-project/` with explicit demo paths, then verifies that the expected backlog draft, prompt, normalized backlog, review outputs, export manifest, and project status files were generated under `outputs/demo-project/`.
+
 ## End-To-End Manual Loop
 
 The intended V1 usage is:

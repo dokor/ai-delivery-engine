@@ -8,6 +8,7 @@
     "backlog:export": "node --experimental-strip-types src/exportBacklog.ts",
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
     "backlog:run": "node --experimental-strip-types src/index.ts",
+    "demo:validate": "node --experimental-strip-types src/demoValidate.ts",
     "import:po": "node --experimental-strip-types src/importPo.ts",
     "project:status": "node --experimental-strip-types src/projectStatus.ts",
     "prompt:po": "node --experimental-strip-types src/promptPo.ts",

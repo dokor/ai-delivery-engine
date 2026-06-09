@@ -72,6 +72,14 @@ This prints a local status summary and writes:
 
 - `outputs/demo-project/project-status.json`
 
+## 7. Validate The Full Demo Workflow
+
+```bash
+pnpm demo:validate
+```
+
+This command reruns the full explicit-path demo workflow and verifies that all expected files exist, including the normalized backlog outputs, review reports, export manifest, and project status JSON.
+
 ## Optional Shortcuts
 
 These commands exist, but they use the repository default sample files rather than this demo fixture:
@@ -82,3 +90,4 @@ These commands exist, but they use the repository default sample files rather th
 - `pnpm backlog:review`
 - `pnpm backlog:export`
 - `pnpm project:status`
+- `pnpm demo:validate`
