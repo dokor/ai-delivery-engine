@@ -5,17 +5,19 @@ type WritePromptInput = {
   briefPath: string;
   outputDirectory: string;
   promptMarkdown: string;
+  outputBaseName?: string;
 };
 
 export async function writePromptFile({
   briefPath,
   outputDirectory,
-  promptMarkdown
+  promptMarkdown,
+  outputBaseName
 }: WritePromptInput): Promise<string> {
   await mkdir(outputDirectory, { recursive: true });
 
-  const baseName = basename(briefPath).replace(/\.[^.]+$/, '');
-  const promptPath = join(outputDirectory, `${baseName}.po-pm.prompt.md`);
+  const baseName = outputBaseName ?? `${basename(briefPath).replace(/\.[^.]+$/, '')}.po-pm.prompt`;
+  const promptPath = join(outputDirectory, `${baseName}.md`);
 
   await writeFile(promptPath, `${promptMarkdown.trim()}\n`, 'utf8');
 
