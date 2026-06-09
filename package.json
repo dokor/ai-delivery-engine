@@ -9,6 +9,7 @@
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
     "backlog:run": "node --experimental-strip-types src/index.ts",
     "import:po": "node --experimental-strip-types src/importPo.ts",
+    "project:status": "node --experimental-strip-types src/projectStatus.ts",
     "prompt:po": "node --experimental-strip-types src/promptPo.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },

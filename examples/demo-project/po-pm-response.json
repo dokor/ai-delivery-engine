@@ -1,0 +1,141 @@
+{
+  "projectName": "Neighborhood Tool Library Reservation App",
+  "projectSummary": "A small first-release web app that helps neighborhood members browse shared tools, request reservations, and lets volunteers confirm the requests in one place.",
+  "generatedAt": "2026-06-09T16:00:00.000Z",
+  "sourceBrief": "examples/demo-project/brief.md",
+  "assumptions": [
+    "The first release focuses on reservation requests and volunteer review rather than payments or long-term inventory planning.",
+    "Only approved volunteers need access to the request review surface in the initial MVP."
+  ],
+  "questions": [
+    "Should volunteers be able to mark a tool as returned in the first release, or is pickup confirmation enough for MVP validation?",
+    "Do members need email notifications in the first release, or can status updates stay inside the admin workflow for now?"
+  ],
+  "items": [
+    {
+      "id": "epic-001",
+      "type": "epic",
+      "title": "Support the member reservation journey",
+      "description": "Define the first-release member flow for browsing tools, understanding availability, and requesting a reservation without confusion.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "notes": [
+        "Keep the first release focused on the shortest useful reservation flow."
+      ]
+    },
+    {
+      "id": "story-002",
+      "parentId": "epic-001",
+      "type": "story",
+      "title": "Let a member browse tools and submit a reservation request",
+      "description": "As a neighborhood member, I want to browse the available tools and request one quickly so I can reserve what I need without back-and-forth messages.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "acceptanceCriteria": [
+        "A member can browse a list of available tools with short summaries.",
+        "A member can open a tool detail view and understand what the tool is for.",
+        "A member can submit a reservation request with their contact details and desired pickup timing."
+      ],
+      "assumptions": [
+        "Tool availability can be represented in a simple first-release status rather than a full calendar."
+      ]
+    },
+    {
+      "id": "task-003",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Draft the catalog and request flow structure",
+      "description": "Outline the catalog, tool detail, and reservation request flow so the member journey stays clear before implementation work is split further.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "ux_ui"
+    },
+    {
+      "id": "task-004",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Break the member reservation journey into front-end tasks",
+      "description": "Prepare the catalog, detail view, and request form as implementation-ready front-end tasks with clear component and state boundaries.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "frontend"
+    },
+    {
+      "id": "task-005",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Define the reservation request service and data notes",
+      "description": "Describe the minimum data fields and service behavior needed to store a reservation request and present it for volunteer review.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "backend"
+    },
+    {
+      "id": "epic-006",
+      "type": "epic",
+      "title": "Support volunteer request review",
+      "description": "Prepare the first-release volunteer workflow for reviewing pending requests and confirming which reservations should move forward.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm"
+    },
+    {
+      "id": "story-007",
+      "parentId": "epic-006",
+      "type": "story",
+      "title": "Let a volunteer review and confirm pending reservation requests",
+      "description": "As a volunteer coordinator, I want to review pending reservation requests in one place so I can confirm the next pickup without relying on scattered messages.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "acceptanceCriteria": [
+        "A volunteer can see a list of pending reservation requests.",
+        "A volunteer can review the requested tool, member details, and requested pickup timing.",
+        "A volunteer can mark a request as confirmed for the first release workflow."
+      ]
+    },
+    {
+      "id": "task-008",
+      "parentId": "story-007",
+      "type": "task",
+      "title": "Prepare volunteer review screen interaction notes",
+      "description": "Define the content hierarchy and decision points for the volunteer review screen so the admin flow remains lightweight and understandable.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "ux_ui"
+    },
+    {
+      "id": "task-009",
+      "parentId": "story-007",
+      "type": "task",
+      "title": "Define request review and confirmation back-end behavior",
+      "description": "Specify the minimum service behavior needed to list pending requests and update a request to a confirmed state for the first release.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "backend"
+    },
+    {
+      "id": "task-010",
+      "parentId": "story-007",
+      "type": "task",
+      "title": "Prepare QA checks for member and volunteer reservation flows",
+      "description": "Capture review checks for the request submission and volunteer confirmation paths so the MVP can be validated before implementation is treated as ready.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "qa"
+    },
+    {
+      "id": "risk-011",
+      "type": "risk",
+      "title": "Availability status may become outdated between request and confirmation",
+      "description": "The first-release workflow may show stale tool availability if another volunteer updates the same item outside the app before a request is confirmed.",
+      "priority": "medium",
+      "status": "review",
+      "notes": [
+        "Review whether the MVP needs a lightweight lock or warning before confirmation."
+      ]
+    }
+  ]
+}
