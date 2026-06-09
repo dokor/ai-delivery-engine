@@ -60,6 +60,7 @@ It deliberately does not yet:
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - [docs/AGENTS.md](docs/AGENTS.md)
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
+- [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
