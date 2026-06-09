@@ -52,6 +52,32 @@ V1 is a manual, documentation-driven operating model for turning a project brief
 - no complex dashboard
 - no external API coupling
 
+## Local MVP Runner
+
+The repository now includes a small local PO/PM backlog runner for the first documented flow:
+
+`brief -> PO/PM -> backlog draft`
+
+Install dependencies for typechecking:
+
+```bash
+pnpm install
+```
+
+Run the sample brief:
+
+```bash
+pnpm backlog:run
+```
+
+The command reads [src/examples/sample-brief.md](src/examples/sample-brief.md) and writes a JSON draft plus a Markdown summary under `outputs/`.
+
+You can also pass a custom brief path and optional output directory:
+
+```bash
+node --experimental-strip-types src/index.ts path/to/brief.md outputs
+```
+
 ## Current Status
 
 This repository now defines the product vision, agent roles, backlog model, workflow, and MVP scope for a semi-automatic first release.
