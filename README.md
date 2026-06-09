@@ -37,9 +37,11 @@ It can already:
 - generate a manual PO/PM prompt to copy into an AI assistant;
 - ask the AI assistant for an importable JSON response;
 - import and validate a manually saved PO/PM JSON response;
+- generate specialist prompts from individual exported backlog items;
 - produce normalized JSON and Markdown backlog outputs;
 - run deterministic backlog quality checks;
 - export one Markdown file per backlog item for manual review;
+- generate batch specialist prompts from the export manifest for supported owner roles;
 - summarize the local workflow state from generated files under `outputs/`.
 
 It deliberately does not yet:
@@ -232,7 +234,40 @@ You can also pass a custom backlog JSON path and optional export directory:
 node --experimental-strip-types src/exportBacklog.ts path/to/backlog.json outputs/exported-items
 ```
 
-### 7. Check local project status
+### 7. Generate batch specialist prompts from the export manifest
+
+```bash
+pnpm prompt:specialists
+```
+
+By default, the command reads `outputs/exported-items/manifest.json`, maps supported `ownerRole` values to the matching specialist templates under [templates/](templates/), and writes provider-agnostic Markdown prompts under `outputs/specialist-prompts/`.
+
+Supported role mappings:
+
+```txt
+ux_ui -> ux-ui
+frontend -> frontend
+backend -> backend
+qa -> qa
+tech_lead -> tech-lead
+```
+
+Items with missing or unsupported owner roles, such as `po_pm`, are skipped.
+
+Suggested output filenames:
+
+```txt
+outputs/specialist-prompts/task-003.ux-ui.prompt.md
+outputs/specialist-prompts/task-004.frontend.prompt.md
+```
+
+You can also pass a custom manifest path and optional output directory:
+
+```bash
+node --experimental-strip-types src/promptSpecialists.ts path/to/manifest.json outputs/specialist-prompts
+```
+
+### 8. Check local project status
 
 ```bash
 pnpm project:status
@@ -248,7 +283,7 @@ The command also writes:
 outputs/project-status.json
 ```
 
-### 8. Validate the demo workflow
+### 9. Validate the demo workflow
 
 ```bash
 pnpm demo:validate
