@@ -39,7 +39,8 @@ It can already:
 - import and validate a manually saved PO/PM JSON response;
 - produce normalized JSON and Markdown backlog outputs;
 - run deterministic backlog quality checks;
-- export one Markdown file per backlog item for manual review.
+- export one Markdown file per backlog item for manual review;
+- summarize the local workflow state from generated files under `outputs/`.
 
 It deliberately does not yet:
 
@@ -190,6 +191,22 @@ You can also pass a custom backlog JSON path and optional export directory:
 
 ```bash
 node --experimental-strip-types src/exportBacklog.ts path/to/backlog.json outputs/exported-items
+```
+
+### 6. Check local project status
+
+```bash
+pnpm project:status
+```
+
+By default, the command inspects local generated files under `outputs/` and prints a concise summary of whether the deterministic backlog draft, PO/PM prompt, normalized backlog, backlog review report, exported Markdown items, and export manifest exist.
+
+When available, it also reports the number of backlog review findings and the number of exported items, then suggests the next local step.
+
+The command also writes:
+
+```txt
+outputs/project-status.json
 ```
 
 ## End-To-End Manual Loop
