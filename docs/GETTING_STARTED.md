@@ -224,6 +224,8 @@ node --experimental-strip-types src/promptSpecialists.ts outputs/my-project/expo
 
 When you use one of the generated specialist prompts in an assistant, the response should follow [contracts/SPECIALIST_RESPONSE_CONTRACT.md](./contracts/SPECIALIST_RESPONSE_CONTRACT.md) so it stays local-first and easy to review manually.
 
+For fixture examples of what those responses can look like, see [../examples/specialist-responses/README.md](../examples/specialist-responses/README.md).
+
 Supported batch role mappings:
 
 ```txt
