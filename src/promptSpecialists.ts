@@ -12,6 +12,8 @@ import {
   buildSpecialistPrompt,
   type SpecialistRole
 } from './prompts/specialistPromptBuilder.ts';
+import type { GeneratedSpecialistPromptEntry } from './prompts/specialistPromptBatch.types.ts';
+import { writeSpecialistPromptBatchArtifacts } from './prompts/specialistPromptBatchWriter.ts';
 import { writePromptFile } from './prompts/promptWriter.ts';
 
 const DEFAULT_MANIFEST_PATH = 'outputs/exported-items/manifest.json';
@@ -85,11 +87,13 @@ async function main(): Promise<void> {
 
   let generatedCount = 0;
   let skippedCount = 0;
+  const generatedPrompts: GeneratedSpecialistPromptEntry[] = [];
 
   for (const entry of parsed.files) {
-    const role = entry.ownerRole ? OWNER_ROLE_TEMPLATE_MAP[entry.ownerRole] : undefined;
+    const ownerRole = entry.ownerRole;
+    const role = ownerRole ? OWNER_ROLE_TEMPLATE_MAP[ownerRole] : undefined;
 
-    if (!role) {
+    if (!ownerRole || !role) {
       skippedCount += 1;
       continue;
     }
@@ -108,15 +112,34 @@ async function main(): Promise<void> {
       backlogItemPath
     );
 
-    await writePromptFile({
+    const promptPath = await writePromptFile({
       briefPath: backlogItemPath,
       outputDirectory,
       promptMarkdown,
       outputBaseName: getOutputBaseName(entry.id, role)
     });
 
+    generatedPrompts.push({
+      itemId: entry.id,
+      itemTitle: entry.title,
+      itemType: entry.type,
+      ownerRole,
+      specialistRole: role,
+      promptFilePath: promptPath,
+      sourceBacklogItemFilePath: backlogItemPath
+    });
+
     generatedCount += 1;
   }
+
+  const batchArtifacts = await writeSpecialistPromptBatchArtifacts({
+    outputDirectory,
+    sourceManifestPath: manifestPath,
+    manifestItemCount: parsed.files.length,
+    generatedPromptCount: generatedCount,
+    skippedItemCount: skippedCount,
+    prompts: generatedPrompts
+  });
 
   logLines([
     `Specialist prompt batch generation completed.`,
@@ -124,7 +147,9 @@ async function main(): Promise<void> {
     `Output directory: ${outputDirectory}`,
     `Items read: ${parsed.files.length}`,
     `Prompts generated: ${generatedCount}`,
-    `Skipped items: ${skippedCount}`
+    `Skipped items: ${skippedCount}`,
+    `Prompt index: ${batchArtifacts.indexPath}`,
+    `Prompt README: ${batchArtifacts.readmePath}`
   ]);
 }
 
