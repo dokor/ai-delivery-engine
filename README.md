@@ -64,6 +64,7 @@ It deliberately does not yet:
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
 - [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, and Tech Lead prompts
+- [examples/demo-project/README.md](examples/demo-project/README.md) complete demo fixture for the full local V1 workflow
 
 ## Recommended First Implementation Approach
 
