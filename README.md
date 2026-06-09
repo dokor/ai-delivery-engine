@@ -4,6 +4,18 @@ AI Delivery Engine est un projet visant à orchestrer une équipe d'agents IA ca
 
 L'objectif n'est pas de créer un simple workflow no-code, mais un véritable moteur de livraison logiciel réutilisable d'un projet à l'autre.
 
+## Statut actuel
+
+Phase en cours : **Phase 1 — MVP Backlog Generator**.
+
+Le dépôt contient désormais :
+
+- la documentation produit et technique initiale ;
+- un socle monorepo TypeScript ;
+- les premiers types partagés ;
+- le contrat de sortie du PO Agent ;
+- le prompt système versionné du PO Agent.
+
 ## Vision
 
 Créer un cockpit permettant de piloter une équipe IA composée au minimum de :
@@ -41,28 +53,20 @@ Le premier cas d'usage cible est le site vitrine freelance web / IA.
 - Chaque workflow doit être réutilisable pour plusieurs projets.
 - GitHub doit servir de point d'ancrage pour le code, les issues et les pull requests.
 
-## Structure cible du dépôt
+## Structure du dépôt
 
 ```txt
 ai-delivery-engine/
-├── apps/
-│   ├── dashboard/
-│   └── api/
+├── package.json
+├── pnpm-workspace.yaml
+├── tsconfig.base.json
 ├── packages/
 │   ├── agents/
 │   ├── prompts/
-│   ├── backlog/
-│   ├── github/
 │   └── shared/
 ├── workflows/
 │   └── n8n/
 ├── docs/
-│   ├── vision.md
-│   ├── architecture.md
-│   ├── agents.md
-│   ├── backlog.md
-│   ├── workflows.md
-│   └── roadmap.md
 └── infra/
 ```
 
@@ -84,6 +88,6 @@ ai-delivery-engine/
 5. Créer automatiquement des issues GitHub.
 6. Préparer les prompts d'exécution pour Codex.
 
-## Statut
+## Prochaine étape technique
 
-Projet en phase d'initialisation.
+Créer un runner local capable de prendre un brief en entrée et de produire une sortie conforme au contrat `PoAgentOutput`.
