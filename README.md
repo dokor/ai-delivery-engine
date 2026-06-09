@@ -78,6 +78,20 @@ You can also pass a custom brief path and optional output directory:
 node --experimental-strip-types src/index.ts path/to/brief.md outputs
 ```
 
+Generate a manual PO/PM prompt from the same brief:
+
+```bash
+pnpm prompt:po
+```
+
+This command writes a provider-agnostic Markdown prompt under `outputs/`, ready to copy into ChatGPT, Codex, Claude, or another assistant manually.
+
+You can also pass a custom brief path and optional output directory:
+
+```bash
+node --experimental-strip-types src/promptPo.ts path/to/brief.md outputs
+```
+
 ## Current Status
 
 This repository now defines the product vision, agent roles, backlog model, workflow, and MVP scope for a semi-automatic first release.

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "backlog:run": "node --experimental-strip-types src/index.ts",
+    "prompt:po": "node --experimental-strip-types src/promptPo.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
