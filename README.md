@@ -131,6 +131,22 @@ You can also pass a custom backlog JSON path and optional output directory:
 node --experimental-strip-types src/reviewBacklog.ts path/to/backlog.json outputs
 ```
 
+Export backlog items to local Markdown files:
+
+```bash
+pnpm backlog:export
+```
+
+By default, the exporter reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog first, and writes one Markdown file per item under `outputs/exported-items/`.
+
+Each file includes the item title, description, type, priority, status, owner role when present, parent ID when present, acceptance criteria for stories, assumptions and notes when present, and suggested labels.
+
+You can also pass a custom backlog JSON path and optional export directory:
+
+```bash
+node --experimental-strip-types src/exportBacklog.ts path/to/backlog.json outputs/exported-items
+```
+
 ## Current Status
 
 This repository now defines the product vision, agent roles, backlog model, workflow, and MVP scope for a semi-automatic first release.
