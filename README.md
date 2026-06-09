@@ -37,6 +37,7 @@ It can already:
 - generate a manual PO/PM prompt to copy into an AI assistant;
 - ask the AI assistant for an importable JSON response;
 - import and validate a manually saved PO/PM JSON response;
+- generate specialist prompts from individual exported backlog items;
 - produce normalized JSON and Markdown backlog outputs;
 - run deterministic backlog quality checks;
 - export one Markdown file per backlog item for manual review;
@@ -156,7 +157,45 @@ You can also pass a custom input path and optional output directory:
 node --experimental-strip-types src/importPo.ts path/to/po-pm-response.json outputs
 ```
 
-### 4. Run a deterministic backlog quality review
+### 4. Generate a specialist prompt from an exported backlog item
+
+```bash
+pnpm prompt:specialist
+```
+
+The command accepts:
+
+1. a role name
+2. a backlog item Markdown file path
+3. an optional output directory
+
+Example:
+
+```bash
+node --experimental-strip-types src/promptSpecialist.ts frontend outputs/exported-items/story-002.md outputs
+```
+
+Supported roles:
+
+- `ux-ui`
+- `frontend`
+- `backend`
+- `qa`
+- `tech-lead`
+
+By default, the command reads the matching role template from `templates/`, reads the selected backlog item Markdown file, and writes a provider-agnostic prompt under `outputs/` using the format:
+
+```txt
+<item-id>.<role>.prompt.md
+```
+
+For example:
+
+```txt
+outputs/story-002.frontend.prompt.md
+```
+
+### 5. Run a deterministic backlog quality review
 
 ```bash
 pnpm backlog:review
@@ -177,7 +216,7 @@ You can also pass a custom backlog JSON path and optional output directory:
 node --experimental-strip-types src/reviewBacklog.ts path/to/backlog.json outputs
 ```
 
-### 5. Export backlog items to local Markdown files
+### 6. Export backlog items to local Markdown files
 
 ```bash
 pnpm backlog:export
@@ -195,7 +234,7 @@ You can also pass a custom backlog JSON path and optional export directory:
 node --experimental-strip-types src/exportBacklog.ts path/to/backlog.json outputs/exported-items
 ```
 
-### 6. Generate batch specialist prompts from the export manifest
+### 7. Generate batch specialist prompts from the export manifest
 
 ```bash
 pnpm prompt:specialists
@@ -228,7 +267,7 @@ You can also pass a custom manifest path and optional output directory:
 node --experimental-strip-types src/promptSpecialists.ts path/to/manifest.json outputs/specialist-prompts
 ```
 
-### 7. Check local project status
+### 8. Check local project status
 
 ```bash
 pnpm project:status
@@ -244,7 +283,7 @@ The command also writes:
 outputs/project-status.json
 ```
 
-### 8. Validate the demo workflow
+### 9. Validate the demo workflow
 
 ```bash
 pnpm demo:validate

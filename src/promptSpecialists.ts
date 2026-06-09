@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { dirname, isAbsolute, resolve } from 'node:path';
 
 import { logFailure, logLines } from './cli/logger.ts';
@@ -31,12 +31,38 @@ function getTemplatePath(role: SpecialistRole): string {
   return resolve(process.cwd(), 'templates', `${role}.md`);
 }
 
-function resolveManifestEntryPath(manifestPath: string, entryPath: string): string {
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveManifestEntryPath(
+  manifestPath: string,
+  entryPath: string
+): Promise<string> {
   if (isAbsolute(entryPath)) {
     return entryPath;
   }
 
-  return resolve(dirname(manifestPath), entryPath);
+  const cwdRelativePath = resolve(process.cwd(), entryPath);
+
+  if (await pathExists(cwdRelativePath)) {
+    return cwdRelativePath;
+  }
+
+  const manifestRelativePath = resolve(dirname(manifestPath), entryPath);
+
+  if (await pathExists(manifestRelativePath)) {
+    return manifestRelativePath;
+  }
+
+  throw new Error(
+    `Unable to resolve exported backlog item path "${entryPath}". Tried "${cwdRelativePath}" and "${manifestRelativePath}".`
+  );
 }
 
 function getOutputBaseName(itemId: string, role: SpecialistRole): string {
@@ -69,7 +95,7 @@ async function main(): Promise<void> {
     }
 
     const templatePath = getTemplatePath(role);
-    const backlogItemPath = resolveManifestEntryPath(manifestPath, entry.filePath);
+    const backlogItemPath = await resolveManifestEntryPath(manifestPath, entry.filePath);
     const [roleTemplateMarkdown, backlogItemMarkdown] = await Promise.all([
       readFile(templatePath, 'utf8'),
       readFile(backlogItemPath, 'utf8')
