@@ -41,7 +41,7 @@ It can already:
 - produce normalized JSON and Markdown backlog outputs;
 - run deterministic backlog quality checks;
 - export one Markdown file per backlog item for manual review;
-- generate batch specialist prompts from the export manifest for supported owner roles;
+- generate batch specialist prompts from the export manifest for supported owner roles, with a generated local index;
 - summarize the local workflow state from generated files under `outputs/`.
 
 It deliberately does not yet:
@@ -241,6 +241,17 @@ pnpm prompt:specialists
 ```
 
 By default, the command reads `outputs/exported-items/manifest.json`, maps supported `ownerRole` values to the matching specialist templates under [templates/](templates/), and writes provider-agnostic Markdown prompts under `outputs/specialist-prompts/`.
+
+It also writes:
+
+```txt
+outputs/specialist-prompts/index.json
+outputs/specialist-prompts/README.md
+```
+
+The generated index includes the source manifest path, generation timestamp, manifest item count, generated prompt count, skipped item count, and one entry per generated prompt with the item ID, item title, item type, owner role, specialist role, prompt file path, and source backlog item file path.
+
+The generated Markdown README makes the batch easy to inspect manually by summarizing the run and linking each generated prompt file.
 
 Supported role mappings:
 
