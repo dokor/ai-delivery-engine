@@ -14,7 +14,10 @@ Le dépôt contient désormais :
 - un socle monorepo TypeScript ;
 - les premiers types partagés ;
 - le contrat de sortie du PO Agent ;
-- le prompt système versionné du PO Agent.
+- le prompt système versionné du PO Agent ;
+- une abstraction LLM provider-agnostic ;
+- un MockProvider pour développer sans API IA ;
+- un ManualProvider pour générer les prompts à utiliser manuellement dans ChatGPT ou un autre outil.
 
 ## Vision
 
@@ -37,12 +40,28 @@ Brief projet
 ↓
 PO Agent
 ↓
+LLM Provider
+↓
 Epics / User stories / Tasks
 ↓
 GitHub Issues
 ```
 
 Le premier cas d'usage cible est le site vitrine freelance web / IA.
+
+## Stratégie LLM
+
+L'abonnement ChatGPT Plus ne donne pas automatiquement accès à l'API OpenAI.
+
+Le moteur est donc conçu pour ne dépendre d'aucun fournisseur unique.
+
+Providers prévus :
+
+- `MockProvider` : permet de développer et tester le pipeline sans API IA ;
+- `ManualProvider` : génère un prompt complet à copier/coller dans ChatGPT ou un autre assistant ;
+- `OpenAiProvider` : pourra être ajouté plus tard si un accès API est activé ;
+- `OllamaProvider` : pourra être ajouté pour tester des modèles locaux ;
+- `N8nWebhookProvider` : pourra être ajouté si n8n orchestre l'appel au modèle.
 
 ## Principes clés
 
@@ -52,6 +71,7 @@ Le premier cas d'usage cible est le site vitrine freelance web / IA.
 - Les sorties des agents doivent être structurées en JSON.
 - Chaque workflow doit être réutilisable pour plusieurs projets.
 - GitHub doit servir de point d'ancrage pour le code, les issues et les pull requests.
+- Le moteur doit rester provider-agnostic côté IA.
 
 ## Structure du dépôt
 
@@ -62,6 +82,7 @@ ai-delivery-engine/
 ├── tsconfig.base.json
 ├── packages/
 │   ├── agents/
+│   ├── llm/
 │   ├── prompts/
 │   └── shared/
 ├── workflows/
@@ -83,11 +104,12 @@ ai-delivery-engine/
 
 1. Recevoir un brief projet.
 2. Appeler le PO Agent.
-3. Générer un backlog structuré.
-4. Valider le format JSON.
-5. Créer automatiquement des issues GitHub.
-6. Préparer les prompts d'exécution pour Codex.
+3. Générer un prompt complet.
+4. Passer par un provider LLM.
+5. Produire une sortie JSON conforme au contrat `PoAgentOutput`.
+6. Valider le format JSON.
+7. Créer automatiquement des issues GitHub.
 
 ## Prochaine étape technique
 
-Créer un runner local capable de prendre un brief en entrée et de produire une sortie conforme au contrat `PoAgentOutput`.
+Créer un runner local capable de prendre un brief en entrée et de produire une sortie conforme au contrat `PoAgentOutput`, d'abord via `MockProvider`, puis via `ManualProvider`.
