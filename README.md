@@ -33,6 +33,7 @@ V1 is a manual, documentation-driven operating model for turning a project brief
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - [docs/AGENTS.md](docs/AGENTS.md)
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
+- [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
