@@ -24,7 +24,31 @@ AI Delivery Engine is meant to turn ad hoc prompting into a repeatable delivery 
 
 ## V1 In One Line
 
-V1 is a manual, documentation-driven operating model for turning a project brief into a backlog that multiple AI roles can refine with human review at every important step.
+V1 is a manual, local-first, documentation-driven workflow for turning a project brief into a structured backlog with human review at every important step.
+
+## Current MVP Status
+
+The current MVP is not an autonomous agent platform yet. It is a local semi-automatic delivery loop.
+
+It can already:
+
+- read a local project brief;
+- generate a deterministic PO/PM backlog draft;
+- generate a manual PO/PM prompt to copy into an AI assistant;
+- ask the AI assistant for an importable JSON response;
+- import and validate a manually saved PO/PM JSON response;
+- produce normalized JSON and Markdown backlog outputs;
+- run deterministic backlog quality checks;
+- export one Markdown file per backlog item for manual review.
+
+It deliberately does not yet:
+
+- call OpenAI, Claude, Ollama, or any other model provider;
+- run autonomous agents;
+- create remote issues;
+- use n8n;
+- use a database;
+- provide a web dashboard.
 
 ## Repository Map
 
@@ -53,25 +77,38 @@ V1 is a manual, documentation-driven operating model for turning a project brief
 - no complex dashboard
 - no external API coupling
 
-## Local MVP Runner
+## Local MVP Workflow
 
-The repository now includes a small local PO/PM backlog runner for the first documented flow:
-
-`brief -> PO/PM -> backlog draft`
-
-Install dependencies for typechecking:
+Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-Run the sample brief:
+### 1. Generate a deterministic backlog draft
 
 ```bash
 pnpm backlog:run
 ```
 
-The command reads [src/examples/sample-brief.md](src/examples/sample-brief.md) and writes a JSON draft plus a Markdown summary under `outputs/`.
+Default input:
+
+```txt
+src/examples/sample-brief.md
+```
+
+Default outputs:
+
+```txt
+outputs/sample-brief.backlog.json
+outputs/sample-brief.backlog.md
+```
+
+This command proves the basic flow locally:
+
+```txt
+brief -> PO/PM runner -> backlog draft
+```
 
 You can also pass a custom brief path and optional output directory:
 
@@ -79,7 +116,7 @@ You can also pass a custom brief path and optional output directory:
 node --experimental-strip-types src/index.ts path/to/brief.md outputs
 ```
 
-Generate a manual PO/PM prompt from the same brief:
+### 2. Generate a manual PO/PM prompt
 
 ```bash
 pnpm prompt:po
@@ -87,7 +124,7 @@ pnpm prompt:po
 
 This command writes a provider-agnostic Markdown prompt under `outputs/`, ready to copy into ChatGPT, Codex, Claude, or another assistant manually.
 
-The prompt now asks for a fenced importable JSON response aligned with [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md). A sample valid response lives at [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json).
+The prompt asks for a fenced importable JSON response aligned with [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md). A sample valid response lives at [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json).
 
 You can also pass a custom brief path and optional output directory:
 
@@ -95,7 +132,7 @@ You can also pass a custom brief path and optional output directory:
 node --experimental-strip-types src/promptPo.ts path/to/brief.md outputs
 ```
 
-Import a manually saved PO/PM AI JSON response:
+### 3. Import a manually saved PO/PM AI response
 
 ```bash
 pnpm import:po
@@ -103,8 +140,10 @@ pnpm import:po
 
 By default, the importer reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates it against the PO/PM contract and backlog draft types, and writes:
 
-- `outputs/sample-po-pm-output.normalized.backlog.json`
-- `outputs/sample-po-pm-output.normalized.backlog.md`
+```txt
+outputs/sample-po-pm-output.normalized.backlog.json
+outputs/sample-po-pm-output.normalized.backlog.md
+```
 
 You can also pass a custom input path and optional output directory:
 
@@ -112,7 +151,7 @@ You can also pass a custom input path and optional output directory:
 node --experimental-strip-types src/importPo.ts path/to/po-pm-response.json outputs
 ```
 
-Run a deterministic backlog quality review:
+### 4. Run a deterministic backlog quality review
 
 ```bash
 pnpm backlog:review
@@ -120,8 +159,10 @@ pnpm backlog:review
 
 By default, the review reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog shape first, then writes:
 
-- `outputs/backlog-review.md`
-- `outputs/backlog-review.json`
+```txt
+outputs/backlog-review.md
+outputs/backlog-review.json
+```
 
 The review reports simple deterministic findings such as missing acceptance criteria, missing task owner roles, orphan stories or tasks, weak descriptions, missing assumptions or open questions, and missing risk items.
 
@@ -131,13 +172,17 @@ You can also pass a custom backlog JSON path and optional output directory:
 node --experimental-strip-types src/reviewBacklog.ts path/to/backlog.json outputs
 ```
 
-Export backlog items to local Markdown files:
+### 5. Export backlog items to local Markdown files
 
 ```bash
 pnpm backlog:export
 ```
 
-By default, the exporter reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog first, and writes one Markdown file per item under `outputs/exported-items/`.
+By default, the exporter reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog first, and writes one Markdown file per item under:
+
+```txt
+outputs/exported-items/
+```
 
 Each file includes the item title, description, type, priority, status, owner role when present, parent ID when present, acceptance criteria for stories, assumptions and notes when present, and suggested labels.
 
@@ -147,6 +192,24 @@ You can also pass a custom backlog JSON path and optional export directory:
 node --experimental-strip-types src/exportBacklog.ts path/to/backlog.json outputs/exported-items
 ```
 
+## End-To-End Manual Loop
+
+The intended V1 usage is:
+
+```txt
+1. Write or choose a local brief
+2. Run pnpm backlog:run for a deterministic baseline
+3. Run pnpm prompt:po to generate a manual PO/PM prompt
+4. Copy the prompt into an AI assistant
+5. Save the AI response as a local JSON file
+6. Run pnpm import:po to validate and normalize it
+7. Run pnpm backlog:review to check backlog quality
+8. Run pnpm backlog:export to create one Markdown file per item
+9. Review the exported items manually before implementation
+```
+
+This keeps the human in control while making each step repeatable and inspectable.
+
 ## Current Status
 
-This repository now defines the product vision, agent roles, backlog model, workflow, and MVP scope for a semi-automatic first release.
+AI Delivery Engine currently defines the product vision, agent roles, backlog model, workflow, MVP scope, and the first local semi-automatic PO/PM delivery loop.
