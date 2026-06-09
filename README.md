@@ -180,13 +180,11 @@ node --experimental-strip-types src/reviewBacklog.ts path/to/backlog.json output
 pnpm backlog:export
 ```
 
-By default, the exporter reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog first, and writes one Markdown file per item under:
+By default, the exporter reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog first, writes one Markdown file per item under `outputs/exported-items/`, and also generates `outputs/exported-items/manifest.json`.
 
-```txt
-outputs/exported-items/
-```
+Each item file includes the item title, description, type, priority, status, owner role when present, parent ID when present, acceptance criteria for stories, assumptions and notes when present, and suggested labels.
 
-Each file includes the item title, description, type, priority, status, owner role when present, parent ID when present, acceptance criteria for stories, assumptions and notes when present, and suggested labels.
+The manifest includes the source backlog path, export timestamp, exported item count, and one entry per exported Markdown file with the item ID, title, type, priority, status, owner role when present, parent ID when present, file path, and suggested labels.
 
 You can also pass a custom backlog JSON path and optional export directory:
 
