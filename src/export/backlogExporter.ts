@@ -2,7 +2,11 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import type { BacklogDraft, BacklogItem } from '../backlog/backlog.types.ts';
-import type { ExportedBacklogItemFile } from './backlogExport.types.ts';
+import type {
+  BacklogExportManifest,
+  BacklogExportResult,
+  ExportedBacklogItemFile
+} from './backlogExport.types.ts';
 
 function buildSuggestedLabels(item: BacklogItem): string[] {
   const labels = [`type:${item.type}`, `priority:${item.priority}`, `status:${item.status}`];
@@ -12,6 +16,18 @@ function buildSuggestedLabels(item: BacklogItem): string[] {
   }
 
   return labels;
+}
+
+function buildManifest(
+  sourceBacklogPath: string,
+  exportedFiles: ExportedBacklogItemFile[]
+): BacklogExportManifest {
+  return {
+    sourceBacklogPath,
+    exportedAt: new Date().toISOString(),
+    exportedItemCount: exportedFiles.length,
+    files: exportedFiles
+  };
 }
 
 function renderList(items: string[] | undefined, emptyFallback?: string): string[] {
@@ -70,8 +86,9 @@ function buildMarkdown(item: BacklogItem): string {
 
 export async function exportBacklogItems(
   backlogDraft: BacklogDraft,
+  sourceBacklogPath: string,
   outputDirectory: string
-): Promise<ExportedBacklogItemFile[]> {
+): Promise<BacklogExportResult> {
   await mkdir(outputDirectory, { recursive: true });
 
   const exportedFiles: ExportedBacklogItemFile[] = [];
@@ -79,11 +96,28 @@ export async function exportBacklogItems(
   for (const item of backlogDraft.items) {
     const itemPath = join(outputDirectory, `${item.id}.md`);
     await writeFile(itemPath, buildMarkdown(item), 'utf8');
+    const suggestedLabels = buildSuggestedLabels(item);
+
     exportedFiles.push({
-      itemId: item.id,
-      path: itemPath
+      id: item.id,
+      title: item.title,
+      type: item.type,
+      priority: item.priority,
+      status: item.status,
+      ownerRole: item.ownerRole,
+      parentId: item.parentId,
+      filePath: itemPath,
+      suggestedLabels
     });
   }
 
-  return exportedFiles;
+  const manifestPath = join(outputDirectory, 'manifest.json');
+  const manifest = buildManifest(sourceBacklogPath, exportedFiles);
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+
+  return {
+    exportDirectory: outputDirectory,
+    manifestPath,
+    files: exportedFiles
+  };
 }

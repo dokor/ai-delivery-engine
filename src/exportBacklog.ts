@@ -15,12 +15,13 @@ async function main(): Promise<void> {
     invalidShapePrefix: 'Invalid backlog draft for export'
   });
 
-  const exportedFiles = await exportBacklogItems(parsed, outputDirectory);
+  const exportResult = await exportBacklogItems(parsed, inputPath, outputDirectory);
 
   logLines([
     `Backlog export completed for "${parsed.projectName}".`,
     `Export directory: ${outputDirectory}`,
-    `Exported item files: ${exportedFiles.length}`
+    `Exported item files: ${exportResult.files.length}`,
+    `Manifest output: ${exportResult.manifestPath}`
   ]);
 }
 
