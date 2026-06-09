@@ -1,7 +1,19 @@
-export type BacklogItemType = 'epic' | 'story' | 'task' | 'risk';
-export type BacklogPriority = 'low' | 'medium' | 'high';
-export type BacklogStatus = 'draft' | 'review' | 'ready' | 'done';
-export type BacklogOwnerRole = 'po_pm' | 'ux_ui' | 'frontend' | 'backend' | 'qa' | 'tech_lead';
+export const BACKLOG_ITEM_TYPES = ['epic', 'story', 'task', 'risk'] as const;
+export const BACKLOG_PRIORITIES = ['low', 'medium', 'high'] as const;
+export const BACKLOG_STATUSES = ['draft', 'review', 'ready', 'done'] as const;
+export const BACKLOG_OWNER_ROLES = [
+  'po_pm',
+  'ux_ui',
+  'frontend',
+  'backend',
+  'qa',
+  'tech_lead'
+] as const;
+
+export type BacklogItemType = (typeof BACKLOG_ITEM_TYPES)[number];
+export type BacklogPriority = (typeof BACKLOG_PRIORITIES)[number];
+export type BacklogStatus = (typeof BACKLOG_STATUSES)[number];
+export type BacklogOwnerRole = (typeof BACKLOG_OWNER_ROLES)[number];
 
 export type BacklogItem = {
   id: string;
@@ -27,17 +39,10 @@ export type BacklogDraft = {
   items: BacklogItem[];
 };
 
-const VALID_TYPES = new Set<BacklogItemType>(['epic', 'story', 'task', 'risk']);
-const VALID_PRIORITIES = new Set<BacklogPriority>(['low', 'medium', 'high']);
-const VALID_STATUSES = new Set<BacklogStatus>(['draft', 'review', 'ready', 'done']);
-const VALID_OWNER_ROLES = new Set<BacklogOwnerRole>([
-  'po_pm',
-  'ux_ui',
-  'frontend',
-  'backend',
-  'qa',
-  'tech_lead'
-]);
+const VALID_TYPES = new Set<BacklogItemType>(BACKLOG_ITEM_TYPES);
+const VALID_PRIORITIES = new Set<BacklogPriority>(BACKLOG_PRIORITIES);
+const VALID_STATUSES = new Set<BacklogStatus>(BACKLOG_STATUSES);
+const VALID_OWNER_ROLES = new Set<BacklogOwnerRole>(BACKLOG_OWNER_ROLES);
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((entry) => typeof entry === 'string');

@@ -1,0 +1,77 @@
+{
+  "projectName": "Freelance Web and AI Studio Site",
+  "projectSummary": "A first MVP marketing site for a freelance web and AI consultant that explains the offer, builds trust, and converts qualified visitors into contact requests.",
+  "generatedAt": "2026-06-09T11:30:00.000Z",
+  "sourceBrief": "src/examples/sample-brief.md",
+  "assumptions": [
+    "The first release should optimize for clarity and conversion rather than advanced product features.",
+    "The initial scope focuses on a marketing site with a small number of pages."
+  ],
+  "questions": [
+    "Should the first release include booking availability or only a contact path?",
+    "Is an English version required in the initial MVP?"
+  ],
+  "items": [
+    {
+      "id": "epic-001",
+      "type": "epic",
+      "title": "Clarify the freelance offer",
+      "description": "Define the first-release messaging and key value proposition for target visitors.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "notes": [
+        "Keep the initial story set focused on the first release."
+      ]
+    },
+    {
+      "id": "story-002",
+      "parentId": "epic-001",
+      "type": "story",
+      "title": "Present a clear homepage value proposition",
+      "description": "As a target visitor, I want to understand the offer within a few seconds so I can decide whether to continue exploring the site.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "acceptanceCriteria": [
+        "The homepage states what service is offered and for whom.",
+        "A primary contact-oriented call to action is visible near the top of the page.",
+        "The messaging stays aligned with the first MVP scope."
+      ],
+      "assumptions": [
+        "The homepage is the main entry point for new visitors."
+      ]
+    },
+    {
+      "id": "task-003",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Draft homepage content structure",
+      "description": "Outline the homepage sections, message hierarchy, and user journey before implementation planning.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "ux_ui"
+    },
+    {
+      "id": "task-004",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Prepare homepage implementation tasks",
+      "description": "Split the homepage story into front-end implementation work that a developer can review next.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "frontend"
+    },
+    {
+      "id": "risk-005",
+      "type": "risk",
+      "title": "Scope drift toward non-MVP features",
+      "description": "The backlog may expand toward CMS or advanced integrations unless the team reviews each addition against the MVP constraints.",
+      "priority": "medium",
+      "status": "review",
+      "notes": [
+        "Review any new feature request against the brief before accepting it."
+      ]
+    }
+  ]
+}
