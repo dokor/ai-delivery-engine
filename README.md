@@ -28,14 +28,14 @@ V1 is a manual, documentation-driven operating model for turning a project brief
 
 ## Repository Map
 
-- [docs/VISION.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/VISION.md)
-- [docs/ROADMAP.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/ROADMAP.md)
-- [docs/ARCHITECTURE.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/ARCHITECTURE.md)
-- [docs/AGENTS.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/AGENTS.md)
-- [docs/WORKFLOW.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/WORKFLOW.md)
-- [docs/BACKLOG_MODEL.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/BACKLOG_MODEL.md)
-- [docs/MVP.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/MVP.md)
-- [docs/DECISIONS/ADR-0001-documentation-first.md](/C:/Users/antoi/IdeaProjects/ai-delivery-engine/docs/DECISIONS/ADR-0001-documentation-first.md)
+- [docs/VISION.md](docs/VISION.md)
+- [docs/ROADMAP.md](docs/ROADMAP.md)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/AGENTS.md](docs/AGENTS.md)
+- [docs/WORKFLOW.md](docs/WORKFLOW.md)
+- [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
+- [docs/MVP.md](docs/MVP.md)
+- [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
 
 ## Recommended First Implementation Approach
 
