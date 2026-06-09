@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document explains the V1 semi-automatic workflow from project brief to reviewed backlog.
+This document explains the complete V1 local workflow from project brief to reviewed and exportable backlog items.
 
 It stays aligned with:
 
@@ -14,15 +14,16 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 
 ## Workflow Overview
 
-1. Write or choose a project brief.
+1. Start from a project brief.
 2. Generate a deterministic backlog draft.
 3. Generate a PO/PM manual prompt.
-4. Copy the prompt into an AI assistant.
+4. Copy the prompt into an AI assistant manually.
 5. Save the AI response locally.
 6. Import and validate the response.
-7. Review backlog quality.
-8. Export backlog items.
-9. Decide what is ready for implementation.
+7. Run the backlog quality review.
+8. Export backlog items to Markdown.
+9. Use the export manifest.
+10. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -41,12 +42,13 @@ Typical generated files under `outputs/`:
 - `backlog-review.md`
 - `backlog-review.json`
 - `exported-items/*.md`
+- `exported-items/manifest.json`
 
-`outputs/` is the working directory for local generated artifacts. It is where you inspect deterministic drafts, copyable prompts, imported backlog files, review reports, and exported Markdown items before any future remote synchronization exists.
+`outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
 ## Step By Step
 
-### 1. Write Or Choose A Project Brief
+### 1. Start From A Project Brief
 
 Human-controlled:
 
@@ -69,23 +71,23 @@ Command:
 pnpm backlog:run
 ```
 
-Human-controlled:
+Reads:
 
-- decide whether to use the deterministic draft as a baseline
-- inspect whether the generated scope looks useful before involving manual AI help
+- brief Markdown file such as `src/examples/sample-brief.md`
 
-Input:
-
-- brief Markdown file
-
-Outputs:
+Writes:
 
 - `outputs/sample-brief.backlog.json`
 - `outputs/sample-brief.backlog.md`
 
+Human review:
+
+- inspect whether the generated scope looks useful
+- decide whether to use the deterministic draft as the baseline before involving manual AI help
+
 Purpose:
 
-- create a small local baseline without calling any model or external service
+- create a small local baseline without calling any external model or service
 
 ### 3. Generate A PO/PM Manual Prompt
 
@@ -95,24 +97,24 @@ Command:
 pnpm prompt:po
 ```
 
-Human-controlled:
+Reads:
 
-- decide whether the brief is ready to send to an assistant
-- review the generated prompt before copy/paste
+- brief Markdown file such as `src/examples/sample-brief.md`
 
-Input:
-
-- brief Markdown file
-
-Output:
+Writes:
 
 - `outputs/sample-brief.po-pm.prompt.md`
+
+Human review:
+
+- review the generated prompt before copy and paste
+- decide whether the brief and prompt are ready to send to an assistant
 
 Purpose:
 
 - create a provider-agnostic prompt that asks for a structured JSON response aligned with the PO/PM output contract
 
-### 4. Copy The Prompt Into An AI Assistant
+### 4. Copy The Prompt Into An AI Assistant Manually
 
 Human-controlled:
 
@@ -149,26 +151,26 @@ Command:
 pnpm import:po
 ```
 
-Human-controlled:
+Reads:
 
-- decide whether the saved AI response is worth importing
-- inspect validation failures and correct the source response if needed
+- local PO/PM JSON response such as `src/examples/sample-po-pm-output.json`
 
-Input:
-
-- local PO/PM JSON response
-
-Outputs:
+Writes:
 
 - `outputs/sample-po-pm-output.normalized.backlog.json`
 - `outputs/sample-po-pm-output.normalized.backlog.md`
+
+Human review:
+
+- inspect validation failures and correct the source response if needed
+- decide whether the imported backlog is good enough to move into review
 
 Purpose:
 
 - validate contract shape locally
 - normalize the response into backlog draft outputs
 
-### 7. Review Backlog Quality
+### 7. Run The Backlog Quality Review
 
 Command:
 
@@ -176,25 +178,25 @@ Command:
 pnpm backlog:review
 ```
 
-Human-controlled:
+Reads:
 
-- decide whether the review findings are acceptable
-- choose whether to send the backlog back through another PO/PM pass
+- local backlog JSON file, typically the imported normalized backlog
 
-Input:
-
-- local backlog JSON file
-
-Outputs:
+Writes:
 
 - `outputs/backlog-review.md`
 - `outputs/backlog-review.json`
+
+Human review:
+
+- inspect the findings and decide whether the backlog needs another PO/PM revision
+- decide whether the current backlog quality is acceptable for export
 
 Purpose:
 
 - run deterministic, explainable checks for missing acceptance criteria, missing owner roles, orphan links, weak descriptions, missing assumptions or open questions, and missing risks
 
-### 8. Export Backlog Items
+### 8. Export Backlog Items To Markdown
 
 Command:
 
@@ -202,24 +204,51 @@ Command:
 pnpm backlog:export
 ```
 
-Human-controlled:
+Reads:
 
-- inspect the exported Markdown items one by one
-- decide which items are understandable enough for downstream use
+- local backlog JSON file, typically the imported normalized backlog
 
-Input:
-
-- local backlog JSON file
-
-Outputs:
+Writes:
 
 - `outputs/exported-items/*.md`
+- `outputs/exported-items/manifest.json`
+
+Human review:
+
+- inspect the exported item files one by one
+- decide whether the exported backlog items are understandable enough for downstream implementation work
 
 Purpose:
 
-- turn backlog items into reviewable local Markdown files before any remote issue creation exists
+- turn backlog items into reviewable local Markdown files
+- create a manifest that summarizes the export in one machine-readable place before any remote issue creation exists
 
-### 9. Decide What Is Ready For Implementation
+### 9. Use The Export Manifest
+
+Primary file:
+
+- `outputs/exported-items/manifest.json`
+
+What it contains:
+
+- source backlog path
+- export timestamp
+- exported item count
+- one entry per exported Markdown file with item metadata and suggested labels
+
+How to use it later:
+
+- confirm which items were exported in one pass
+- trace each Markdown file back to its backlog item metadata
+- prepare future local sync or issue-creation tooling without using it yet in V1
+- compare later exports to earlier ones during human review
+
+Human review:
+
+- inspect whether the manifest matches the exported item files
+- decide whether the export set is complete enough for the next implementation-oriented step
+
+### 10. Decide What Is Ready For Implementation
 
 Human-controlled:
 
@@ -227,6 +256,7 @@ Human-controlled:
 - review the imported AI-assisted backlog
 - review quality findings
 - review exported item files
+- review the export manifest
 - decide which stories or tasks are ready for the next implementation-oriented workflow
 
 No local command makes this decision automatically in V1.
@@ -241,6 +271,7 @@ The following remain human-controlled in V1:
 - saving the AI response locally
 - interpreting validation failures
 - deciding whether the backlog quality is good enough
+- checking the exported Markdown items and manifest
 - deciding what is ready for implementation
 
 This matches [MVP.md](./MVP.md), which explicitly keeps prompts, AI tool execution, output review, backlog edits, and readiness decisions manual in V1.
