@@ -95,6 +95,23 @@ You can also pass a custom brief path and optional output directory:
 node --experimental-strip-types src/promptPo.ts path/to/brief.md outputs
 ```
 
+Import a manually saved PO/PM AI JSON response:
+
+```bash
+pnpm import:po
+```
+
+By default, the importer reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates it against the PO/PM contract and backlog draft types, and writes:
+
+- `outputs/sample-po-pm-output.normalized.backlog.json`
+- `outputs/sample-po-pm-output.normalized.backlog.md`
+
+You can also pass a custom input path and optional output directory:
+
+```bash
+node --experimental-strip-types src/importPo.ts path/to/po-pm-response.json outputs
+```
+
 ## Current Status
 
 This repository now defines the product vision, agent roles, backlog model, workflow, and MVP scope for a semi-automatic first release.
