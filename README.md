@@ -112,6 +112,25 @@ You can also pass a custom input path and optional output directory:
 node --experimental-strip-types src/importPo.ts path/to/po-pm-response.json outputs
 ```
 
+Run a deterministic backlog quality review:
+
+```bash
+pnpm backlog:review
+```
+
+By default, the review reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog shape first, then writes:
+
+- `outputs/backlog-review.md`
+- `outputs/backlog-review.json`
+
+The review reports simple deterministic findings such as missing acceptance criteria, missing task owner roles, orphan stories or tasks, weak descriptions, missing assumptions or open questions, and missing risk items.
+
+You can also pass a custom backlog JSON path and optional output directory:
+
+```bash
+node --experimental-strip-types src/reviewBacklog.ts path/to/backlog.json outputs
+```
+
 ## Current Status
 
 This repository now defines the product vision, agent roles, backlog model, workflow, and MVP scope for a semi-automatic first release.
