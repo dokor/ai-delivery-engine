@@ -37,6 +37,7 @@ V1 is a manual, documentation-driven operating model for turning a project brief
 - [docs/MVP.md](docs/MVP.md)
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
+- [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, and Tech Lead prompts
 
 ## Recommended First Implementation Approach
 
