@@ -7,6 +7,7 @@ type WriteBacklogDraftInput = {
   backlogDraft: BacklogDraft;
   briefPath: string;
   outputDirectory: string;
+  outputBaseName?: string;
 };
 
 export type WrittenBacklogDraft = {
@@ -106,7 +107,8 @@ function hasRequiredBacklogShape(items: BacklogItem[]): boolean {
 export async function writeBacklogDraft({
   backlogDraft,
   briefPath,
-  outputDirectory
+  outputDirectory,
+  outputBaseName
 }: WriteBacklogDraftInput): Promise<WrittenBacklogDraft> {
   if (!hasRequiredBacklogShape(backlogDraft.items)) {
     throw new Error('Backlog draft must contain at least one epic, one story, and one task.');
@@ -114,7 +116,7 @@ export async function writeBacklogDraft({
 
   await mkdir(outputDirectory, { recursive: true });
 
-  const baseName = basename(briefPath).replace(/\.[^.]+$/, '');
+  const baseName = outputBaseName ?? basename(briefPath).replace(/\.[^.]+$/, '');
   const jsonPath = join(outputDirectory, `${baseName}.backlog.json`);
   const markdownPath = join(outputDirectory, `${baseName}.backlog.md`);
 
