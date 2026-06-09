@@ -5,6 +5,7 @@
   "description": "AI Delivery Engine orchestrates AI agents to transform project briefs into actionable delivery backlogs.",
   "type": "module",
   "scripts": {
+    "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
     "backlog:run": "node --experimental-strip-types src/index.ts",
     "import:po": "node --experimental-strip-types src/importPo.ts",
     "prompt:po": "node --experimental-strip-types src/promptPo.ts",
