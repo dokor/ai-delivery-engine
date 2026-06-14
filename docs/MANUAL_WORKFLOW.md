@@ -22,8 +22,10 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 6. Import and validate the response.
 7. Run the backlog quality review.
 8. Export backlog items to Markdown.
-9. Use the export manifest.
-10. Decide what is ready for implementation.
+9. Use the export manifest and generate specialist prompts when needed.
+10. Save specialist responses locally as Markdown.
+11. Run the specialist response checker.
+12. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -43,6 +45,9 @@ Typical generated files under `outputs/`:
 - `backlog-review.json`
 - `exported-items/*.md`
 - `exported-items/manifest.json`
+- `specialist-prompts/*.prompt.md`
+- `frontend-story-002.specialist-check.md`
+- `frontend-story-002.specialist-check.json`
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
@@ -248,7 +253,59 @@ Human review:
 - inspect whether the manifest matches the exported item files
 - decide whether the export set is complete enough for the next implementation-oriented step
 
-### 10. Decide What Is Ready For Implementation
+### 10. Save Specialist Responses Locally
+
+Human-controlled:
+
+- choose which exported backlog items need specialist review
+- copy a generated specialist prompt into an assistant manually
+- save the specialist response as a local Markdown file
+
+Typical source files:
+
+- exported backlog item Markdown from `outputs/exported-items/`
+- generated specialist prompts from `outputs/specialist-prompts/`
+- example response fixtures from [../examples/specialist-responses/README.md](../examples/specialist-responses/README.md)
+
+Purpose:
+
+- keep specialist review local, manual, and provider agnostic
+- create a reviewable Markdown artifact before any acceptance decision is made
+
+### 11. Run The Specialist Response Checker
+
+Command:
+
+```bash
+pnpm specialist:check
+```
+
+Reads:
+
+- a local specialist response Markdown file such as `examples/specialist-responses/frontend-story-002.md`
+
+Writes:
+
+- `outputs/frontend-story-002.specialist-check.md`
+- `outputs/frontend-story-002.specialist-check.json`
+
+Human review:
+
+- inspect missing sections, unsupported roles, weak content, or suspicious claims
+- decide whether the response should be accepted, revised, or rejected
+
+Purpose:
+
+- run a deterministic structural check against the specialist response contract
+- surface obvious format and workflow problems before the response is used further
+
+Boundary:
+
+- the checker does not grade specialist quality semantically
+- the checker does not approve work automatically
+- the checker does not decide whether the response is good enough to keep
+
+### 12. Decide What Is Ready For Implementation
 
 Human-controlled:
 
@@ -257,6 +314,7 @@ Human-controlled:
 - review quality findings
 - review exported item files
 - review the export manifest
+- review specialist responses and their checker outputs when used
 - decide which stories or tasks are ready for the next implementation-oriented workflow
 
 No local command makes this decision automatically in V1.
@@ -269,9 +327,11 @@ The following remain human-controlled in V1:
 - deciding whether to use the deterministic draft
 - deciding when to involve an external assistant manually
 - saving the AI response locally
+- saving specialist responses locally
 - interpreting validation failures
 - deciding whether the backlog quality is good enough
 - checking the exported Markdown items and manifest
+- deciding whether a specialist response should be accepted, revised, or rejected
 - deciding what is ready for implementation
 
 This matches [MVP.md](./MVP.md), which explicitly keeps prompts, AI tool execution, output review, backlog edits, and readiness decisions manual in V1.

@@ -67,6 +67,17 @@ node --experimental-strip-types src/projectStatus.ts outputs/demo-project
 
 This takes you from a demo brief to exported backlog items and specialist prompts without adding any external integration.
 
+If you want to include specialist response checking in that flow, you can also run:
+
+```bash
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs/demo-project/specialist-check
+```
+
+This validates a saved Markdown specialist response locally and writes:
+
+- `outputs/demo-project/specialist-check/frontend-story-002.specialist-check.md`
+- `outputs/demo-project/specialist-check/frontend-story-002.specialist-check.json`
+
 ## Validate The Demo Workflow
 
 To rerun and verify the built-in demo workflow end to end:
@@ -281,6 +292,8 @@ Practical flow:
 specialist prompt -> manual response -> specialist:check -> human review
 ```
 
+The response is still generated manually and saved locally. The checker only validates structure and suspicious claims against the documented contract. It does not grade specialist quality semantically, approve work automatically, or decide whether the response is good enough to use.
+
 Or with an explicit file path:
 
 ```bash
@@ -288,6 +301,13 @@ node --experimental-strip-types src/specialistCheck.ts examples/specialist-respo
 ```
 
 This writes a Markdown report and a JSON report under `outputs/` so you can review missing sections, unsupported roles, weak content, or suspicious claims before using the response further.
+
+Typical outputs:
+
+- `outputs/frontend-story-002.specialist-check.md`
+- `outputs/frontend-story-002.specialist-check.json`
+
+Human review still decides whether the response should be accepted, revised, or rejected after the checker runs.
 
 ## How To Use Generated Files Manually
 
@@ -302,7 +322,8 @@ Typical manual use:
 5. read exported backlog item Markdown files one by one
 6. generate specialist prompts for the items you want to refine further
 7. copy specialist prompts into an assistant manually when needed
-8. decide which backlog items are ready for implementation
+8. save specialist responses as Markdown and run `specialist:check` when you want a local structural check
+9. decide which backlog items are ready for implementation
 
 Nothing in V1 marks items ready automatically.
 
@@ -315,6 +336,7 @@ The following steps stay manual on purpose:
 - choosing which external assistant to use
 - copying prompts into that assistant
 - saving AI responses locally
+- deciding which specialist responses need revision after `specialist:check`
 - deciding whether validation errors need prompt changes or JSON fixes
 - deciding whether backlog review findings are acceptable
 - deciding which exported items should move toward implementation

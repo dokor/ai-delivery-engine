@@ -82,7 +82,30 @@ This writes:
 - `outputs/demo-v1-roles/specialist-prompts/index.json`
 - `outputs/demo-v1-roles/specialist-prompts/README.md`
 
-## 7. Check Project Status
+## 7. Save A Manual Specialist Response And Run The Checker
+
+The specialist response is still generated manually after you copy one of the generated prompts into an assistant. The intended loop is:
+
+```txt
+specialist prompt -> manual assistant response saved as Markdown -> specialist:check -> human review
+```
+
+If you want a contract-compliant response example to test with, see [../specialist-responses/README.md](../specialist-responses/README.md).
+
+You can run the local structure checker like this:
+
+```bash
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs/demo-v1-roles/specialist-check
+```
+
+This writes:
+
+- `outputs/demo-v1-roles/specialist-check/frontend-story-002.specialist-check.md`
+- `outputs/demo-v1-roles/specialist-check/frontend-story-002.specialist-check.json`
+
+The checker does not grade specialist quality semantically and does not approve work automatically. A human still decides whether the response is accepted, revised, or rejected.
+
+## 8. Check Project Status
 
 ```bash
 node --experimental-strip-types src/projectStatus.ts outputs/demo-v1-roles
