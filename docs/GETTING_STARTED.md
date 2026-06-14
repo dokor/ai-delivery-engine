@@ -236,7 +236,7 @@ qa -> qa
 tech_lead -> tech-lead
 ```
 
-The current reusable prompt templates focus on the main delivery roles. The broader V1 role roadmap is documented in [AGENTS.md](./AGENTS.md), including Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success as review perspectives.
+The current specialist prompt commands focus on the main delivery roles. The [templates/](../templates/) directory also includes reusable V1 review templates for Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success, even though prompt generation support for those roles is not extended in this issue.
 
 Items with missing or unsupported owner roles are skipped intentionally.
 
