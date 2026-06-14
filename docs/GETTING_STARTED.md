@@ -361,3 +361,5 @@ When updating it, prefer:
 - alignment with the local-only, human-controlled V1 workflow
 
 For the final maintainer gate before declaring the local-first workflow complete, use [V1_READINESS_CHECKLIST.md](./V1_READINESS_CHECKLIST.md).
+
+For the role-to-role context flow behind that workflow, use [V1_ROLE_HANDOFFS.md](./V1_ROLE_HANDOFFS.md).
