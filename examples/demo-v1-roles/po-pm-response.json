@@ -1,0 +1,160 @@
+{
+  "projectName": "Community Workshop Registration MVP",
+  "projectSummary": "A small first-release web app that helps residents browse community workshops, request registration, and lets staff review and confirm signups in one local workflow.",
+  "generatedAt": "2026-06-14T13:30:00.000Z",
+  "sourceBrief": "examples/demo-v1-roles/brief.md",
+  "assumptions": [
+    "The first release focuses on workshop registration requests and staff review rather than payments or waitlists.",
+    "Only internal staff need access to the registration review surface in the initial MVP."
+  ],
+  "questions": [
+    "Should the first release support a simple attendance status after confirmation, or is registration confirmation enough for MVP validation?",
+    "Does the community center need multilingual workshop content in the first release, or can English-only content validate the initial flow?"
+  ],
+  "items": [
+    {
+      "id": "epic-001",
+      "type": "epic",
+      "title": "Coordinate resident registration and staff review",
+      "description": "Define the first-release workflow for browsing workshops, requesting registration, and letting staff review signups in one manageable process.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "notes": [
+        "Keep the first release focused on the smallest useful registration workflow."
+      ]
+    },
+    {
+      "id": "story-002",
+      "parentId": "epic-001",
+      "type": "story",
+      "title": "Let a resident register for a workshop and let staff confirm the request",
+      "description": "As a resident, I want to browse a workshop and submit a registration request so I can reserve a spot without back-and-forth email, while staff can review and confirm the request in one place.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "po_pm",
+      "acceptanceCriteria": [
+        "A resident can browse a list of upcoming workshops with short summaries.",
+        "A resident can open a workshop detail view and understand how to request a spot.",
+        "A resident can submit a registration request with contact details and attendance preferences.",
+        "A staff member can review pending registration requests and mark a request as confirmed."
+      ],
+      "assumptions": [
+        "The first release can treat each workshop as a simple availability unit rather than a full scheduling system."
+      ]
+    },
+    {
+      "id": "task-003",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Define the workshop browsing and registration content flow",
+      "description": "Outline the workshop list, detail, and registration request flow so the resident journey stays clear before implementation work is split further.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "ux_ui"
+    },
+    {
+      "id": "task-004",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Break the resident and staff screens into front-end tasks",
+      "description": "Prepare implementation-ready front-end tasks for the workshop list, registration form, and staff review screen with clear component and state boundaries.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "frontend"
+    },
+    {
+      "id": "task-005",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Define registration storage and confirmation service behavior",
+      "description": "Describe the minimum data fields and service behavior needed to store registration requests, list pending signups, and update a request to confirmed.",
+      "priority": "high",
+      "status": "review",
+      "ownerRole": "backend"
+    },
+    {
+      "id": "task-006",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Prepare QA checks for the resident registration workflow",
+      "description": "Capture validation checks for workshop browsing, registration submission, and staff confirmation so the MVP can be reviewed before implementation is treated as ready.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "qa"
+    },
+    {
+      "id": "task-007",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Review sequencing and cross-role dependencies for the first release",
+      "description": "Challenge the current task ordering and highlight the smallest changes needed to keep the registration MVP aligned with the documented architecture and delivery flow.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "tech_lead"
+    },
+    {
+      "id": "task-008",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Review consent, privacy notice, and data retention needs",
+      "description": "Identify the minimum consent language, privacy documentation, and attendee data retention expectations that should be visible before the registration flow is treated as ready.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "legal_compliance"
+    },
+    {
+      "id": "task-009",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Review staff access and attendee data handling risks",
+      "description": "Surface the main security concerns around staff dashboard access, attendee contact data, and misuse of registration review actions in the first release.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "security"
+    },
+    {
+      "id": "task-010",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Outline environments, deployment checks, and monitoring basics",
+      "description": "Define the smallest practical operational tasks for environments, deployment confidence, rollback readiness, and basic monitoring for the workshop MVP.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "devops"
+    },
+    {
+      "id": "task-011",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Define registration funnel events and workshop signup KPIs",
+      "description": "Recommend the minimum events, KPI definitions, and reporting checks needed to understand whether residents discover workshops and complete the registration flow.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "data_analytics"
+    },
+    {
+      "id": "task-012",
+      "parentId": "story-002",
+      "type": "task",
+      "title": "Prepare resident-facing guidance and staff support notes",
+      "description": "Identify the onboarding, help, and release communication notes needed so residents and staff understand the first-release registration workflow clearly.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "customer_success"
+    },
+    {
+      "id": "risk-013",
+      "parentId": "story-002",
+      "type": "risk",
+      "title": "Staff may confirm registrations without enough visibility into consent and attendance details",
+      "description": "The first-release staff review flow could lead to incorrect confirmations if attendee consent state, registration notes, or workshop capacity context are unclear at review time.",
+      "priority": "medium",
+      "status": "review",
+      "ownerRole": "security",
+      "notes": [
+        "Review whether the first release needs explicit consent state and capacity warnings in the staff dashboard."
+      ]
+    }
+  ]
+}

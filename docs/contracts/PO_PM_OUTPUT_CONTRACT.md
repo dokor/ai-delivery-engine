@@ -50,7 +50,7 @@ Required:
 Optional:
 
 - `parentId`: string
-- `ownerRole`: `po_pm` | `ux_ui` | `frontend` | `backend` | `qa` | `tech_lead`
+- `ownerRole`: `po_pm` | `ux_ui` | `frontend` | `backend` | `qa` | `tech_lead` | `legal_compliance` | `security` | `devops` | `data_analytics` | `customer_success`
 - `acceptanceCriteria`: string array
 - `assumptions`: string array
 - `notes`: string array
