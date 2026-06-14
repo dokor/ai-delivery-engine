@@ -12,7 +12,7 @@ In practical terms, it gives you a repeatable V1 workflow to:
 - import and validate the saved PO/PM response as local JSON
 - review backlog quality
 - export backlog items as Markdown files
-- generate specialist prompts for roles such as UX/UI, Front-end, Back-end, QA, and Tech Lead
+- generate specialist prompts for all current V1 roles, including UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success
 
 Everything in V1 is local-first. You run local commands, inspect local files, and decide manually what should happen next.
 
@@ -234,9 +234,14 @@ frontend -> frontend
 backend -> backend
 qa -> qa
 tech_lead -> tech-lead
+legal_compliance -> legal-compliance
+security -> security
+devops -> devops
+data_analytics -> data-analytics
+customer_success -> customer-success
 ```
 
-The current specialist prompt commands focus on the main delivery roles. The [templates/](../templates/) directory also includes reusable V1 review templates for Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success, even though prompt generation support for those roles is not extended in this issue.
+The current specialist prompt commands support all current V1 roles from [templates/](../templates/). V2-only roles such as Performance, SEO, Accessibility, Finance & Cost, and Marketing are still intentionally excluded.
 
 Items with missing or unsupported owner roles are skipped intentionally.
 

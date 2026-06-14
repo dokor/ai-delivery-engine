@@ -185,6 +185,11 @@ Supported roles:
 - `backend`
 - `qa`
 - `tech-lead`
+- `legal-compliance`
+- `security`
+- `devops`
+- `data-analytics`
+- `customer-success`
 
 By default, the command reads the matching role template from `templates/`, reads the selected backlog item Markdown file, and writes a provider-agnostic prompt under `outputs/` using the format:
 
@@ -264,6 +269,11 @@ frontend -> frontend
 backend -> backend
 qa -> qa
 tech_lead -> tech-lead
+legal_compliance -> legal-compliance
+security -> security
+devops -> devops
+data_analytics -> data-analytics
+customer_success -> customer-success
 ```
 
 Items with missing or unsupported owner roles, such as `po_pm`, are skipped.

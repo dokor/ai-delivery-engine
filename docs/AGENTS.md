@@ -155,4 +155,4 @@ Every major handoff in this flow still requires human approval in V1.
 
 ## Current V1 Boundary
 
-The V1 role model is broader than the current reusable prompt templates. Today, the local prompt tooling is centered on the main delivery roles, while the broader V1 roadmap also includes Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success as documented operating perspectives.
+The local prompt tooling now supports all current V1 roles through the reusable templates and specialist prompt commands. V2-only specialist roles remain intentionally excluded until the roadmap expands beyond the current V1 operating loop.
