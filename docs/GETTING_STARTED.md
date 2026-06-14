@@ -359,3 +359,5 @@ When updating it, prefer:
 - explicit input and output paths
 - practical notes about what a user should inspect next
 - alignment with the local-only, human-controlled V1 workflow
+
+For the final maintainer gate before declaring the local-first workflow complete, use [V1_READINESS_CHECKLIST.md](./V1_READINESS_CHECKLIST.md).

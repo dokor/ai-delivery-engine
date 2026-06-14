@@ -63,6 +63,7 @@ It deliberately does not yet:
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
 - [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
+- [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
