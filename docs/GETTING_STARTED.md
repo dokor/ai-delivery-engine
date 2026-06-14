@@ -40,6 +40,8 @@ The repository uses `pnpm` scripts from [package.json](../package.json).
 
 If you want a plug-and-play first run, use the demo fixture in [examples/demo-project/README.md](../examples/demo-project/README.md).
 
+If you specifically want a fixture that exercises every current V1 core role in one backlog, use [examples/demo-v1-roles/README.md](../examples/demo-v1-roles/README.md).
+
 The main demo files are:
 
 - `examples/demo-project/brief.md`

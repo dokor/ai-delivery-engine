@@ -22,7 +22,18 @@ type BacklogItem = {
   description: string;
   priority: 'low' | 'medium' | 'high';
   status: 'draft' | 'review' | 'ready' | 'done';
-  ownerRole?: 'po_pm' | 'ux_ui' | 'frontend' | 'backend' | 'qa' | 'tech_lead';
+  ownerRole?:
+    | 'po_pm'
+    | 'ux_ui'
+    | 'frontend'
+    | 'backend'
+    | 'qa'
+    | 'tech_lead'
+    | 'legal_compliance'
+    | 'security'
+    | 'devops'
+    | 'data_analytics'
+    | 'customer_success';
   acceptanceCriteria?: string[];
   assumptions?: string[];
   notes?: string[];
@@ -37,6 +48,11 @@ type BacklogItem = {
 - Back-end adds service or data tasks
 - QA adds validation and risk notes
 - Tech Lead can re-sequence or flag dependencies
+- Legal & Compliance adds privacy, consent, and retention notes
+- Security adds trust-boundary, access-control, and misuse risks
+- DevOps adds deployment and operational readiness tasks
+- Data & Analytics adds KPI, event, and measurement tasks
+- Customer Success adds onboarding, support, and release clarity tasks
 
 ## Quality Rules
 

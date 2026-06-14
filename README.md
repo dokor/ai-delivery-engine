@@ -69,6 +69,7 @@ It deliberately does not yet:
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
 - [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success perspectives
 - [examples/demo-project/README.md](examples/demo-project/README.md) complete demo fixture for the full local V1 workflow
+- [examples/demo-v1-roles/README.md](examples/demo-v1-roles/README.md) compact demo fixture that covers every current V1 core role in one backlog
 - [examples/specialist-responses/README.md](examples/specialist-responses/README.md) fixture examples of contract-compliant specialist responses
 
 ## Recommended First Implementation Approach
