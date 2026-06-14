@@ -1,4 +1,15 @@
-const SPECIALIST_ROLES = ['ux-ui', 'frontend', 'backend', 'qa', 'tech-lead'] as const;
+const SPECIALIST_ROLES = [
+  'ux-ui',
+  'frontend',
+  'backend',
+  'qa',
+  'tech-lead',
+  'legal-compliance',
+  'security',
+  'devops',
+  'data-analytics',
+  'customer-success'
+] as const;
 
 export type SpecialistRole = (typeof SPECIALIST_ROLES)[number];
 

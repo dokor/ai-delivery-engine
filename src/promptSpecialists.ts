@@ -26,7 +26,12 @@ const OWNER_ROLE_TEMPLATE_MAP: Partial<
   frontend: 'frontend',
   backend: 'backend',
   qa: 'qa',
-  tech_lead: 'tech-lead'
+  tech_lead: 'tech-lead',
+  legal_compliance: 'legal-compliance',
+  security: 'security',
+  devops: 'devops',
+  data_analytics: 'data-analytics',
+  customer_success: 'customer-success'
 };
 
 function getTemplatePath(role: SpecialistRole): string {

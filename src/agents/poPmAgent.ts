@@ -56,6 +56,16 @@ function formatOwnerRole(value: BacklogOwnerRole): string {
       return 'QA';
     case 'tech_lead':
       return 'Tech Lead';
+    case 'legal_compliance':
+      return 'Legal & Compliance';
+    case 'security':
+      return 'Security';
+    case 'devops':
+      return 'DevOps';
+    case 'data_analytics':
+      return 'Data & Analytics';
+    case 'customer_success':
+      return 'Customer Success';
   }
 }
 

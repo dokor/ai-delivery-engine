@@ -4,7 +4,18 @@ export type ExportedBacklogItemFile = {
   type: 'epic' | 'story' | 'task' | 'risk';
   priority: 'low' | 'medium' | 'high';
   status: 'draft' | 'review' | 'ready' | 'done';
-  ownerRole?: 'po_pm' | 'ux_ui' | 'frontend' | 'backend' | 'qa' | 'tech_lead';
+  ownerRole?:
+    | 'po_pm'
+    | 'ux_ui'
+    | 'frontend'
+    | 'backend'
+    | 'qa'
+    | 'tech_lead'
+    | 'legal_compliance'
+    | 'security'
+    | 'devops'
+    | 'data_analytics'
+    | 'customer_success';
   parentId?: string;
   filePath: string;
   suggestedLabels: string[];
@@ -32,7 +43,12 @@ const EXPORTED_ITEM_OWNER_ROLES = [
   'frontend',
   'backend',
   'qa',
-  'tech_lead'
+  'tech_lead',
+  'legal_compliance',
+  'security',
+  'devops',
+  'data_analytics',
+  'customer_success'
 ] as const;
 
 const VALID_ITEM_TYPES = new Set(EXPORTED_ITEM_TYPES);
