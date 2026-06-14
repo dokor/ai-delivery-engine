@@ -297,7 +297,35 @@ The command also writes:
 outputs/project-status.json
 ```
 
-### 9. Validate the demo workflow
+### 9. Check a specialist response locally
+
+```bash
+pnpm specialist:check
+```
+
+By default, the checker reads `examples/specialist-responses/frontend-story-002.md`, validates the response against the basic specialist response contract structure, and writes:
+
+```txt
+outputs/frontend-story-002.specialist-check.md
+outputs/frontend-story-002.specialist-check.json
+```
+
+The checker looks for:
+
+- `# Specialist Response`
+- required `##` sections such as `Role`, `Scope`, `Item Notes`, `Assumptions`, `Open Questions`, `Risks`, and `Suggested Backlog Updates`
+- a supported role value
+- at least one backlog item ID reference
+- weak or very short content
+- suspicious claims such as direct file edits, automatic status changes, remote issue creation, or automatic approval
+
+You can also pass a custom specialist response Markdown path and optional output directory:
+
+```bash
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs
+```
+
+### 10. Validate the demo workflow
 
 ```bash
 pnpm demo:validate

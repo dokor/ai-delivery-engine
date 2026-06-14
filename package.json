@@ -14,6 +14,7 @@
     "prompt:po": "node --experimental-strip-types src/promptPo.ts",
     "prompt:specialists": "node --experimental-strip-types src/promptSpecialists.ts",
     "prompt:specialist": "node --experimental-strip-types src/promptSpecialist.ts",
+    "specialist:check": "node --experimental-strip-types src/specialistCheck.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
