@@ -258,6 +258,28 @@ These files help you inspect the generated prompt batch quickly.
 
 The generated `README.md` gives you a human-readable summary and links to the prompt files in that batch.
 
+## Check A Specialist Response
+
+If you save or keep a specialist response as Markdown, you can run the local checker against it:
+
+```bash
+pnpm specialist:check
+```
+
+Practical flow:
+
+```txt
+specialist prompt -> manual response -> specialist:check -> human review
+```
+
+Or with an explicit file path:
+
+```bash
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs
+```
+
+This writes a Markdown report and a JSON report under `outputs/` so you can review missing sections, unsupported roles, weak content, or suspicious claims before using the response further.
+
 ## How To Use Generated Files Manually
 
 In V1, generated files are working artifacts for human-controlled delivery.
