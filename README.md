@@ -42,6 +42,7 @@ It can already:
 - run deterministic backlog quality checks;
 - export one Markdown file per backlog item for manual review;
 - generate batch specialist prompts from the export manifest for supported owner roles, with a generated local index;
+- check saved specialist responses locally with deterministic Markdown and JSON reports;
 - summarize the local workflow state from generated files under `outputs/`.
 
 It deliberately does not yet:
@@ -330,6 +331,14 @@ The checker looks for:
 - weak or very short content
 - suspicious claims such as direct file edits, automatic status changes, remote issue creation, or automatic approval
 
+The intended specialist loop is:
+
+```txt
+specialist prompt -> manual assistant response saved as Markdown -> specialist:check -> human review
+```
+
+The checker is deterministic and structure-focused. It does not grade specialist quality semantically, approve work automatically, or decide whether a response should be accepted. A human still decides whether the response is accepted, revised, or rejected.
+
 You can also pass a custom specialist response Markdown path and optional output directory:
 
 ```bash
@@ -357,7 +366,9 @@ The intended V1 usage is:
 6. Run pnpm import:po to validate and normalize it
 7. Run pnpm backlog:review to check backlog quality
 8. Run pnpm backlog:export to create one Markdown file per item
-9. Review the exported items manually before implementation
+9. Run pnpm prompt:specialists or pnpm prompt:specialist for the items you want to refine
+10. Save the manual specialist response as Markdown and run pnpm specialist:check
+11. Review the specialist check outputs and decide manually what to accept before implementation
 ```
 
 This keeps the human in control while making each step repeatable and inspectable.

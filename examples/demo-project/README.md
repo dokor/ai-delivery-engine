@@ -62,7 +62,42 @@ This writes:
 - one Markdown file per backlog item under `outputs/demo-project/exported-items/`
 - `outputs/demo-project/exported-items/manifest.json`
 
-## 6. Check Project Status
+## 6. Generate Batch Specialist Prompts
+
+```bash
+node --experimental-strip-types src/promptSpecialists.ts outputs/demo-project/exported-items/manifest.json outputs/demo-project/specialist-prompts
+```
+
+This writes:
+
+- one prompt file per supported non-PO/PM owner role under `outputs/demo-project/specialist-prompts/`
+- `outputs/demo-project/specialist-prompts/index.json`
+- `outputs/demo-project/specialist-prompts/README.md`
+
+## 7. Save A Manual Specialist Response And Run The Checker
+
+The specialist response itself is still generated manually. A practical local loop is:
+
+```txt
+specialist prompt -> manual assistant response saved as Markdown -> specialist:check -> human review
+```
+
+You can inspect example responses in [../specialist-responses/README.md](../specialist-responses/README.md).
+
+Run a local structural check against one of those example responses:
+
+```bash
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs/demo-project/specialist-check
+```
+
+This writes:
+
+- `outputs/demo-project/specialist-check/frontend-story-002.specialist-check.md`
+- `outputs/demo-project/specialist-check/frontend-story-002.specialist-check.json`
+
+The checker only validates structure and suspicious claims. It does not grade specialist quality semantically and does not approve work automatically. A human still decides whether the response is accepted, revised, or rejected.
+
+## 8. Check Project Status
 
 ```bash
 node --experimental-strip-types src/projectStatus.ts outputs/demo-project
@@ -72,13 +107,13 @@ This prints a local status summary and writes:
 
 - `outputs/demo-project/project-status.json`
 
-## 7. Validate The Full Demo Workflow
+## 9. Validate The Full Demo Workflow
 
 ```bash
 pnpm demo:validate
 ```
 
-This command reruns the full explicit-path demo workflow and verifies that all expected files exist, including the normalized backlog outputs, review reports, export manifest, and project status JSON.
+This command reruns the full explicit-path demo workflow and verifies that all expected files exist, including the normalized backlog outputs, review reports, export manifest, specialist check reports, and project status JSON.
 
 ## Optional Shortcuts
 
@@ -89,5 +124,7 @@ These commands exist, but they use the repository default sample files rather th
 - `pnpm import:po`
 - `pnpm backlog:review`
 - `pnpm backlog:export`
+- `pnpm prompt:specialists`
+- `pnpm specialist:check`
 - `pnpm project:status`
 - `pnpm demo:validate`

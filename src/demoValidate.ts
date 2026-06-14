@@ -12,6 +12,8 @@ import { buildPoPmPrompt } from './prompts/poPmPromptBuilder.ts';
 import { writePromptFile } from './prompts/promptWriter.ts';
 import { reviewBacklog } from './review/backlogReview.ts';
 import { writeBacklogReviewReport } from './review/reviewWriter.ts';
+import { checkSpecialistResponse } from './specialist/specialistCheck.ts';
+import { writeSpecialistCheckReport } from './specialist/specialistCheckWriter.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -22,6 +24,8 @@ const DEMO_BRIEF_PATH = 'examples/demo-project/brief.md';
 const DEMO_RESPONSE_PATH = 'examples/demo-project/po-pm-response.json';
 const DEMO_OUTPUT_DIRECTORY = 'outputs/demo-project';
 const DEMO_EXPORT_DIRECTORY = 'outputs/demo-project/exported-items';
+const DEMO_SPECIALIST_RESPONSE_PATH = 'examples/specialist-responses/frontend-story-002.md';
+const DEMO_SPECIALIST_CHECK_DIRECTORY = 'outputs/demo-project/specialist-check';
 
 type ValidationStep = {
   label: string;
@@ -139,6 +143,20 @@ const STEPS: ValidationStep[] = [
       const status = await collectProjectStatus(outputsDirectory);
       await writeProjectStatus(status, outputsDirectory);
     }
+  },
+  {
+    label: 'Run specialist response check',
+    run: async () => {
+      const sourcePath = resolve(process.cwd(), DEMO_SPECIALIST_RESPONSE_PATH);
+      const markdown = await readFile(sourcePath, 'utf8');
+      const report = checkSpecialistResponse(markdown, sourcePath);
+
+      await writeSpecialistCheckReport(
+        report,
+        resolve(process.cwd(), DEMO_SPECIALIST_CHECK_DIRECTORY),
+        'frontend-story-002.specialist-check'
+      );
+    }
   }
 ];
 
@@ -178,6 +196,14 @@ const EXPECTED_FILES: ExpectedFile[] = [
   {
     label: 'Project status JSON',
     path: `${DEMO_OUTPUT_DIRECTORY}/project-status.json`
+  },
+  {
+    label: 'Specialist check JSON',
+    path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.json`
+  },
+  {
+    label: 'Specialist check Markdown',
+    path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.md`
   }
 ];
 

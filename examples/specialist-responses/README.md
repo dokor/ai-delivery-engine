@@ -30,6 +30,25 @@ The repository can generate specialist prompts with:
 
 Those prompts ask an assistant to produce a review-ready specialist response. The files in this directory show the expected style and structure of that response after the user copies the prompt into an assistant manually.
 
+The next local step after saving a real response is usually:
+
+```txt
+specialist prompt -> manual response -> specialist:check -> human review
+```
+
+For example:
+
+```bash
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs
+```
+
+This writes:
+
+- `outputs/frontend-story-002.specialist-check.md`
+- `outputs/frontend-story-002.specialist-check.json`
+
+The checker only validates structure and suspicious claims. It does not grade specialist quality semantically, approve work automatically, or decide whether a response is acceptable.
+
 ## How They Can Be Used Later
 
 These fixtures can help with future work such as:
