@@ -51,21 +51,13 @@ async function resolveManifestEntryPath(
   manifestPath: string,
   entryPath: string
 ): Promise<string> {
-  if (isAbsolute(entryPath)) {
-    return entryPath;
-  }
+  if (isAbsolute(entryPath)) return entryPath;
 
   const cwdRelativePath = resolve(process.cwd(), entryPath);
-
-  if (await pathExists(cwdRelativePath)) {
-    return cwdRelativePath;
-  }
+  if (await pathExists(cwdRelativePath)) return cwdRelativePath;
 
   const manifestRelativePath = resolve(dirname(manifestPath), entryPath);
-
-  if (await pathExists(manifestRelativePath)) {
-    return manifestRelativePath;
-  }
+  if (await pathExists(manifestRelativePath)) return manifestRelativePath;
 
   throw new Error(
     `Unable to resolve exported backlog item path "${entryPath}". Tried "${cwdRelativePath}" and "${manifestRelativePath}".`
@@ -94,6 +86,26 @@ async function main(): Promise<void> {
   let skippedCount = 0;
   const generatedPrompts: GeneratedSpecialistPromptEntry[] = [];
 
+  // Cache template file contents by role to avoid redundant disk reads.
+  const templateCache = new Map<SpecialistRole, string>();
+
+  async function getTemplateMarkdown(role: SpecialistRole): Promise<string> {
+    const cached = templateCache.get(role);
+    if (cached !== undefined) return cached;
+
+    const templatePath = getTemplatePath(role);
+    try {
+      const content = await readFile(templatePath, 'utf8');
+      templateCache.set(role, content);
+      return content;
+    } catch (error: unknown) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        throw new Error(`Template file not found for role "${role}": "${templatePath}".`);
+      }
+      throw error;
+    }
+  }
+
   for (const entry of parsed.files) {
     const ownerRole = entry.ownerRole;
     const role = ownerRole ? OWNER_ROLE_TEMPLATE_MAP[ownerRole] : undefined;
@@ -103,10 +115,9 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const templatePath = getTemplatePath(role);
     const backlogItemPath = await resolveManifestEntryPath(manifestPath, entry.filePath);
     const [roleTemplateMarkdown, backlogItemMarkdown] = await Promise.all([
-      readFile(templatePath, 'utf8'),
+      getTemplateMarkdown(role),
       readFile(backlogItemPath, 'utf8')
     ]);
 
@@ -147,7 +158,7 @@ async function main(): Promise<void> {
   });
 
   logLines([
-    `Specialist prompt batch generation completed.`,
+    'Specialist prompt batch generation completed.',
     `Manifest input: ${manifestPath}`,
     `Output directory: ${outputDirectory}`,
     `Items read: ${parsed.files.length}`,
