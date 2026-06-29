@@ -6,6 +6,7 @@ import { writeBacklogDraft } from './backlog/backlogWriter.ts';
 import { parseBrief } from './briefs/briefParser.ts';
 import { logFailure, logLines } from './cli/logger.ts';
 import { deriveOutputBaseName } from './cli/paths.ts';
+import { readJsonFile as readJsonFileSafe } from './cli/readJson.ts';
 import { readBacklogDraftFile } from './cli/backlog.ts';
 import { exportBacklogItems } from './export/backlogExporter.ts';
 import { buildPoPmPrompt } from './prompts/poPmPromptBuilder.ts';
@@ -161,50 +162,17 @@ const STEPS: ValidationStep[] = [
 ];
 
 const EXPECTED_FILES: ExpectedFile[] = [
-  {
-    label: 'Deterministic backlog JSON',
-    path: `${DEMO_OUTPUT_DIRECTORY}/brief.backlog.json`
-  },
-  {
-    label: 'Deterministic backlog Markdown',
-    path: `${DEMO_OUTPUT_DIRECTORY}/brief.backlog.md`
-  },
-  {
-    label: 'PO/PM prompt Markdown',
-    path: `${DEMO_OUTPUT_DIRECTORY}/brief.po-pm.prompt.md`
-  },
-  {
-    label: 'Normalized backlog JSON',
-    path: `${DEMO_OUTPUT_DIRECTORY}/po-pm-response.normalized.backlog.json`
-  },
-  {
-    label: 'Normalized backlog Markdown',
-    path: `${DEMO_OUTPUT_DIRECTORY}/po-pm-response.normalized.backlog.md`
-  },
-  {
-    label: 'Backlog review JSON',
-    path: `${DEMO_OUTPUT_DIRECTORY}/backlog-review.json`
-  },
-  {
-    label: 'Backlog review Markdown',
-    path: `${DEMO_OUTPUT_DIRECTORY}/backlog-review.md`
-  },
-  {
-    label: 'Export manifest',
-    path: `${DEMO_EXPORT_DIRECTORY}/manifest.json`
-  },
-  {
-    label: 'Project status JSON',
-    path: `${DEMO_OUTPUT_DIRECTORY}/project-status.json`
-  },
-  {
-    label: 'Specialist check JSON',
-    path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.json`
-  },
-  {
-    label: 'Specialist check Markdown',
-    path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.md`
-  }
+  { label: 'Deterministic backlog JSON', path: `${DEMO_OUTPUT_DIRECTORY}/brief.backlog.json` },
+  { label: 'Deterministic backlog Markdown', path: `${DEMO_OUTPUT_DIRECTORY}/brief.backlog.md` },
+  { label: 'PO/PM prompt Markdown', path: `${DEMO_OUTPUT_DIRECTORY}/brief.po-pm.prompt.md` },
+  { label: 'Normalized backlog JSON', path: `${DEMO_OUTPUT_DIRECTORY}/po-pm-response.normalized.backlog.json` },
+  { label: 'Normalized backlog Markdown', path: `${DEMO_OUTPUT_DIRECTORY}/po-pm-response.normalized.backlog.md` },
+  { label: 'Backlog review JSON', path: `${DEMO_OUTPUT_DIRECTORY}/backlog-review.json` },
+  { label: 'Backlog review Markdown', path: `${DEMO_OUTPUT_DIRECTORY}/backlog-review.md` },
+  { label: 'Export manifest', path: `${DEMO_EXPORT_DIRECTORY}/manifest.json` },
+  { label: 'Project status JSON', path: `${DEMO_OUTPUT_DIRECTORY}/project-status.json` },
+  { label: 'Specialist check JSON', path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.json` },
+  { label: 'Specialist check Markdown', path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {
@@ -221,17 +189,16 @@ async function countExportedMarkdownItems(): Promise<number> {
     const entries = await readdir(resolve(process.cwd(), DEMO_EXPORT_DIRECTORY), {
       withFileTypes: true
     });
-
     return entries.filter((entry) => entry.isFile() && entry.name.endsWith('.md')).length;
   } catch {
     return 0;
   }
 }
 
-async function readJsonFile(filePath: string): Promise<unknown | undefined> {
+/** Reads a JSON file for validation purposes; returns undefined on any error. */
+async function tryReadJsonFile(filePath: string): Promise<unknown | undefined> {
   try {
-    const content = await readFile(resolve(process.cwd(), filePath), 'utf8');
-    return JSON.parse(content);
+    return await readJsonFileSafe(resolve(process.cwd(), filePath), 'Invalid JSON');
   } catch {
     return undefined;
   }
@@ -246,7 +213,7 @@ async function collectSummary(): Promise<DemoValidationSummary> {
   );
 
   const exportedMarkdownItemCount = await countExportedMarkdownItems();
-  const statusReport = await readJsonFile(`${DEMO_OUTPUT_DIRECTORY}/project-status.json`);
+  const statusReport = await tryReadJsonFile(`${DEMO_OUTPUT_DIRECTORY}/project-status.json`);
   const statusSuccess = Boolean(
     statusReport &&
       typeof statusReport === 'object' &&
