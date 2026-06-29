@@ -1,9 +1,10 @@
-import type { AgentName, Priority } from '@ade/shared';
+import type { BacklogOwnerRole, BacklogPriority } from '@ade/shared';
 
+/** Task recommendation produced by the PO/PM agent for a specialist role. */
 export type PoAgentTaskOutput = {
   title: string;
   description: string;
-  agentOwner: Exclude<AgentName, 'po'>;
+  ownerRole: Exclude<BacklogOwnerRole, 'po_pm'>;
 };
 
 export type PoAgentStoryOutput = {
@@ -11,14 +12,14 @@ export type PoAgentStoryOutput = {
   userStory: string;
   description: string;
   acceptanceCriteria: string[];
-  priority: Priority;
+  priority: BacklogPriority;
   tasks: PoAgentTaskOutput[];
 };
 
 export type PoAgentEpicOutput = {
   title: string;
   description: string;
-  priority: Priority;
+  priority: BacklogPriority;
   stories: PoAgentStoryOutput[];
 };
 
