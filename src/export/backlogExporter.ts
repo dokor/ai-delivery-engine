@@ -34,7 +34,6 @@ function renderList(items: string[] | undefined, emptyFallback?: string): string
   if (!items || items.length === 0) {
     return emptyFallback ? [`- ${emptyFallback}`] : [];
   }
-
   return items.map((item) => `- ${item}`);
 }
 
@@ -91,33 +90,31 @@ export async function exportBacklogItems(
 ): Promise<BacklogExportResult> {
   await mkdir(outputDirectory, { recursive: true });
 
-  const exportedFiles: ExportedBacklogItemFile[] = [];
+  // Write all item files in parallel — each file is independent.
+  const exportedFiles = await Promise.all(
+    backlogDraft.items.map(async (item): Promise<ExportedBacklogItemFile> => {
+      const itemPath = join(outputDirectory, `${item.id}.md`);
+      const suggestedLabels = buildSuggestedLabels(item);
 
-  for (const item of backlogDraft.items) {
-    const itemPath = join(outputDirectory, `${item.id}.md`);
-    await writeFile(itemPath, buildMarkdown(item), 'utf8');
-    const suggestedLabels = buildSuggestedLabels(item);
+      await writeFile(itemPath, buildMarkdown(item), 'utf8');
 
-    exportedFiles.push({
-      id: item.id,
-      title: item.title,
-      type: item.type,
-      priority: item.priority,
-      status: item.status,
-      ownerRole: item.ownerRole,
-      parentId: item.parentId,
-      filePath: itemPath,
-      suggestedLabels
-    });
-  }
+      return {
+        id: item.id,
+        title: item.title,
+        type: item.type,
+        priority: item.priority,
+        status: item.status,
+        ownerRole: item.ownerRole,
+        parentId: item.parentId,
+        filePath: itemPath,
+        suggestedLabels
+      };
+    })
+  );
 
   const manifestPath = join(outputDirectory, 'manifest.json');
   const manifest = buildManifest(sourceBacklogPath, exportedFiles);
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
-  return {
-    exportDirectory: outputDirectory,
-    manifestPath,
-    files: exportedFiles
-  };
+  return { exportDirectory: outputDirectory, manifestPath, files: exportedFiles };
 }
