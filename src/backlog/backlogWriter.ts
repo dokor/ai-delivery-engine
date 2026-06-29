@@ -16,6 +16,17 @@ export type WrittenBacklogDraft = {
 };
 
 function buildMarkdown(backlogDraft: BacklogDraft): string {
+  // Pre-group children by parentId to avoid repeated O(n) scans inside loops.
+  const childrenByParent = new Map<string, BacklogItem[]>();
+
+  for (const item of backlogDraft.items) {
+    if (item.parentId) {
+      const siblings = childrenByParent.get(item.parentId) ?? [];
+      siblings.push(item);
+      childrenByParent.set(item.parentId, siblings);
+    }
+  }
+
   const epics = backlogDraft.items.filter((item) => item.type === 'epic');
 
   const lines: string[] = [
@@ -56,8 +67,8 @@ function buildMarkdown(backlogDraft: BacklogDraft): string {
     lines.push(epic.description);
     lines.push('');
 
-    const stories = backlogDraft.items.filter(
-      (item) => item.type === 'story' && item.parentId === epic.id
+    const stories = (childrenByParent.get(epic.id) ?? []).filter(
+      (item) => item.type === 'story'
     );
 
     for (const story of stories) {
@@ -68,8 +79,8 @@ function buildMarkdown(backlogDraft: BacklogDraft): string {
         lines.push(`  Acceptance: ${criterion}`);
       }
 
-      const tasks = backlogDraft.items.filter(
-        (item) => item.type === 'task' && item.parentId === story.id
+      const tasks = (childrenByParent.get(story.id) ?? []).filter(
+        (item) => item.type === 'task'
       );
 
       for (const task of tasks) {
@@ -87,7 +98,6 @@ function buildMarkdown(backlogDraft: BacklogDraft): string {
 
   if (risks.length > 0) {
     lines.push('## Risks', '');
-
     for (const risk of risks) {
       lines.push(`- ${risk.title}: ${risk.description}`);
     }
@@ -120,8 +130,10 @@ export async function writeBacklogDraft({
   const jsonPath = join(outputDirectory, `${baseName}.backlog.json`);
   const markdownPath = join(outputDirectory, `${baseName}.backlog.md`);
 
-  await writeFile(jsonPath, `${JSON.stringify(backlogDraft, null, 2)}\n`, 'utf8');
-  await writeFile(markdownPath, buildMarkdown(backlogDraft), 'utf8');
+  await Promise.all([
+    writeFile(jsonPath, `${JSON.stringify(backlogDraft, null, 2)}\n`, 'utf8'),
+    writeFile(markdownPath, buildMarkdown(backlogDraft), 'utf8')
+  ]);
 
   return { jsonPath, markdownPath };
 }
