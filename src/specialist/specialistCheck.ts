@@ -43,7 +43,16 @@ const FORBIDDEN_CLAIM_PATTERNS: Array<{
     code: 'FORBIDDEN_CLAIM_MERGED',
     message:
       'Suspicious merge claim detected. Specialist responses should not claim repository changes were merged.',
-    patterns: [/\bmerged\b/i]
+    // Target git/PR merge claims specifically to avoid false positives on
+    // legitimate uses of "merged" (e.g. "the two flows were merged into one").
+    patterns: [
+      /\bPR merged\b/i,
+      /\bpull request merged\b/i,
+      /\bhas been merged\b/i,
+      /\bwas merged\b/i,
+      /\bbranch merged\b/i,
+      /\bmerged branch\b/i
+    ]
   },
   {
     code: 'FORBIDDEN_CLAIM_APPROVED',
@@ -77,12 +86,7 @@ function createFinding(
   message: string,
   section?: string
 ): SpecialistCheckFinding {
-  return {
-    severity,
-    code,
-    message,
-    section
-  };
+  return { severity, code, message, section };
 }
 
 function escapeRegex(value: string): string {
@@ -95,7 +99,6 @@ function extractSection(markdown: string, title: string): string | undefined {
     'm'
   );
   const match = markdown.match(pattern);
-
   return match?.[1].trim();
 }
 
@@ -104,35 +107,21 @@ function isPlaceholderText(value: string): boolean {
 }
 
 function hasEnoughMeaningfulContent(sectionTitle: string, content: string | undefined): boolean {
-  if (!content) {
-    return false;
-  }
-
+  if (!content) return false;
   const trimmed = content.trim();
-
-  if (trimmed.length === 0) {
-    return false;
-  }
-
-  if (sectionTitle === 'Role') {
-    return true;
-  }
-
+  if (trimmed.length === 0) return false;
+  if (sectionTitle === 'Role') return true;
   if (
     ['Assumptions', 'Open Questions', 'Risks', 'Suggested Backlog Updates'].includes(sectionTitle) &&
     /^- No\b/i.test(trimmed)
   ) {
     return true;
   }
-
   return trimmed.length >= MIN_MEANINGFUL_CHARACTERS && trimmed.split(/\s+/).length >= MIN_WORDS;
 }
 
 function parseDetectedRole(roleSection: string | undefined): string | undefined {
-  if (!roleSection) {
-    return undefined;
-  }
-
+  if (!roleSection) return undefined;
   return roleSection
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -159,11 +148,7 @@ export function checkSpecialistResponse(
 
   if (!/^# Specialist Response\s*$/m.test(markdown)) {
     findings.push(
-      createFinding(
-        'error',
-        'MISSING_TITLE',
-        'Missing required top-level title `# Specialist Response`.'
-      )
+      createFinding('error', 'MISSING_TITLE', 'Missing required top-level title `# Specialist Response`.')
     );
   }
 
@@ -176,12 +161,7 @@ export function checkSpecialistResponse(
 
     if (!content) {
       findings.push(
-        createFinding(
-          'error',
-          'MISSING_SECTION',
-          `Missing required section: \`## ${title}\`.`,
-          title
-        )
+        createFinding('error', 'MISSING_SECTION', `Missing required section: \`## ${title}\`.`, title)
       );
       continue;
     }
@@ -200,12 +180,7 @@ export function checkSpecialistResponse(
     if (isPlaceholderText(content)) {
       placeholderSections.push(title);
       findings.push(
-        createFinding(
-          'warning',
-          'PLACEHOLDER_TEXT',
-          `The \`## ${title}\` section contains placeholder text.`,
-          title
-        )
+        createFinding('warning', 'PLACEHOLDER_TEXT', `The \`## ${title}\` section contains placeholder text.`, title)
       );
     }
   }
@@ -224,12 +199,7 @@ export function checkSpecialistResponse(
 
   if (!detectedRole) {
     findings.push(
-      createFinding(
-        'error',
-        'MISSING_ROLE_VALUE',
-        'The `## Role` section does not include a role value.',
-        'Role'
-      )
+      createFinding('error', 'MISSING_ROLE_VALUE', 'The `## Role` section does not include a role value.', 'Role')
     );
   } else if (!isSpecialistRole(detectedRole)) {
     findings.push(

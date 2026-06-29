@@ -74,8 +74,10 @@ export async function writeSpecialistCheckReport(
   const markdownPath = join(outputDirectory, `${outputBaseName}.md`);
   const jsonPath = join(outputDirectory, `${outputBaseName}.json`);
 
-  await writeFile(markdownPath, buildMarkdown(report), 'utf8');
-  await writeFile(jsonPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+  await Promise.all([
+    writeFile(markdownPath, buildMarkdown(report), 'utf8'),
+    writeFile(jsonPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8')
+  ]);
 
   return {
     markdownPath,
