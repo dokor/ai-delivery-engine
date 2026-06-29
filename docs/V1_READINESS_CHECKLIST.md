@@ -16,6 +16,7 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 
 - [ ] A maintainer can install dependencies with `pnpm install`.
 - [ ] Type checking passes with `pnpm typecheck`.
+- [ ] Unit tests pass with `pnpm test`.
 - [ ] Demo validation passes with `pnpm demo:validate`.
 - [ ] Local status can be inspected with `pnpm project:status`.
 
@@ -72,6 +73,8 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] No `n8n` dependency is required.
 - [ ] No web app is required.
 - [ ] No database is required.
+- [ ] File I/O is protected against path traversal via `assertSafePath`.
+- [ ] JSON inputs are bounded by a 10 MB size limit.
 
 ## 8. Manual Approval Gates
 
@@ -98,6 +101,7 @@ Run this from the repository root before declaring V1 ready:
 
 ```bash
 pnpm typecheck
+pnpm test
 pnpm demo:validate
 pnpm project:status
 ```

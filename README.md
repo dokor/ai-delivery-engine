@@ -97,6 +97,13 @@ Install dependencies:
 pnpm install
 ```
 
+Run type checking and unit tests:
+
+```bash
+pnpm typecheck
+pnpm test
+```
+
 ### 1. Generate a deterministic backlog draft
 
 ```bash
