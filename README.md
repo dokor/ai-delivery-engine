@@ -43,13 +43,14 @@ It can already:
 - export one Markdown file per backlog item for manual review;
 - generate batch specialist prompts from the export manifest for supported owner roles, with a generated local index;
 - check saved specialist responses locally with deterministic Markdown and JSON reports;
-- summarize the local workflow state from generated files under `outputs/`.
+- summarize the local workflow state from generated files under `outputs/`;
+- list and enrich GitHub issues, and prepare issue development (branch + specialist prompts), through `gh` CLI scripts driven by Claude Code (see [GitHub Issue Workflow](#github-issue-workflow-claude-code) below).
 
 It deliberately does not yet:
 
-- call OpenAI, Claude, Ollama, or any other model provider;
-- run autonomous agents;
-- create remote issues;
+- call OpenAI, Claude, Ollama, or any other model provider directly from ADE's own code (Claude Code plays that role manually today);
+- run autonomous agents without a human approval gate;
+- merge pull requests automatically;
 - use n8n;
 - use a database;
 - provide a web dashboard.
@@ -63,16 +64,18 @@ It deliberately does not yet:
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
 - [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
-- [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md)
+- [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md) context handoff map between V1 roles
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
-- [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md)
-- [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md)
+- [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
 - [docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md](docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md)
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
-- [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success perspectives
+- [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success perspectives, including capability-aware guidance for Front-end and Back-end (see [templates/backend-capability-guidance.md](templates/backend-capability-guidance.md))
+- [scripts/](scripts/) `issues-enrich.sh` and `issue-dev.sh`, the shell entry points for the GitHub issue workflow
+- [src/github/](src/github/) GitHub integration code (issue fetching, enrichment prompts, PR creation, comments/labels) used by the GitHub issue workflow
+- [tests/](tests/) `node:test` unit tests covering backlog types, brief parsing, PO/PM agent modes, specialist prompt building, specialist checks, and safe path handling
 - [examples/demo-project/README.md](examples/demo-project/README.md) complete demo fixture for the full local V1 workflow
 - [examples/demo-v1-roles/README.md](examples/demo-v1-roles/README.md) compact demo fixture that covers every current V1 core role in one backlog
 - [examples/specialist-responses/README.md](examples/specialist-responses/README.md) fixture examples of contract-compliant specialist responses
@@ -106,6 +109,8 @@ Run type checking and unit tests:
 pnpm typecheck
 pnpm test
 ```
+
+`pnpm test` runs the `node:test` suite under `tests/`, covering backlog types, brief parsing (including PO/PM agent modes), specialist prompt building, specialist response checks, and safe path handling.
 
 ### 1. Generate a deterministic backlog draft
 
@@ -364,6 +369,28 @@ pnpm demo:validate
 
 This command runs the full local workflow against `examples/demo-project/` with explicit demo paths, then verifies that the expected backlog draft, prompt, normalized backlog, review outputs, export manifest, and project status files were generated under `outputs/demo-project/`.
 
+## GitHub Issue Workflow (Claude Code)
+
+Beyond the local file-based loop, ADE also drives three GitHub automation loops through Claude Code and the `gh` CLI, defined in [CLAUDE.md](CLAUDE.md) and documented in full in [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md):
+
+1. **Issue enrichment** — Claude Code lists open GitHub issues, picks out the ones missing the `backlog-refined` or `ready-for-dev` labels, rewrites their descriptions with a clear objective, at least three acceptance criteria, and relevant technical context, splits oversized issues into sub-issues, and labels the result.
+2. **Issue development** — starting from a `ready-for-dev` issue, Claude Code creates a branch, implements the change, runs `pnpm typecheck && pnpm test`, generates Security, QA, and Tech Lead specialist reviews, opens a PR with those reviews embedded in the body, and comments on the issue with a link to the PR. If the issue is not yet enriched, this loop stops at a mandatory PO/PM gate and waits for explicit human validation before any branch or code is created.
+3. **Review and merge** — entirely manual: a human reviews the PR and merges it. ADE never merges automatically.
+
+Prerequisites: the [GitHub CLI](https://cli.github.com) (`gh auth login`) and Claude Code. Optionally set `GITHUB_REPO=<owner>/<repo>` to avoid repeating `--repo` on each command.
+
+Helper scripts:
+
+```bash
+# List issues that still need enrichment
+pnpm issues:enrich
+
+# Prepare a branch and specialist prompts for a ready-for-dev issue
+pnpm issue:dev <issue-number>
+```
+
+These scripts prepare local state (branch, prompts); Claude Code performs the actual enrichment, implementation, and review steps described above.
+
 ## End-To-End Manual Loop
 
 The intended V1 usage is:
@@ -384,6 +411,11 @@ The intended V1 usage is:
 
 This keeps the human in control while making each step repeatable and inspectable.
 
+## Releases
+
+- **Beta**: `pnpm release:beta` publishes an npm prerelease (`X.Y.Z-beta.N`, `beta` dist-tag) directly from your machine. It runs typecheck + tests first, then reverts the local version bump so `package.json` on `main` never carries a beta version. Install with `npm install @alelouet/ai-delivery-engine@beta`.
+- **Stable releases**: fully automated by GitHub Actions (`.github/workflows/release-please.yml`, powered by [release-please](https://github.com/googleapis/release-please)). It watches `main` for Conventional Commits (`feat:`, `fix:`, `feat!:`, ...), maintains a release PR with the next version bump and `CHANGELOG.md`, and on merge creates the git tag, the GitHub Release, and publishes to npm (`latest` dist-tag). Manual `npm version` / `npm publish` for stable releases is no longer used.
+
 ## Current Status
 
-AI Delivery Engine currently defines the product vision, agent roles, backlog model, workflow, MVP scope, and the first local semi-automatic PO/PM delivery loop.
+AI Delivery Engine currently defines the product vision, agent roles, backlog model, workflow, MVP scope, and the first local semi-automatic PO/PM delivery loop. It also now drives a GitHub issue enrichment and development workflow through Claude Code, backed by a growing `node:test` unit test suite and capability-aware Front-end and Back-end role guidance.

@@ -19,10 +19,26 @@ pnpm prompt:specialist <role> <item.md>            # génère un prompt pour un 
 pnpm specialist:check <response.md>                # valide une réponse spécialiste
 pnpm project:status                                # état du projet local
 pnpm demo:validate                                 # valide le workflow complet en mode demo
+pnpm release:beta                                  # publie une version beta npm (dist-tag "beta")
 ```
 
 Rôles spécialistes disponibles : `ux-ui`, `frontend`, `backend`, `qa`, `tech-lead`,
 `legal-compliance`, `security`, `devops`, `data-analytics`, `customer-success`
+
+---
+
+## Releases
+
+- **Beta** : `pnpm release:beta` (voir `scripts/release-beta.sh`) publie une
+  prerelease npm (`X.Y.Z-beta.N`, dist-tag `beta`) sans jamais modifier la
+  version committée sur `main`.
+- **Release réelle** : entièrement automatisée par GitHub Actions
+  (`.github/workflows/release-please.yml`, basé sur release-please). Le bump
+  de version, le `CHANGELOG.md`, le tag git, la GitHub Release et la
+  publication npm (dist-tag `latest`) sont gérés par ce workflow à partir des
+  commits `feat:` / `fix:` / `feat!:` (Conventional Commits) mergés sur
+  `main`. Ne jamais lancer `npm version` / `npm publish` manuellement pour
+  une release réelle.
 
 ---
 
@@ -43,11 +59,14 @@ gh issue list --state open --json number,title,body,labels,url --limit 50
 
 a. Analyser le contenu (titre + description existante)
 
-b. Identifier le profil le plus pertinent :
-   - PO/PM → objectifs produit, user stories, scope
-   - Security → vulnérabilités, authentification, données sensibles
-   - DevOps → déploiement, CI/CD, infrastructure
-   - QA → tests, régressions, couverture
+b. Identifier le rôle ADE dominant selon les mots-clés du titre/corps :
+   - `backend`  → architecture TypeScript, Node.js, parsing, fichiers src/
+   - `frontend` → pas applicable pour ADE (outil CLI sans UI)
+   - `security` → vulnérabilités, path traversal, injection, données sensibles
+   - `devops`   → CI/CD, release, npm publish, packaging
+   - `qa`       → tests node:test, couverture, régressions, cas limites
+   - `tech-lead` → architecture, performance, dette technique, refactoring
+   - `legal-compliance` → licences, RGPD si applicable
 
 c. Générer une description améliorée contenant :
    - Objectif clair (user story ou énoncé technique)
@@ -87,29 +106,57 @@ e. Mettre à jour l'issue enrichie :
 
 **Déclencheur :** "Prends l'issue <N> et développe-la" ou "développe une issue ready-for-dev"
 
-### Étapes
+### ⚠️ Gate PO/PM obligatoire — à exécuter AVANT tout développement
 
 **1. Lire l'issue**
 ```bash
 gh issue view <N> --json number,title,body,labels,url
 ```
 
-**2. Marquer comme in-progress**
+**2. Vérifier les labels**
+
+- Si l'issue a le label `backlog-refined` ou `ready-for-dev` → continuer au développement.
+- Si l'issue N'a PAS ces labels → **STOP. Enrichir d'abord.**
+
+**Procédure d'enrichissement obligatoire (si pas backlog-refined) :**
+
+a. Analyser l'issue dans le contexte ADE (templates, types, architecture src/).
+
+b. Rédiger une version enrichie avec :
+   - Objectif clair (une phrase)
+   - Critères d'acceptation (≥ 3 checkboxes `- [ ]`)
+   - Contexte technique (fichiers concernés, dépendances, impact sur les tests)
+   - Risques identifiés (régressions, breaking changes)
+
+c. Mettre à jour l'issue et la labelliser :
+   ```bash
+   gh issue edit <N> --body "<ENRICHED_BODY>"
+   gh issue edit <N> --add-label "backlog-refined"
+   ```
+
+d. Une fois l'issue mise à jour sur GitHub, **continuer automatiquement au développement**
+   sans attendre de validation manuelle.
+
+---
+
+### Développement
+
+**3. Marquer comme in-progress**
 ```bash
 gh issue edit <N> --add-label "in-progress"
 ```
 
-**3. Créer une branche**
+**4. Créer une branche**
 ```bash
 git checkout -b feat/issue-<N>-<slug-du-titre>
 # Exemple : feat/issue-42-add-rate-limiting
 ```
 
-**4. Planifier avec le rôle Tech Lead**
+**5. Planifier avec le rôle Tech Lead**
 - Lire `templates/tech-lead.md` pour le cadre de réflexion
 - Identifier les fichiers à modifier, les dépendances, l'approche
 
-**5. Implémenter**
+**6. Implémenter**
 - Écrire le code en TypeScript strict
 - Vérifier régulièrement :
   ```bash
@@ -117,11 +164,10 @@ git checkout -b feat/issue-<N>-<slug-du-titre>
   ```
 - Respecter les conventions : pas de build step, `node:test` pour les tests, ESM
 
-**6. Générer les reviews spécialistes post-développement**
+**7. Générer les reviews spécialistes post-développement**
 
 Créer un fichier Markdown décrivant les changements :
 ```bash
-# Créer un fichier de description de l'implémentation
 cat > /tmp/issue-<N>-impl.md << 'EOF'
 # Issue #<N>: <Titre>
 
@@ -132,28 +178,33 @@ cat > /tmp/issue-<N>-impl.md << 'EOF'
 ## Fichiers modifiés
 
 <liste>
-
-## Questions ouvertes
-
-<si applicable>
 EOF
 ```
 
-Générer les prompts :
+Sélectionner les rôles selon le domaine de l'issue :
+- **Toujours** : `tech-lead` + `qa`
+- Issue `backend`  → ajouter `backend` + `security`
+- Issue `security` → ajouter `security` (prioritaire)
+- Issue `devops`   → ajouter `devops` + `security`
+- Issue `qa`       → `qa` seul suffit + `tech-lead`
+- Issue `legal-compliance` → ajouter `legal-compliance`
+
 ```bash
-node --experimental-strip-types src/promptSpecialist.ts security /tmp/issue-<N>-impl.md outputs/
-node --experimental-strip-types src/promptSpecialist.ts qa /tmp/issue-<N>-impl.md outputs/
-node --experimental-strip-types src/promptSpecialist.ts tech-lead /tmp/issue-<N>-impl.md outputs/
+# Exemple pour une issue backend :
+pnpm prompt:specialist tech-lead /tmp/issue-<N>-impl.md outputs/
+pnpm prompt:specialist qa /tmp/issue-<N>-impl.md outputs/
+pnpm prompt:specialist backend /tmp/issue-<N>-impl.md outputs/
+pnpm prompt:specialist security /tmp/issue-<N>-impl.md outputs/
 ```
 
 Lire les prompts générés, produire les reviews (tu joues les rôles), corriger le code si des points sont soulevés.
 
-**7. Vérification finale**
+**8. Vérification finale**
 ```bash
 pnpm typecheck && pnpm test
 ```
 
-**8. Créer la PR**
+**9. Créer la PR**
 ```bash
 gh pr create \
   --title "feat: <titre court>" \
@@ -190,7 +241,7 @@ PREOF
 )"
 ```
 
-**9. Notifier et linker**
+**10. Notifier et linker**
 ```bash
 # Récupérer le numéro de la PR créée
 PR_NUMBER=$(gh pr list --head "feat/issue-<N>-<slug>" --json number --jq '.[0].number')
@@ -215,24 +266,4 @@ Claude Code ne merge jamais une PR sans validation humaine explicite.
 ## Règles importantes
 
 - **Ne jamais merger sans validation humaine.** Même si tous les tests passent.
-- **Toujours lancer `pnpm typecheck && pnpm test`** avant de créer une PR.
-- **Les reviews spécialistes sont des recommandations**, pas des approbations automatiques.
-- La variable d'environnement `GITHUB_REPO` peut être définie pour éviter de répéter le repo : `export GITHUB_REPO=dokor/ai-delivery-engine`
-- Le projet utilise TypeScript strict avec Node.js 22 `--experimental-strip-types` — pas de compilation nécessaire.
-- Les templates de rôle sont dans `templates/` (10 rôles V1, format Markdown).
-- Les briefs sont dans `examples/`, les sorties dans `outputs/`.
-
----
-
-## Prérequis GitHub
-
-```bash
-# Authentification gh CLI (à faire une seule fois)
-gh auth login
-
-# Vérifier que tu as accès au repo
-gh repo view dokor/ai-delivery-engine
-
-# Pour le repo Argos
-gh repo view dokor/argos
-```
+- **Toujours lancer `pnpm typecheck &&

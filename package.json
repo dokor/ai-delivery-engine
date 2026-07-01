@@ -20,9 +20,7 @@
   "scripts": {
     "validate": "pnpm typecheck && pnpm test && npm pack --dry-run",
     "prepublishOnly": "pnpm typecheck && pnpm test",
-    "release:patch": "npm version patch && npm publish --access public",
-    "release:minor": "npm version minor && npm publish --access public",
-    "release:major": "npm version major && npm publish --access public",
+    "release:beta": "bash scripts/release-beta.sh",
     "backlog:export": "node --experimental-strip-types src/exportBacklog.ts",
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
     "backlog:run": "node --experimental-strip-types src/index.ts",
