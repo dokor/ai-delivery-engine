@@ -92,10 +92,10 @@ e. Mettre à jour l'issue enrichie :
 
 | Label | Signification |
 |---|---|
-| `backlog-refined` | Issue enrichie, prête pour estimation |
+| `backlog-refined` | Issue enrichie automatiquement par Claude Code |
 | `ready-for-dev` | Prête à développer (estimée, critères clairs) |
 | `in-progress` | Développement en cours |
-| `pr-ready` | PR créée, en attente de review humaine |
+| `pr-ready` | PR créée, reviews passées, en attente de merge |
 | `needs-info` | Informations manquantes |
 | `backend` / `frontend` / `security` / `devops` / `qa` / `legal-compliance` | Domaine |
 | `good-first-issue` | Adaptée pour contribuer facilement |
@@ -122,19 +122,22 @@ gh issue view <N> --json number,title,body,labels,url
 
 a. Analyser l'issue dans le contexte ADE (templates, types, architecture src/).
 
-b. Rédiger une version enrichie avec :
+b. Identifier le rôle ADE dominant (backend / security / devops / qa / tech-lead / legal-compliance)
+   selon les mots-clés du titre/corps (voir Workflow 1 step 3b).
+
+c. Rédiger une version enrichie en adoptant la perspective du rôle identifié :
    - Objectif clair (une phrase)
    - Critères d'acceptation (≥ 3 checkboxes `- [ ]`)
    - Contexte technique (fichiers concernés, dépendances, impact sur les tests)
    - Risques identifiés (régressions, breaking changes)
 
-c. Mettre à jour l'issue et la labelliser :
+d. Mettre à jour l'issue et la labelliser :
    ```bash
    gh issue edit <N> --body "<ENRICHED_BODY>"
    gh issue edit <N> --add-label "backlog-refined"
    ```
 
-d. Une fois l'issue mise à jour sur GitHub, **continuer automatiquement au développement**
+e. Une fois l'issue mise à jour sur GitHub, **continuer automatiquement au développement**
    sans attendre de validation manuelle.
 
 ---
@@ -204,7 +207,11 @@ Lire les prompts générés, produire les reviews (tu joues les rôles), corrige
 pnpm typecheck && pnpm test
 ```
 
-**9. Créer la PR**
+**9. Pousser la branche et créer la PR**
+```bash
+git push -u origin $(git branch --show-current)
+```
+
 ```bash
 gh pr create \
   --title "feat: <titre court>" \
@@ -259,10 +266,11 @@ $(cat /tmp/pr-${PR_NUMBER}-diff.md)
 EOF
 ```
 
-Générer les reviews sur le diff réel (toujours tech-lead + qa) :
+Générer les reviews sur le diff réel — mêmes rôles que l'étape 7 (toujours tech-lead + qa, plus les rôles domaine) :
 ```bash
 pnpm prompt:specialist tech-lead /tmp/pr-${PR_NUMBER}-review.md outputs/
 pnpm prompt:specialist qa /tmp/pr-${PR_NUMBER}-review.md outputs/
+# Ajouter les rôles domaine selon le type de l'issue (backend+security, devops+security…)
 ```
 
 Jouer les rôles Tech Lead et QA sur le diff. Deux cas possibles :
@@ -302,5 +310,6 @@ Claude Code ne merge jamais une PR sans validation humaine explicite.
 
 ## Règles importantes
 
+- **L'issue doit avoir le label `backlog-refined` avant tout développement** (ajouté automatiquement après enrichissement).
 - **Ne jamais merger sans validation humaine.** Même si tous les tests passent.
 - **Toujours lancer `pnpm typecheck &&
