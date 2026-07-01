@@ -48,3 +48,7 @@ Fully automatic mode means the engine can trigger the next role on its own, appl
 ## Workflow Rule
 
 Automation should only be introduced after the manual flow is trusted, measurable, and easy to audit.
+
+## Role Handoff Map
+
+The full V1 handoff map — with context passed, expected outputs, timing, and human approval points for each role transition — is documented in [V1_ROLE_HANDOFFS.md](./V1_ROLE_HANDOFFS.md).

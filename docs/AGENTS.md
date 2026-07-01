@@ -144,6 +144,8 @@ Release readiness
 
 Every major handoff in this flow still requires human approval in V1.
 
+The full handoff map — context passed, expected output, timing, required vs optional, and human approval points — is documented in [V1_ROLE_HANDOFFS.md](./V1_ROLE_HANDOFFS.md).
+
 # Role Philosophy
 
 - Local-first: roles operate on local briefs, backlog files, prompts, and reports before any remote integration exists.
