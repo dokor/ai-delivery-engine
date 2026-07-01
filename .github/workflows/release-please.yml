@@ -1,0 +1,66 @@
+name: release-please
+
+# Automatise les "vraies" releases :
+#   1. À chaque push sur main, release-please analyse les commits
+#      (Conventional Commits : feat:, fix:, feat!:, etc.) et maintient une
+#      Release PR avec le prochain numéro de version + le CHANGELOG.
+#   2. Quand cette Release PR est mergée, release-please crée le tag git et
+#      la GitHub Release correspondante.
+#   3. Le job `publish` se déclenche alors et publie le paquet sur npm
+#      (dist-tag "latest").
+#
+# Les betas ne passent pas par ce workflow : elles se publient en local via
+# `pnpm release:beta` (voir scripts/release-beta.sh) et ne touchent jamais
+# à la version committée sur main.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # requis pour la provenance npm (OIDC)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: pnpm install --no-frozen-lockfile
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+      - run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
