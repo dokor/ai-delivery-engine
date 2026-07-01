@@ -241,23 +241,60 @@ PREOF
 )"
 ```
 
-**10. Notifier et linker**
+**10. Review post-PR — Tech Lead + QA sur le diff réel**
+
 ```bash
-# Récupérer le numéro de la PR créée
 PR_NUMBER=$(gh pr list --head "feat/issue-<N>-<slug>" --json number --jq '.[0].number')
 
-# Commenter sur l'issue
-gh issue comment <N> --body "PR prête pour review : #${PR_NUMBER} — cc @alelouet"
+# Récupérer le diff complet de la PR
+gh pr diff ${PR_NUMBER} > /tmp/pr-${PR_NUMBER}-diff.md
 
-# Mettre à jour les labels
+# Créer le fichier de contexte pour les reviews
+cat > /tmp/pr-${PR_NUMBER}-review.md << EOF
+# PR #${PR_NUMBER} — Review post-implémentation
+Issue : #<N> — <Titre>
+
+## Diff complet
+$(cat /tmp/pr-${PR_NUMBER}-diff.md)
+EOF
+```
+
+Générer les reviews sur le diff réel (toujours tech-lead + qa) :
+```bash
+pnpm prompt:specialist tech-lead /tmp/pr-${PR_NUMBER}-review.md outputs/
+pnpm prompt:specialist qa /tmp/pr-${PR_NUMBER}-review.md outputs/
+```
+
+Jouer les rôles Tech Lead et QA sur le diff. Deux cas possibles :
+
+**Cas A — Aucun point bloquant** : passer à l'étape 11.
+
+**Cas B — Des corrections sont nécessaires** :
+- Corriger le code sur la même branche
+- Relancer les tests :
+  ```bash
+  pnpm typecheck && pnpm test
+  ```
+- Pousser les corrections :
+  ```bash
+  git add . && git commit -m "fix: <description de la correction>"
+  git push
+  ```
+- Retourner à l'étape 10 (re-review du nouveau diff)
+- La PR reste `in-progress` pendant toute cette phase
+
+**11. Notifier — uniquement quand toutes les reviews passent**
+```bash
+gh issue comment <N> --body "PR #${PR_NUMBER} prête pour review : cc @alelouet"
 gh issue edit <N> --remove-label "in-progress" --add-label "pr-ready"
+gh pr edit ${PR_NUMBER} --add-assignee "alelouet"
 ```
 
 ---
 
 ## Workflow 3 — Notification et merge
 
-Ce workflow est **entièrement manuel** : @alelouet reçoit la notification GitHub, fait une review finale de la PR, et merge si tout est en ordre.
+Ce workflow est **entièrement manuel** : @alelouet reçoit la notification GitHub (assignation + commentaire), fait une review finale de la PR, et merge si tout est en ordre.
 
 Claude Code ne merge jamais une PR sans validation humaine explicite.
 
