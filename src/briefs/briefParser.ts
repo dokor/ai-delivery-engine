@@ -1,4 +1,4 @@
-import type { BriefSectionName, ParsedBrief } from './brief.types.ts';
+import type { BriefMode, BriefSectionName, ParsedBrief } from './brief.types.ts';
 
 const SECTION_ALIASES: Record<string, BriefSectionName> = {
   project: 'project',
@@ -12,7 +12,9 @@ const SECTION_ALIASES: Record<string, BriefSectionName> = {
   constraints: 'constraints',
   'success criteria': 'success criteria',
   success: 'success criteria',
-  notes: 'notes'
+  notes: 'notes',
+  type: 'type',
+  mode: 'type'
 };
 
 function normalizeSectionName(value: string): BriefSectionName | undefined {
@@ -36,6 +38,12 @@ function collectParagraph(
     .map(cleanLine)
     .join(' ')
     .trim() || fallback;
+}
+
+function parseMode(sections: Partial<Record<BriefSectionName, string[]>>): BriefMode {
+  const raw = (sections['type'] ?? []).map(cleanLine).join(' ').trim().toLowerCase();
+  if (raw.includes('existing') || raw === 'existing-iteration') return 'existing-iteration';
+  return 'new-product';
 }
 
 export function parseBrief(markdown: string, fallbackTitle: string): ParsedBrief {
@@ -85,6 +93,7 @@ export function parseBrief(markdown: string, fallbackTitle: string): ParsedBrief
     constraints: collectList(sections, 'constraints'),
     successCriteria: collectList(sections, 'success criteria'),
     notes: collectList(sections, 'notes'),
+    mode: parseMode(sections),
     sections,
     raw: markdown
   };

@@ -1,4 +1,4 @@
-import type { ParsedBrief } from '../briefs/brief.types.ts';
+import type { BriefMode, ParsedBrief } from '../briefs/brief.types.ts';
 import type {
   BacklogDraft,
   BacklogItem,
@@ -38,6 +38,10 @@ function createItemFactory(): ItemFactory {
   };
 }
 
+function resolveMode(brief: ParsedBrief): BriefMode {
+  return brief.mode ?? 'new-product';
+}
+
 function pickPrimaryAudience(brief: ParsedBrief): string {
   return brief.audience[0] ?? 'the primary audience';
 }
@@ -69,13 +73,34 @@ function formatOwnerRole(value: BacklogOwnerRole): string {
   }
 }
 
+// Keywords that indicate a scope item has a UI surface
+const UI_SCOPE_KEYWORDS = [
+  'ui', 'ux', 'front', 'page', 'view', 'screen', 'interface',
+  'display', 'export', 'pdf', 'comparaison', 'rapport', 'share',
+  'partage', 'component', 'dashboard', 'form', 'button', 'modal',
+  'history', 'historique', 'landing', 'home'
+];
+
+function isScopeItemUiFacing(item: string): boolean {
+  const lower = item.toLowerCase();
+  return UI_SCOPE_KEYWORDS.some((k) => lower.includes(k));
+}
+
+function shouldIncludeUxTask(item: string, mode: BriefMode): boolean {
+  return mode === 'new-product' || isScopeItemUiFacing(item);
+}
+
 function buildAssumptions(brief: ParsedBrief): string[] {
+  const mode = resolveMode(brief);
   const assumptions = [
-    `The first MVP should stay intentionally small and focused on a usable first delivery backlog for ${pickPrimaryAudience(brief)}.`
+    mode === 'existing-iteration'
+      ? 'This iteration should respect existing functionality and API contracts — changes must not introduce regressions.'
+      : `The first MVP should stay intentionally small and focused on a usable first delivery backlog for ${pickPrimaryAudience(brief)}.`
   ];
 
   if (brief.pages.length > 0) {
-    assumptions.push(`The initial scope includes these core surfaces: ${brief.pages.join(', ')}.`);
+    const label = mode === 'existing-iteration' ? 'planned scope items' : 'core surfaces';
+    assumptions.push(`The ${mode === 'existing-iteration' ? 'iteration' : 'initial'} scope includes these ${label}: ${brief.pages.join(', ')}.`);
   }
 
   if (brief.constraints.length > 0) {
@@ -107,30 +132,61 @@ function buildQuestions(brief: ParsedBrief): string[] {
   return questions;
 }
 
-function createPageStoryTitle(pageName: string): string {
-  return `Define and deliver the ${pageName} experience`;
+function createScopeItemStoryTitle(item: string, mode: BriefMode): string {
+  if (mode === 'existing-iteration') return `Implement ${item}`;
+  return `Define and deliver the ${item} experience`;
 }
 
-function createPageStoryDescription(pageName: string, audience: string): string {
-  return `As a target visitor from ${audience}, I want the ${pageName} experience to be clear and actionable so I can move through the project journey without confusion.`;
+function createScopeItemStoryDescription(item: string, audience: string, mode: BriefMode): string {
+  if (mode === 'existing-iteration') {
+    return `Deliver the planned work for: ${item}. Define the acceptance criteria, implementation approach, and review checkpoints before implementation starts.`;
+  }
+  return `As a target visitor from ${audience}, I want the ${item} experience to be clear and actionable so I can move through the project journey without confusion.`;
 }
 
-function createTaskDescription(pageName: string, ownerRole: BacklogOwnerRole): string {
+function createTaskDescription(scopeItem: string, ownerRole: BacklogOwnerRole): string {
   switch (ownerRole) {
     case 'ux_ui':
-      return `Outline the content structure, key user actions, and UX risks for the ${pageName} experience.`;
+      return `Outline the content structure, key user actions, and UX risks for the ${scopeItem} experience.`;
     case 'frontend':
-      return `Break the ${pageName} experience into implementation-ready UI tasks and component work.`;
+      return `Break the ${scopeItem} experience into implementation-ready UI tasks and component work.`;
     case 'backend':
-      return `Check whether the ${pageName} experience needs forms, integrations, or structured data support.`;
+      return `Check whether the ${scopeItem} experience needs forms, integrations, or structured data support.`;
     case 'qa':
-      return `Prepare review checks for the ${pageName} experience, including acceptance coverage and regression notes.`;
+      return `Prepare review checks for the ${scopeItem} experience, including acceptance coverage and regression notes.`;
     default:
-      return `Add delivery notes for the ${pageName} experience.`;
+      return `Add delivery notes for the ${scopeItem} experience.`;
   }
 }
 
+function createIterationTaskDescription(scopeItem: string, ownerRole: BacklogOwnerRole): string {
+  switch (ownerRole) {
+    case 'ux_ui':
+      return `Review the user-facing impact of this change and flag any UX or content concerns: ${scopeItem}.`;
+    case 'frontend':
+      return `Plan the frontend implementation for: ${scopeItem}. Break into component or integration tasks.`;
+    case 'backend':
+      return `Design the backend approach for: ${scopeItem}. Define API changes, data model impact, and error handling.`;
+    case 'qa':
+      return `Define acceptance checks and regression tests for: ${scopeItem}.`;
+    default:
+      return `Add delivery notes for: ${scopeItem}.`;
+  }
+}
+
+function getExperienceEpicTitle(mode: BriefMode): string {
+  return mode === 'existing-iteration' ? 'Deliver the planned scope' : 'Design the core user journey';
+}
+
+function getExperienceEpicDescription(audience: string, mode: BriefMode, primaryGoal: string): string {
+  if (mode === 'existing-iteration') {
+    return `Implement the planned improvements and features for this iteration: ${primaryGoal}.`;
+  }
+  return `Define the first-release experiences that matter most to ${audience}.`;
+}
+
 export function runPoPmAgent(brief: ParsedBrief, sourceBrief: string): BacklogDraft {
+  const mode = resolveMode(brief);
   const summary =
     brief.summary || `Backlog draft generated from the brief for ${brief.title}.`;
   const assumptions = buildAssumptions(brief);
@@ -194,41 +250,58 @@ export function runPoPmAgent(brief: ParsedBrief, sourceBrief: string): BacklogDr
     );
   }
 
-  const pageNames = brief.pages.length > 0 ? brief.pages : ['homepage', 'contact flow'];
+  const scopeItems = brief.pages.length > 0 ? brief.pages : ['homepage', 'contact flow'];
+
   const experienceEpic = itemFactory.createEpic({
-    title: 'Design the core user journey',
-    description: `Define the first-release experiences that matter most to ${audience}.`,
+    title: getExperienceEpicTitle(mode),
+    description: getExperienceEpicDescription(audience, mode, primaryGoal),
     priority: 'high',
     ownerRole: 'po_pm',
     notes: brief.successCriteria
   });
   items.push(experienceEpic);
 
-  for (const pageName of pageNames) {
-    const normalizedPageName = pageName.toLowerCase();
+  for (const scopeItem of scopeItems) {
+    const normalizedItem = scopeItem.toLowerCase();
     const storyPriority: BacklogPriority =
-      normalizedPageName.includes('home') || normalizedPageName.includes('landing') ? 'high' : 'medium';
+      normalizedItem.includes('home') || normalizedItem.includes('landing') ? 'high' : 'medium';
 
     const story = itemFactory.createStory({
       parentId: experienceEpic.id,
-      title: createPageStoryTitle(pageName),
-      description: createPageStoryDescription(pageName, audience),
+      title: createScopeItemStoryTitle(scopeItem, mode),
+      description: createScopeItemStoryDescription(scopeItem, audience, mode),
       priority: storyPriority,
       ownerRole: 'po_pm',
-      acceptanceCriteria: [
-        `The purpose of the ${pageName} experience is explicit.`,
-        `The ${pageName} experience supports the first-release goal.`,
-        `The next specialist roles can add implementation detail without rewriting the scope.`
-      ]
+      acceptanceCriteria:
+        mode === 'existing-iteration'
+          ? [
+              `The implementation approach for "${scopeItem}" is documented.`,
+              `Acceptance criteria are defined before implementation starts.`,
+              `The next specialist roles can add detail without rewriting the scope.`
+            ]
+          : [
+              `The purpose of the ${scopeItem} experience is explicit.`,
+              `The ${scopeItem} experience supports the first-release goal.`,
+              `The next specialist roles can add implementation detail without rewriting the scope.`
+            ]
     });
     items.push(story);
 
-    for (const ownerRole of ['ux_ui', 'frontend', 'backend', 'qa'] as const) {
+    const followUpRoles: BacklogOwnerRole[] = ['ux_ui', 'frontend', 'backend', 'qa'];
+    for (const ownerRole of followUpRoles) {
+      // In existing-iteration mode, skip UX/UI tasks for non-UI scope items
+      if (ownerRole === 'ux_ui' && !shouldIncludeUxTask(scopeItem, mode)) {
+        continue;
+      }
+
       items.push(
         itemFactory.createTask({
           parentId: story.id,
-          title: `${formatOwnerRole(ownerRole)} follow-up for ${pageName}`,
-          description: createTaskDescription(pageName, ownerRole),
+          title: `${formatOwnerRole(ownerRole)} follow-up for ${scopeItem}`,
+          description:
+            mode === 'existing-iteration'
+              ? createIterationTaskDescription(scopeItem, ownerRole)
+              : createTaskDescription(scopeItem, ownerRole),
           priority: ownerRole === 'backend' ? 'medium' : storyPriority,
           ownerRole
         })

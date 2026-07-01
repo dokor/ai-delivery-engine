@@ -6,7 +6,10 @@ export type BriefSectionName =
   | 'pages'
   | 'constraints'
   | 'success criteria'
-  | 'notes';
+  | 'notes'
+  | 'type';
+
+export type BriefMode = 'new-product' | 'existing-iteration';
 
 export type ParsedBrief = {
   title: string;
@@ -16,7 +19,8 @@ export type ParsedBrief = {
   pages: string[];
   constraints: string[];
   successCriteria: string[];
-  notes: string[];
-  sections: Partial<Record<BriefSectionName, string[]>>;
+  notes?: string[];
+  mode?: BriefMode;
+  sections?: Partial<Record<BriefSectionName, string[]>>;
   raw: string;
 };
