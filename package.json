@@ -6,6 +6,9 @@
   "bin": {
     "ade": "src/cli.js"
   },
+  "repository": { "type": "git", "url": "https://github.com/dokor/ai-delivery-engine.git" },
+  "homepage": "https://github.com/dokor/ai-delivery-engine#readme",
+  "bugs": { "url": "https://github.com/dokor/ai-delivery-engine/issues" },
   "files": [
     "src/",
     "templates/",
