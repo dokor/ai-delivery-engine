@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 
 import { logFailure, logLines } from './cli/logger.ts';
+import { getTemplatesDir } from './cli/packagePaths.ts';
 import { resolveOutputDirectory } from './cli/paths.ts';
 import {
   buildSpecialistPrompt,
@@ -13,7 +14,7 @@ import { writePromptFile } from './prompts/promptWriter.ts';
 const DEFAULT_OUTPUT_DIRECTORY = 'outputs';
 
 function getTemplatePath(role: string): string {
-  return `templates/${role}.md`;
+  return resolve(getTemplatesDir(), `${role}.md`);
 }
 
 function getOutputBaseName(backlogItemPath: string, role: string): string {
@@ -40,7 +41,7 @@ async function main(): Promise<void> {
     throw new Error('Missing backlog item Markdown file path.');
   }
 
-  const templatePath = resolve(process.cwd(), getTemplatePath(roleArg));
+  const templatePath = getTemplatePath(roleArg);
   const backlogItemPath = resolve(process.cwd(), backlogItemArg);
   const outputDirectory = resolveOutputDirectory(outputArg, DEFAULT_OUTPUT_DIRECTORY);
 

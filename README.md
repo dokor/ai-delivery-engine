@@ -65,6 +65,7 @@ It deliberately does not yet:
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
 - [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md)
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
+- [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md)
 - [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md)
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)

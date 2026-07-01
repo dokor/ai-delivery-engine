@@ -2,6 +2,7 @@ import { access, readFile } from 'node:fs/promises';
 import { dirname, isAbsolute, resolve } from 'node:path';
 
 import { logFailure, logLines } from './cli/logger.ts';
+import { getTemplatesDir } from './cli/packagePaths.ts';
 import { resolveInputPath, resolveOutputDirectory } from './cli/paths.ts';
 import { readJsonFile } from './cli/readJson.ts';
 import {
@@ -35,7 +36,7 @@ const OWNER_ROLE_TEMPLATE_MAP: Partial<
 };
 
 function getTemplatePath(role: SpecialistRole): string {
-  return resolve(process.cwd(), 'templates', `${role}.md`);
+  return resolve(getTemplatesDir(), `${role}.md`);
 }
 
 async function pathExists(filePath: string): Promise<boolean> {
@@ -170,5 +171,5 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  logFailure('Specialist prompt batch generation failed', error);
+  logFailure('Specialiist prompt batch generation failed', error);
 });

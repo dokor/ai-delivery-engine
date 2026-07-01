@@ -1,10 +1,28 @@
 {
-  "name": "ai-delivery-engine",
+  "name": "@alelouet/ai-delivery-engine",
   "version": "0.1.0",
-  "private": true,
   "description": "AI Delivery Engine orchestrates AI agents to transform project briefs into actionable delivery backlogs.",
   "type": "module",
+  "bin": {
+    "ade": "src/cli.js"
+  },
+  "files": [
+    "src/",
+    "templates/",
+    "examples/",
+    "scripts/",
+    "docs/",
+    "CLAUDE.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
+    "validate": "pnpm typecheck && pnpm test && npm pack --dry-run",
+    "prepublishOnly": "pnpm typecheck && pnpm test",
+    "release:patch": "npm version patch && npm publish --access public",
+    "release:minor": "npm version minor && npm publish --access public",
+    "release:major": "npm version major && npm publish --access public",
     "backlog:export": "node --experimental-strip-types src/exportBacklog.ts",
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
     "backlog:run": "node --experimental-strip-types src/index.ts",
@@ -16,7 +34,9 @@
     "prompt:specialist": "node --experimental-strip-types src/promptSpecialist.ts",
     "specialist:check": "node --experimental-strip-types src/specialistCheck.ts",
     "test": "node --experimental-strip-types --test tests/**/*.test.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "issues:enrich": "bash scripts/issues-enrich.sh",
+    "issue:dev": "bash scripts/issue-dev.sh"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
