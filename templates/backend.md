@@ -17,6 +17,10 @@ Provide:
 - any known integration, data, or authentication constraints
 - UX/UI or Front-end notes when they affect back-end behavior
 
+## Capability-Aware Working Method
+
+Read and apply [Back-end Capability Guidance](backend-capability-guidance.md) before creating recommendations. It defines how to discover and use hooks or MCP tools when they are present, how to report unavailable capabilities, and which actions remain human-approved.
+
 ## Expected Output
 
 Return a concise Markdown response with:
@@ -24,6 +28,8 @@ Return a concise Markdown response with:
 - API, service, or data notes
 - dependency warnings
 - open questions, assumptions, and technical risks
+- an `## Evidence And Capabilities Used` section as defined in the capability guidance
+- a recommended validation approach, including applicable checks when they are available
 
 ## Constraints
 
