@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.2.0...ai-delivery-engine-v0.3.0) (2026-07-02)
+
+
+### Features
+
+* compile TS→JS at publish so the CLI works from node_modules ([9968a49](https://github.com/dokor/ai-delivery-engine/commit/9968a49b764c22a651ae4cdb22d74c313985794b))
+
+
+### Bug Fixes
+
+* require TypeScript &gt;=5.7 for build and harden build script ([63888de](https://github.com/dokor/ai-delivery-engine/commit/63888dec8233847f33207bab5bae62f7cf1a8574))
+
 ## [0.2.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.1.0...ai-delivery-engine-v0.2.0) (2026-07-01)
 
 
