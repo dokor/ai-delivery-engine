@@ -17,8 +17,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = resolve(__dirname, '..');
 const require = createRequire(import.meta.url);
 
-// Use the project's own TypeScript (already in devDependencies)
-const ts = require(join(pkgRoot, 'node_modules/typescript/lib/typescript.js'));
+// Use the project's own TypeScript (already in devDependencies). A bare
+// specifier lets Node's resolution find it regardless of the install layout
+// (pnpm symlinks, hoisting, monorepo hoisted node_modules, …).
+// NOTE: requires TypeScript >= 5.7 for `rewriteRelativeImportExtensions`.
+const ts = require('typescript');
 
 const SRC_DIR = join(pkgRoot, 'src');
 const DIST_DIR = join(pkgRoot, 'dist');
@@ -64,7 +67,18 @@ for (const tsFile of tsFiles) {
   const result = ts.transpileModule(source, {
     compilerOptions: COMPILER_OPTIONS,
     fileName: tsFile,
+    reportDiagnostics: true,
   });
+
+  // transpileModule doesn't type-check (that's `pnpm typecheck`), but it does
+  // report syntax errors. Fail loudly rather than emit broken JS.
+  if (result.diagnostics?.length) {
+    for (const d of result.diagnostics) {
+      const msg = ts.flattenDiagnosticMessageText(d.messageText, '\n');
+      console.error(`${relative(pkgRoot, tsFile)}: ${msg}`);
+    }
+    process.exit(1);
+  }
 
   // Mirror src/ structure in dist/
   const relPath = relative(SRC_DIR, tsFile).replace(/\.ts$/, '.js');
