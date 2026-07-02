@@ -2,9 +2,12 @@
 /**
  * ADE CLI dispatcher — plain JavaScript entry point for the `ade` bin.
  *
- * Why plain JS? So the binary works without a build step when ADE is installed
- * as a devDependency. The dispatcher spawns Node.js with --experimental-strip-types
- * to run the target TypeScript file directly.
+ * Dispatches to compiled JS files in dist/ so the CLI works when ADE is
+ * installed as a devDependency (Node 22 refuses --experimental-strip-types
+ * for files under node_modules/).
+ *
+ * For local development, use the pnpm scripts (e.g. `pnpm backlog:run`)
+ * which run TypeScript directly via --experimental-strip-types.
  *
  * Usage: ade <command> [args...]
  */
@@ -15,18 +18,18 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-/** Maps CLI command names to their TypeScript entry point (relative to src/). */
+/** Maps CLI command names to their compiled JS entry point (relative to dist/). */
 const COMMANDS = {
-  'backlog:run': 'index.ts',
-  'backlog:review': 'reviewBacklog.ts',
-  'backlog:export': 'exportBacklog.ts',
-  'prompt:po': 'promptPo.ts',
-  'prompt:specialist': 'promptSpecialist.ts',
-  'prompt:specialists': 'promptSpecialists.ts',
-  'import:po': 'importPo.ts',
-  'specialist:check': 'specialistCheck.ts',
-  'project:status': 'projectStatus.ts',
-  'demo:validate': 'demoValidate.ts',
+  'backlog:run':      'index.js',
+  'backlog:review':   'reviewBacklog.js',
+  'backlog:export':   'exportBacklog.js',
+  'prompt:po':        'promptPo.js',
+  'prompt:specialist': 'promptSpecialist.js',
+  'prompt:specialists': 'promptSpecialists.js',
+  'import:po':        'importPo.js',
+  'specialist:check': 'specialistCheck.js',
+  'project:status':   'projectStatus.js',
+  'demo:validate':    'demoValidate.js',
 };
 
 const [command, ...rest] = process.argv.slice(2);
@@ -37,19 +40,20 @@ if (!command || command === '--help' || command === '-h') {
   process.exit(0);
 }
 
-const tsFile = COMMANDS[command];
+const jsFile = COMMANDS[command];
 
-if (!tsFile) {
+if (!jsFile) {
   console.error(`ade: unknown command "${command}"`);
-  console.error(`Run "ade --help" for available commands.`);
+  console.error('Run "ade --help" for available commands.');
   process.exit(1);
 }
 
-const tsPath = resolve(__dirname, tsFile);
+// __dirname = <pkg>/src/  →  dist/ is one level up then down
+const jsPath = resolve(__dirname, '..', 'dist', jsFile);
 
 const child = spawn(
-  process.execPath, // reuse the same node binary
-  ['--experimental-strip-types', tsPath, ...rest],
+  process.execPath,
+  [jsPath, ...rest],
   { stdio: 'inherit' }
 );
 

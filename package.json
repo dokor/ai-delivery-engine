@@ -10,10 +10,11 @@
   "homepage": "https://github.com/dokor/ai-delivery-engine#readme",
   "bugs": { "url": "https://github.com/dokor/ai-delivery-engine/issues" },
   "files": [
-    "src/",
+    "dist/",
+    "src/cli.js",
     "templates/",
     "examples/",
-    "scripts/",
+    "scripts/build.mjs",
     "docs/",
     "CLAUDE.md"
   ],
@@ -21,8 +22,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "validate": "pnpm typecheck && pnpm test && npm pack --dry-run",
-    "prepublishOnly": "pnpm typecheck && pnpm test",
+    "build": "node scripts/build.mjs",
+    "validate": "pnpm typecheck && pnpm test && pnpm build && npm pack --dry-run",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
     "release:beta": "bash scripts/release-beta.sh",
     "backlog:export": "node --experimental-strip-types src/exportBacklog.ts",
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
@@ -41,7 +43,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "packageManager": "pnpm@9.12.3"
 }
