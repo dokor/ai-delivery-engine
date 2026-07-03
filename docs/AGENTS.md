@@ -99,6 +99,7 @@ Deferred to V2 so V1 can focus on functional flow and basic delivery readiness b
 ## SEO Specialist
 
 Deferred to V2 so V1 can focus on product workflow clarity before search optimization concerns.
+Detailed forward-looking specification: [roles/seo.md](./roles/seo.md) — responsibilities, scope boundaries, and future follow-up work.
 
 ## Accessibility Specialist
 
