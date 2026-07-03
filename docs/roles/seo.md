@@ -1,13 +1,11 @@
 # SEO Specialist Role
 
-Status: **V2 role — deferred.** Not part of the current V1 operating loop.
+Status: **V1 core role** — active in the current operating loop.
 
-> This role is documented ahead of time so the V2 roadmap is explicit. It must **not** be
-> implemented before the V1 local workflow and core specialist roles are stable. This document
-> adds no tooling, no command behavior, and no code — it is a forward-looking specification only.
-
-This document is the detailed specification for the future SEO role. It expands the short
-"deferred to V2" entry in [../AGENTS.md](../AGENTS.md).
+This document is the detailed specification for the SEO role. It complements the shorter
+summary in [../AGENTS.md](../AGENTS.md), the handoff map in
+[../V1_ROLE_HANDOFFS.md](../V1_ROLE_HANDOFFS.md), and the reusable prompt template in
+[../../templates/seo.md](../../templates/seo.md).
 
 ## Strategic Positioning
 
@@ -15,17 +13,19 @@ Some projects require strong discoverability, technical SEO, content structure, 
 search performance. The SEO Specialist reviews backlog items and product features from a
 **search visibility and technical SEO** perspective.
 
-It is intentionally deferred to V2 so V1 can focus on product workflow clarity before search
-optimization concerns. When introduced, it will slot into the V2 operating loop and stay
-human-reviewed like every other role.
+It participates **before implementation starts**, right after the UX/UI content structure is
+clear, so search-readiness shapes the backlog rather than being retrofitted. Its place in the
+V1 flow (see [../AGENTS.md](../AGENTS.md) for the full diagram):
 
-## Priority
+```txt
+PO/PM → UX/UI → SEO → Legal & Compliance → Data & Analytics → Security → Tech Lead → …
+```
 
-**V2.** Do not implement before the V1 local workflow and core specialist roles are stable.
+The role stays human-reviewed in V1.
 
 ## Mission
 
-- review content structure, metadata, and search intent alignment;
+- review content structure, metadata, and search-intent alignment before implementation;
 - surface technical SEO risks (crawlability, indexing, canonicalization, redirects);
 - keep search visibility a first-class concern for projects where discoverability matters.
 
@@ -66,30 +66,40 @@ human-reviewed like every other role.
 
 ## Scope Boundaries
 
-The SEO role overlaps with other roles. These boundaries keep ownership clear when the role is
-activated in V2.
+The SEO role overlaps with other roles. These boundaries keep each role's ownership clear.
 
 ### SEO vs Marketing
 
 Marketing owns acquisition strategy and messaging. SEO focuses on organic search visibility
-and technical/content search readiness.
+and technical/content search readiness. (Marketing is a V2 role; until then, SEO surfaces
+search-visibility concerns on its own.)
 
 ### SEO vs Performance
 
 Performance improves speed and Core Web Vitals. SEO uses performance as one signal but has
-broader search-visibility responsibilities.
+broader search-visibility responsibilities. (Performance is a V2 role.)
 
 ### SEO vs UX
 
 UX owns user flows and readability. SEO reviews content structure and search-intent alignment.
 
+## Workflow Integration
+
+- **Inputs:** UX/UI notes on content structure, page intent, and user journeys; the backlog and
+  brief; any known URL structure, routing, and metadata decisions; Data & Analytics inputs for
+  SEO measurement (Search Console readiness, SEO KPIs).
+- **Outputs:** SEO review notes linked to backlog item IDs; technical-SEO and content-SEO
+  recommendations; crawlability, indexing, and duplicate-content risks; open questions,
+  assumptions, and SEO risks.
+- **Handoffs:** documented in [../V1_ROLE_HANDOFFS.md](../V1_ROLE_HANDOFFS.md)
+  (`UX/UI → SEO`, `SEO → Frontend`).
+
 ## Future Follow-up Work
 
 These are tracked as separate follow-up issues and are intentionally out of scope here:
 
-- SEO role template
 - SEO response contract
-- SEO examples
+- SEO response examples
 - Technical SEO checklist
 - Metadata recommendation workflow
 - Content SEO review workflow
@@ -97,11 +107,12 @@ These are tracked as separate follow-up issues and are intentionally out of scop
 
 ## Constraints
 
-Documentation-first. This role adds **no** SEO tooling, external APIs, or model calls, and
-changes **no** existing command behavior. It is a V2 specification only, activated when the
-roadmap expands beyond the current V1 operating loop.
+Documentation-first. This role adds **no** SEO tooling (crawlers, audits, ranking tools),
+external APIs, or model calls. It produces human-reviewable recommendations only — a human
+decides what to accept, revise, or defer.
 
 ## Related
 
-- Role summary (V2 Specialist Roles): [../AGENTS.md](../AGENTS.md)
-- Roadmap: [../ROADMAP.md](../ROADMAP.md)
+- Prompt template: [../../templates/seo.md](../../templates/seo.md)
+- Role summary: [../AGENTS.md](../AGENTS.md)
+- Handoff map: [../V1_ROLE_HANDOFFS.md](../V1_ROLE_HANDOFFS.md)

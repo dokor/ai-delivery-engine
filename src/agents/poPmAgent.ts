@@ -70,6 +70,8 @@ function formatOwnerRole(value: BacklogOwnerRole): string {
       return 'Data & Analytics';
     case 'customer_success':
       return 'Customer Success';
+    case 'seo':
+      return 'SEO';
   }
 }
 

@@ -32,7 +32,8 @@ const OWNER_ROLE_TEMPLATE_MAP: Partial<
   security: 'security',
   devops: 'devops',
   data_analytics: 'data-analytics',
-  customer_success: 'customer-success'
+  customer_success: 'customer-success',
+  seo: 'seo'
 };
 
 function getTemplatePath(role: SpecialistRole): string {

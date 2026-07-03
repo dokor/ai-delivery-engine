@@ -8,7 +8,8 @@ const SPECIALIST_ROLES = [
   'security',
   'devops',
   'data-analytics',
-  'customer-success'
+  'customer-success',
+  'seo'
 ] as const;
 
 export type SpecialistRole = (typeof SPECIALIST_ROLES)[number];
