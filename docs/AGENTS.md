@@ -89,6 +89,7 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - Primary outputs: support readiness notes, handoff concerns, user guidance gaps, post-release questions.
 - When the role participates: late in V1 planning, near QA and release readiness review.
 - Key interactions: reviews PO/PM, UX/UI, QA, Legal & Compliance, and Data & Analytics outputs.
+- Detailed specification: [roles/customer-success.md](./roles/customer-success.md) — responsibilities, scope boundaries, and future follow-up work.
 
 # Cross-Cutting Roles
 
