@@ -11,7 +11,7 @@ describe('isSpecialistRole', () => {
   it('returns true for all valid specialist roles', () => {
     const roles = [
       'ux-ui', 'frontend', 'backend', 'qa', 'tech-lead',
-      'legal-compliance', 'security', 'devops', 'data-analytics', 'customer-success'
+      'legal-compliance', 'security', 'devops', 'data-analytics', 'customer-success', 'seo'
     ];
     for (const role of roles) {
       assert.equal(isSpecialistRole(role), true, `Expected "${role}" to be a valid specialist role`);
@@ -41,7 +41,7 @@ describe('getSpecialistRoles', () => {
     const roles = getSpecialistRoles();
     const expected = [
       'ux-ui', 'frontend', 'backend', 'qa', 'tech-lead',
-      'legal-compliance', 'security', 'devops', 'data-analytics', 'customer-success'
+      'legal-compliance', 'security', 'devops', 'data-analytics', 'customer-success', 'seo'
     ];
     for (const role of expected) {
       assert.ok(roles.includes(role as never), `Expected role "${role}" in getSpecialistRoles()`);

@@ -252,9 +252,10 @@ security -> security
 devops -> devops
 data_analytics -> data-analytics
 customer_success -> customer-success
+seo -> seo
 ```
 
-The current specialist prompt commands support all current V1 roles from [templates/](../templates/). V2-only roles such as Performance, SEO, Accessibility, Finance & Cost, and Marketing are still intentionally excluded.
+The current specialist prompt commands support all current V1 roles from [templates/](../templates/). V2-only roles such as Performance, Accessibility, Finance & Cost, and Marketing are still intentionally excluded.
 
 Items with missing or unsupported owner roles are skipped intentionally.
 

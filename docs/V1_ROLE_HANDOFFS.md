@@ -58,6 +58,20 @@ Each entry follows this structure:
 
 ---
 
+## UX/UI → SEO
+
+**Context passed:** UX notes covering content structure, page intent, user journeys, and any known URL or routing decisions.
+
+**Expected output:** SEO notes tied to the content surface — metadata and structured-data recommendations, content-hierarchy and internal-linking suggestions, crawlability and indexing risks, and suggested SEO tasks.
+
+**When:** Before implementation planning. After UX/UI content structure is clear and before Frontend implementation planning is finalized.
+
+**Required or optional:** Required for projects where organic search visibility matters (public, content-driven, or marketing-facing surfaces). Optional for purely internal tools with no search surface.
+
+**Human approval point:** A human reviews the SEO notes and decides which recommendations are accepted, revised, or deferred before implementation planning continues.
+
+---
+
 ## UX/UI → Security
 
 **Context passed:** UX notes covering user flow, input surfaces, authentication moments, data display areas, and any sensitive context the UI exposes.
@@ -125,6 +139,20 @@ Each entry follows this structure:
 **Required or optional:** Required before any release readiness decision is made.
 
 **Human approval point:** A human reviews DevOps notes and decides whether release readiness can proceed or whether environment or configuration work must be completed first.
+
+---
+
+## SEO → Frontend
+
+**Context passed:** SEO notes covering metadata, structured data, canonical URLs, robots directives, sitemap and redirect strategy, and content-hierarchy expectations.
+
+**Expected output:** Frontend implementation notes that account for the SEO requirements — how metadata and structured data are rendered, canonical/robots handling, and any routing or redirect work needed.
+
+**When:** Before Frontend implementation planning is finalized, after SEO review is accepted.
+
+**Required or optional:** Required for stories with public pages or search-indexable surfaces.
+
+**Human approval point:** A human confirms that the accepted SEO requirements are reflected in the frontend implementation plan before work starts.
 
 ---
 
@@ -248,4 +276,4 @@ Outputs should take the form of notes, backlog update suggestions, or structured
 
 A role can produce output for multiple downstream roles in parallel, but each output is reviewed separately before it is treated as accepted.
 
-V2 roles such as Performance, SEO, Accessibility, Finance, and Marketing are not included in this handoff map. They will be added when the V2 roadmap expands the operating loop.
+V2 roles such as Performance, Accessibility, Finance, and Marketing are not included in this handoff map. They will be added when the V2 roadmap expands the operating loop.

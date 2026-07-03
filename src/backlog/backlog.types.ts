@@ -12,7 +12,8 @@ export const BACKLOG_OWNER_ROLES = [
   'security',
   'devops',
   'data_analytics',
-  'customer_success'
+  'customer_success',
+  'seo'
 ] as const;
 
 export type BacklogItemType = (typeof BACKLOG_ITEM_TYPES)[number];

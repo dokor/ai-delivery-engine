@@ -38,9 +38,9 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] Current V1 roles are documented in [AGENTS.md](./AGENTS.md).
 - [ ] Reusable V1 role templates exist under [../templates/](../templates/).
 - [ ] Specialist prompt generation supports all current V1 specialist roles:
-  `ux-ui`, `frontend`, `backend`, `qa`, `tech-lead`, `legal-compliance`, `security`, `devops`, `data-analytics`, `customer-success`.
+  `ux-ui`, `seo`, `frontend`, `backend`, `qa`, `tech-lead`, `legal-compliance`, `security`, `devops`, `data-analytics`, `customer-success`.
 - [ ] V2 roles remain explicitly deferred and are not required for V1 readiness:
-  `performance`, `seo`, `accessibility`, `finance-cost`, `marketing`.
+  `performance`, `accessibility`, `finance-cost`, `marketing`.
 
 ## 5. Contracts And Fixtures
 

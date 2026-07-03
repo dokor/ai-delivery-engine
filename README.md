@@ -61,7 +61,7 @@ It deliberately does not yet:
 - [docs/ROADMAP.md](docs/ROADMAP.md)
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - [docs/AGENTS.md](docs/AGENTS.md)
-- [docs/roles/](docs/roles/) detailed role specifications (responsibilities, scope boundaries, follow-up work): [Security](docs/roles/security.md), [Data & Analytics](docs/roles/data-analytics.md), [Cleanup](docs/roles/cleanup.md) (cross-cutting hygiene), and the V2 [SEO Specialist](docs/roles/seo.md)
+- [docs/roles/](docs/roles/) detailed role specifications (responsibilities, scope boundaries, follow-up work): [Security](docs/roles/security.md), [Data & Analytics](docs/roles/data-analytics.md), [SEO](docs/roles/seo.md), and [Cleanup](docs/roles/cleanup.md) (cross-cutting hygiene)
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
 - [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
@@ -74,7 +74,7 @@ It deliberately does not yet:
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
 - [docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md](docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md)
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
-- [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, and Customer Success perspectives, including capability-aware guidance for Front-end and Back-end (see [templates/backend-capability-guidance.md](templates/backend-capability-guidance.md))
+- [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, Customer Success, and SEO perspectives, including capability-aware guidance for Front-end and Back-end (see [templates/backend-capability-guidance.md](templates/backend-capability-guidance.md))
 - [scripts/](scripts/) `issues-enrich.sh` and `issue-dev.sh`, the shell entry points for the GitHub issue workflow
 - [src/github/](src/github/) GitHub integration code (issue fetching, enrichment prompts, PR creation, comments/labels) used by the GitHub issue workflow
 - [tests/](tests/) `node:test` unit tests covering backlog types, brief parsing, PO/PM agent modes, specialist prompt building, specialist checks, and safe path handling
@@ -210,6 +210,7 @@ Supported roles:
 - `devops`
 - `data-analytics`
 - `customer-success`
+- `seo`
 
 By default, the command reads the matching role template from `templates/`, reads the selected backlog item Markdown file, and writes a provider-agnostic prompt under `outputs/` using the format:
 
@@ -294,6 +295,7 @@ security -> security
 devops -> devops
 data_analytics -> data-analytics
 customer_success -> customer-success
+seo -> seo
 ```
 
 Items with missing or unsupported owner roles, such as `po_pm`, are skipped.

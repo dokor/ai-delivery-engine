@@ -22,7 +22,7 @@ pnpm demo:validate                                 # valide le workflow complet 
 pnpm release:beta                                  # publie une version beta npm (dist-tag "beta")
 ```
 
-Rôles spécialistes disponibles : `ux-ui`, `frontend`, `backend`, `qa`, `tech-lead`,
+Rôles spécialistes disponibles : `ux-ui`, `seo`, `frontend`, `backend`, `qa`, `tech-lead`,
 `legal-compliance`, `security`, `devops`, `data-analytics`, `customer-success`
 
 ---

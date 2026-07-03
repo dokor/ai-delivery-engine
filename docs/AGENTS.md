@@ -25,6 +25,14 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - When the role participates: after PO/PM framing and before detailed implementation breakdown.
 - Key interactions: works closely with PO/PM, Frontend, QA, and Customer Success.
 
+## SEO (`seo`)
+
+- Mission: review content structure, metadata, and search-intent alignment so search visibility is designed in, not retrofitted.
+- Primary outputs: SEO review notes, technical-SEO and content-SEO recommendations, crawlability/indexing/duplicate-content risks, suggested SEO tasks.
+- When the role participates: after UX/UI content structure is clear and before implementation planning is finalized.
+- Key interactions: works with UX/UI, Frontend, Data & Analytics, and Tech Lead.
+- Detailed specification: [roles/seo.md](./roles/seo.md) — responsibilities, scope boundaries, and future follow-up work.
+
 ## Frontend (`frontend`)
 
 - Mission: translate approved stories into UI implementation planning with component, state, and integration concerns made explicit.
@@ -111,11 +119,6 @@ These roles are intentionally deferred to V2. They matter, but they are not part
 
 Deferred to V2 so V1 can focus on functional flow and basic delivery readiness before deeper runtime tuning.
 
-## SEO Specialist
-
-Deferred to V2 so V1 can focus on product workflow clarity before search optimization concerns.
-Detailed forward-looking specification: [roles/seo.md](./roles/seo.md) — responsibilities, scope boundaries, and future follow-up work.
-
 ## Accessibility Specialist
 
 Deferred to V2 as a dedicated role, even though V1 roles should still surface obvious accessibility concerns where relevant.
@@ -136,6 +139,8 @@ The V1 role flow is a human-reviewed sequence, not an orchestration engine:
 PO/PM
 ↓
 UX/UI
+↓
+SEO
 ↓
 Legal & Compliance
 ↓

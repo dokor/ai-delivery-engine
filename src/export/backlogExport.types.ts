@@ -15,7 +15,8 @@ export type ExportedBacklogItemFile = {
     | 'security'
     | 'devops'
     | 'data_analytics'
-    | 'customer_success';
+    | 'customer_success'
+    | 'seo';
   parentId?: string;
   filePath: string;
   suggestedLabels: string[];
@@ -48,7 +49,8 @@ const EXPORTED_ITEM_OWNER_ROLES = [
   'security',
   'devops',
   'data_analytics',
-  'customer_success'
+  'customer_success',
+  'seo'
 ] as const;
 
 const VALID_ITEM_TYPES = new Set(EXPORTED_ITEM_TYPES);
