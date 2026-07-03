@@ -61,7 +61,7 @@ It deliberately does not yet:
 - [docs/ROADMAP.md](docs/ROADMAP.md)
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - [docs/AGENTS.md](docs/AGENTS.md)
-- [docs/roles/](docs/roles/) detailed role specifications (responsibilities, scope boundaries, follow-up work) — e.g. [Security](docs/roles/security.md)
+- [docs/roles/](docs/roles/) detailed role specifications (responsibilities, scope boundaries, follow-up work)
 - [docs/WORKFLOW.md](docs/WORKFLOW.md)
 - [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
