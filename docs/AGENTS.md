@@ -90,6 +90,19 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - When the role participates: late in V1 planning, near QA and release readiness review.
 - Key interactions: reviews PO/PM, UX/UI, QA, Legal & Compliance, and Data & Analytics outputs.
 
+# Cross-Cutting Roles
+
+These roles are not tied to a single backlog item. They operate across the repository and run
+periodically rather than per story.
+
+## Cleanup (`cleanup`)
+
+- Mission: keep the repository, code, documentation, and Git history clean and consistent as the project grows — hygiene, not product delivery.
+- Primary outputs: dead-code and duplication findings, stale or broken-link doc reports, Git and issue/PR cleanup suggestions, generated-artifact and `.gitignore` recommendations.
+- When the role participates: cross-cutting — periodically, e.g. before a release or after large merges (shown as `Cleanup (future)` in the workflow diagram).
+- Key interactions: complements Tech Lead, QA, and DevOps without owning their decisions.
+- Detailed specification: [roles/cleanup.md](./roles/cleanup.md) — responsibilities, scope boundaries, and future follow-up work.
+
 # V2 Specialist Roles
 
 These roles are intentionally deferred to V2. They matter, but they are not part of the current V1 operating loop.
