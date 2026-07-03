@@ -66,6 +66,7 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - Primary outputs: security review notes, threat or misuse concerns, sensitive-data handling warnings, suggested mitigations.
 - When the role participates: after architecture and data flow assumptions are visible, before release readiness.
 - Key interactions: works closely with Backend, Frontend, DevOps, Legal & Compliance, and Tech Lead.
+- Detailed specification: [roles/security.md](./roles/security.md) — responsibilities, scope boundaries, and future follow-up work.
 
 ## DevOps (`devops`)
 
@@ -100,6 +101,7 @@ Deferred to V2 so V1 can focus on functional flow and basic delivery readiness b
 ## SEO Specialist
 
 Deferred to V2 so V1 can focus on product workflow clarity before search optimization concerns.
+Detailed forward-looking specification: [roles/seo.md](./roles/seo.md) — responsibilities, scope boundaries, and future follow-up work.
 
 ## Accessibility Specialist
 
