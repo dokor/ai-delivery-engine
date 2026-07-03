@@ -80,6 +80,7 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - Primary outputs: analytics questions, measurement recommendations, event or reporting notes, data risks.
 - When the role participates: after the product flow is understandable and before implementation planning is finalized.
 - Key interactions: works with PO/PM, UX/UI, Backend, Customer Success, and Tech Lead.
+- Detailed specification: [roles/data-analytics.md](./roles/data-analytics.md) — responsibilities, scope boundaries, and future follow-up work.
 
 ## Customer Success (`customer-success`)
 
