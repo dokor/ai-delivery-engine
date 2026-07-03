@@ -74,6 +74,7 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - Primary outputs: deployment notes, environment assumptions, operational constraints, release readiness concerns.
 - When the role participates: after implementation direction is clear enough to reason about environments and release flow.
 - Key interactions: depends on Backend, Frontend, Security, QA, and Tech Lead.
+- Detailed specification: [roles/devops.md](./roles/devops.md) — responsibilities, scope boundaries, and future follow-up work.
 
 ## Data & Analytics (`data-analytics`)
 
