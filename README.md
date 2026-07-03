@@ -66,6 +66,7 @@ It deliberately does not yet:
 - [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 - [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
 - [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md) context handoff map between V1 roles
+- [docs/V1_APPROVAL_GATES.md](docs/V1_APPROVAL_GATES.md) the human approval gates for the V1 workflow
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
 - [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
