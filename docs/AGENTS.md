@@ -66,6 +66,7 @@ AI Delivery Engine uses roles as delivery perspectives, not as autonomous worker
 - Primary outputs: security review notes, threat or misuse concerns, sensitive-data handling warnings, suggested mitigations.
 - When the role participates: after architecture and data flow assumptions are visible, before release readiness.
 - Key interactions: works closely with Backend, Frontend, DevOps, Legal & Compliance, and Tech Lead.
+- Detailed specification: [roles/security.md](./roles/security.md) — responsibilities, scope boundaries, and future follow-up work.
 
 ## DevOps (`devops`)
 
