@@ -81,6 +81,17 @@ means more precise reasoning but more tokens.
 - **normal** — the everyday default.
 - **expert** — hard or high-stakes reasoning where correctness beats cost.
 
+## Neighbour fragments
+
+When you scope a review to a diff (`ade review --staged` or `--base <ref>`) with
+a provider, ADE extracts **neighbour fragments** for the review pack: the local
+modules the changed files import, resolved deterministically, ranked by how many
+changed files reference them, and capped by the mode (`0` in chill, up to `5` in
+normal, up to `20` in expert). Package imports are ignored; only local
+neighbours are included, and sensitive/ignored files are excluded. Each fragment
+is truncated to keep the budget bounded and appears in the manifest with the
+reason `imported by N changed file(s)`.
+
 ## Tuning individual levers via config
 
 Modes map onto `ade.config` profiles, so you can override a single lever without
