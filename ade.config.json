@@ -1,0 +1,21 @@
+{
+  "ignore": [".env*", "dist/**", "node_modules/**", ".idea/**", "outputs/**"],
+  "sensitive": [".env*", "**/*.pem", "**/*.key", "**/secrets.*"],
+  "tools": ["typecheck", "test"],
+  "profiles": {
+    "ci": { "mode": "deterministic" },
+    "local": { "mode": "deterministic" },
+    "agent": { "mode": "assisted", "context": "compact", "allowProvider": true, "privacy": "strict" }
+  },
+  "rules": [
+    { "id": "no-build-step", "description": "V1 runs TypeScript directly via --experimental-strip-types; no build step in the dev loop.", "severity": "warn" },
+    { "id": "node-test-only", "description": "Use node:test for unit tests.", "appliesTo": ["tests/**/*.test.ts"], "severity": "warn" }
+  ],
+  "context": {
+    "docsDir": "docs",
+    "adrDir": "docs/DECISIONS",
+    "sections": ["stack", "packages", "modules", "commands", "conventions", "entryPoints", "sensitiveZones", "adrs"],
+    "outputDir": "outputs/context"
+  },
+  "output": { "formats": ["markdown", "json"] }
+}
