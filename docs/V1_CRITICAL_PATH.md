@@ -26,7 +26,13 @@ Guiding constraints for every workflow below:
 
 | Workflow | Command | Critical input | Critical output | Exit codes |
 |---|---|---|---|---|
-| Config resolution | `ade config:print [configPath] [outDir]` | `ade.config.{ts,js,mjs,json}` + presets | `outputs/config/ade.config.resolved.json` + provenance | `0` valid · `1` validation error (unknown key, bad enum, cycle, secret) |
+| Init | `ade init [--dry-run]` | project directory | `ade.config.json` (if absent) | `0` created/present · `1` error |
+| Doctor | `ade doctor` | Node, config, tools, context | diagnostic report | `0` healthy · `1` problems |
+| Review | `ade review [--staged\|--base <ref>] [--run-tools] [--provider <name>] [--json]` | resolved config + context state + files | normalized findings (human/JSON) | `0` no error findings · `1` error findings · `2` usage error |
+| Fix | `ade fix [--dry-run]` | resolved config + context state | created config / refreshed context | `0` ok · `1` error |
+| Upgrade | `ade upgrade` | installed package | version + upgrade guidance (no network) | `0` |
+| Config validate | `ade config validate [configPath]` | `ade.config.*` + presets | validation report (no writes) | `0` valid · `1` validation error |
+| Config resolution | `ade config print [configPath] [outDir]` | `ade.config.{ts,js,mjs,json}` + presets | `outputs/config/ade.config.resolved.json` + provenance | `0` valid · `1` validation error (unknown key, bad enum, cycle, secret) |
 | Context generation | `ade context:generate [outDir]` | repo sources + resolved config | `outputs/context/context.{json,md}` | `0` generated · `1` config error |
 | Context freshness | `ade context:check [outDir]` | stored `context.json` + current sources | freshness verdict (no writes) | `0` up-to-date · `1` stale · `2` absent |
 | Context print | `ade context:print [outDir]` | stored `context.json` | Markdown to stdout | `0` printed · `1` no context |
@@ -74,6 +80,12 @@ Automated `node:test` suites under `tests/` guarding the critical path:
   content/config/mode/budget changes, read/write round-trip.
 - `tests/cli/contextPack.test.ts` — `context:pack` in a separate process:
   manifest contract, cache miss/hit, per-mode budgets.
+- `tests/engine/review.test.ts` — deterministic review engine: config/context/
+  rule-hygiene findings, origin, summary, exit code.
+- `tests/engine/tools.test.ts` — tool-result → finding normalization.
+- `tests/engine/projectFiles.test.ts` — ignore-aware file listing.
+- `tests/cli/cliFoundation.test.ts` — `init`, `doctor`, `review`, `fix` in a
+  separate process: exit codes, idempotence, dry-run, JSON contract.
 - `tests/cli/cliCommands.test.ts` — CLI commands run in a **separate process**,
   asserting exit codes and JSON output contracts for `config:print` and the
   context lifecycle.
