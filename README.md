@@ -373,6 +373,34 @@ pnpm demo:validate
 
 This command runs the full local workflow against `examples/demo-project/` with explicit demo paths, then verifies that the expected backlog draft, prompt, normalized backlog, review outputs, export manifest, and project status files were generated under `outputs/demo-project/`.
 
+## Specialist Loop Summary
+
+After a backlog item is exported to Markdown, it can go through a small, fully manual specialist loop before any implementation decision. This is the one-glance summary; each stage maps to the numbered commands above and to steps 8–12 of [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md#specialist-loop-summary).
+
+```txt
+exported backlog item
+-> specialist prompt
+-> manual specialist response
+-> local response check
+-> human decision
+```
+
+| Stage | Command | Input | Output |
+|---|---|---|---|
+| Exported backlog item | `pnpm backlog:export` | backlog JSON | `outputs/exported-items/*.md` + `manifest.json` |
+| Specialist prompt | `pnpm prompt:specialist <role> <item.md>` (single) or `pnpm prompt:specialists` (batch from manifest) | exported item(s) | single: `outputs/<item-id>.<role>.prompt.md` · batch: `outputs/specialist-prompts/*.prompt.md` + `index.json` + `README.md` |
+| Manual specialist response | none — copied into an AI assistant by a human | generated prompt | a local `.md` file, e.g. under `examples/specialist-responses/` |
+| Local response check | `pnpm specialist:check <response.md>` | saved response `.md` | `outputs/<name>.specialist-check.md` + `.json` |
+| Human decision | none — accept, revise, or reject | check report + response | decision recorded outside the tool |
+
+Where things live:
+
+- **Generated prompts** — single-item prompts default to `outputs/`; batch prompts to `outputs/specialist-prompts/` (with a machine-readable `index.json` and a browsable `README.md`).
+- **Saved specialist responses** — local Markdown. Example fixtures ship under [examples/specialist-responses/](examples/specialist-responses/README.md); your own responses can live there or at any path you pass to the checker.
+- **Check reports** — always written under `outputs/` as `<name>.specialist-check.md` and `<name>.specialist-check.json`.
+
+What stays intentionally manual in V1: choosing which items get a specialist pass, copying a prompt into an assistant and saving its response (no external API, no model call from ADE), reading the check report, and deciding whether to accept, revise, or reject. The checker is deterministic and structure-focused — it never grades quality, approves work, or promotes an item. The human decision gate is always last.
+
 ## GitHub Issue Workflow (Claude Code)
 
 Beyond the local file-based loop, ADE also drives three GitHub automation loops through Claude Code and the `gh` CLI, defined in [CLAUDE.md](CLAUDE.md) and documented in full in [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md):

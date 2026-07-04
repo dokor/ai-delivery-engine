@@ -51,6 +51,45 @@ Typical generated files under `outputs/`:
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
+## Specialist Loop Summary
+
+Once backlog items are exported (step 8), each item can go through a small, fully manual specialist loop before any implementation decision is made:
+
+```txt
+exported backlog item
+-> specialist prompt
+-> manual specialist response
+-> local response check
+-> human decision
+```
+
+At a glance:
+
+| Stage | What happens | Command | Input | Output |
+|---|---|---|---|---|
+| Exported backlog item | An exported Markdown item is the starting point | `pnpm backlog:export` (step 8) | backlog JSON | `outputs/exported-items/*.md` + `outputs/exported-items/manifest.json` |
+| Specialist prompt | Generate a provider-agnostic prompt for one item or in batch | `pnpm prompt:specialist <role> <item.md> [outputDir]` or `pnpm prompt:specialists` | exported item(s) / manifest | single: `outputs/<item-id>.<role>.prompt.md` · batch: `outputs/specialist-prompts/*.prompt.md` + `index.json` + `README.md` |
+| Manual specialist response | A human copies the prompt into an AI assistant and saves the answer as Markdown | none (manual) | generated prompt | a local `.md` file, e.g. under `examples/specialist-responses/` |
+| Local response check | Deterministic structural check against the specialist response contract | `pnpm specialist:check <response.md> [outputDir]` | saved response `.md` | `outputs/<name>.specialist-check.md` + `.json` |
+| Human decision | A human accepts, revises, or rejects the response | none (manual) | check report + response | decision recorded outside the tool |
+
+Where things live:
+
+- **Generated prompts** — single-item prompts are written to `outputs/` by default; batch prompts to `outputs/specialist-prompts/` (with an `index.json` and a browsable `README.md`).
+- **Saved specialist responses** — kept as local Markdown. The repository ships example fixtures under [`examples/specialist-responses/`](../examples/specialist-responses/README.md); your own responses can live there or at any local path you pass to the checker.
+- **Check reports** — always written under `outputs/` as `<name>.specialist-check.md` and `<name>.specialist-check.json`.
+
+Supported specialist roles: `ux-ui`, `frontend`, `backend`, `qa`, `tech-lead`, `legal-compliance`, `security`, `devops`, `data-analytics`, `customer-success`, `seo`.
+
+What stays intentionally manual in V1:
+
+- choosing which exported items deserve a specialist pass;
+- copying a prompt into an assistant and saving its response (no API call, no model call from ADE);
+- reading the check report and deciding whether to accept, revise, or reject the response;
+- deciding what is ready for implementation.
+
+The checker is deterministic and structure-focused: it never grades quality semantically, never approves work, and never promotes an item. The human decision gate is always the last step. Each stage is detailed in [Step By Step](#step-by-step) below (steps 8 to 12).
+
 ## Step By Step
 
 ### 1. Start From A Project Brief
