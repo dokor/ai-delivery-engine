@@ -43,6 +43,8 @@ It can already:
 - export one Markdown file per backlog item for manual review;
 - generate batch specialist prompts from the export manifest for supported owner roles, with a generated local index;
 - check saved specialist responses locally with deterministic Markdown and JSON reports;
+- resolve a modular, inherited, validated `ade.config` (presets, profiles, rules, ignore/sensitive globs) with visible provenance and secret rejection;
+- generate a deterministic, versionable project context (stack, modules, commands, conventions, entry points, ADRs) as Markdown + JSON, with a freshness check;
 - summarize the local workflow state from generated files under `outputs/`;
 - list and enrich GitHub issues, and prepare issue development (branch + specialist prompts), through `gh` CLI scripts driven by Claude Code (see [GitHub Issue Workflow](#github-issue-workflow-claude-code) below).
 
@@ -68,6 +70,7 @@ It deliberately does not yet:
 - [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md) context handoff map between V1 roles
 - [docs/V1_APPROVAL_GATES.md](docs/V1_APPROVAL_GATES.md) the human approval gates for the V1 workflow
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
+- [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) V1 workflows with their critical inputs/outputs, exit codes, and guarding tests
 - [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
@@ -400,6 +403,69 @@ Where things live:
 - **Check reports** — always written under `outputs/` as `<name>.specialist-check.md` and `<name>.specialist-check.json`.
 
 What stays intentionally manual in V1: choosing which items get a specialist pass, copying a prompt into an assistant and saving its response (no external API, no model call from ADE), reading the check report, and deciding whether to accept, revise, or reject. The checker is deterministic and structure-focused — it never grades quality, approves work, or promotes an item. The human decision gate is always last.
+
+## Project Configuration And Context
+
+Two core commands make a project explicit and machine-readable, entirely
+locally and without any AI provider.
+
+### Configuration — `ade config:print`
+
+ADE reads an `ade.config.{ts,js,mjs,json}` (or `.ade/config.json`) from the
+project root. Configuration is modular and inheritable via `extends` (local
+preset files or npm specifiers), deterministically merged with **visible
+provenance**, and validated. It declares the pieces ADE orchestrates —
+`ignore`/`sensitive` globs, `tools`, deterministic `rules`, workflow
+`profiles` (e.g. `ci`, `local`, `agent`), context source locations, and output
+formats. It never stores secrets: a secret-like key (`apiKey`, `token`, …)
+is a validation error.
+
+```bash
+pnpm config:print
+# or: ade config:print [configPath] [outputDir]
+```
+
+It prints the merged configuration with per-key provenance and writes
+`outputs/config/ade.config.resolved.json`. The resolver is a pure function, so
+the CLI, CI and (later) MCP all get identical results. Exit code is `1` when the
+configuration has validation errors (unknown key, invalid enum, `extends`
+cycle, stored secret).
+
+Example `ade.config.json`:
+
+```json
+{
+  "extends": ["./presets/typescript.json"],
+  "ignore": [".env*", "dist/**", "node_modules/**"],
+  "sensitive": [".env*", "**/*.key"],
+  "profiles": {
+    "ci": { "mode": "deterministic" },
+    "agent": { "mode": "assisted", "context": "compact", "allowProvider": true }
+  }
+}
+```
+
+### Project context — `ade context:generate` / `check` / `print`
+
+ADE builds a compact, deterministic, versionable project context from local
+sources only — stack, workspaces/packages, modules, commands, active
+conventions, entry points, declared sensitive zones and ADR filenames. It reads
+structure and metadata, never file contents, environment values or secrets, and
+honours `.gitignore` plus the config's `ignore`/`sensitive` globs. Output is
+byte-stable on an unchanged repo.
+
+```bash
+pnpm context:generate   # writes outputs/context/context.{json,md}
+pnpm context:check      # absent (exit 2) | up-to-date (exit 0) | stale (exit 1); never writes
+pnpm context:print      # prints the stored context as Markdown
+```
+
+Freshness is tracked by a `fingerprint` (a content hash of the sources plus the
+resolved config) — no wall-clock timestamps — so `context:check` reports `stale`
+exactly when the config, rules or relevant sources change.
+
+See [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) for the full list of V1
+workflows, their inputs/outputs, exit codes, and the tests that guard them.
 
 ## GitHub Issue Workflow (Claude Code)
 
