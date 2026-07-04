@@ -13,6 +13,7 @@ import { getProviderAdapter } from './engine/provider.types.ts';
 import { renderReviewHuman, reviewToJson } from './engine/renderFindings.ts';
 import { reviewExitCode, runReview } from './engine/review.ts';
 import { runTool, toolResultsToFindings } from './engine/tools.ts';
+import { runDeterministicPackRules } from './rules/runRulePacks.ts';
 
 const DEFAULT_IGNORES = ['node_modules/**', '.git/**', 'dist/**', 'outputs/**'];
 
@@ -96,6 +97,9 @@ async function main(): Promise<void> {
   const contextState = (await checkContext(cwd, resolution.config, contextDir)).state;
 
   const extraFindings: Finding[] = [];
+
+  // Deterministic rules from the active rule packs (e.g. service size).
+  extraFindings.push(...(await runDeterministicPackRules({ cwd, config: resolution.config, files: projectFiles })));
 
   // Optional tool orchestration.
   if (args.runTools && resolution.config.tools.length > 0) {
