@@ -46,6 +46,7 @@ It can already:
 - resolve a modular, inherited, validated `ade.config` (presets, profiles, rules, ignore/sensitive globs) with visible provenance and secret rejection;
 - generate a deterministic, versionable project context (stack, modules, commands, conventions, entry points, ADRs) as Markdown + JSON, with a freshness check;
 - assemble a budgeted, cacheable context pack (chill/normal/expert modes) with a transparent manifest to reduce LLM token consumption, without ever calling a provider;
+- run a stable `ade` CLI (`init`, `doctor`, `config`, `context`, `review`, `fix`, `upgrade`) with normalized findings, JSON output and documented exit codes, usable in CI without any LLM or secret;
 - summarize the local workflow state from generated files under `outputs/`;
 - list and enrich GitHub issues, and prepare issue development (branch + specialist prompts), through `gh` CLI scripts driven by Claude Code (see [GitHub Issue Workflow](#github-issue-workflow-claude-code) below).
 
@@ -71,6 +72,7 @@ It deliberately does not yet:
 - [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md) context handoff map between V1 roles
 - [docs/V1_APPROVAL_GATES.md](docs/V1_APPROVAL_GATES.md) the human approval gates for the V1 workflow
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
+- [docs/CLI.md](docs/CLI.md) the `ade` command-line surface: installation, commands, result model, exit codes, optional provider, and security notes
 - [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) V1 workflows with their critical inputs/outputs, exit codes, and guarding tests
 - [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md) measuring and tuning LLM token consumption via budgeted context packs and chill/normal/expert modes
 - [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
@@ -405,6 +407,29 @@ Where things live:
 - **Check reports** — always written under `outputs/` as `<name>.specialist-check.md` and `<name>.specialist-check.json`.
 
 What stays intentionally manual in V1: choosing which items get a specialist pass, copying a prompt into an assistant and saving its response (no external API, no model call from ADE), reading the check report, and deciding whether to accept, revise, or reject. The checker is deterministic and structure-focused — it never grades quality, approves work, or promotes an item. The human decision gate is always last.
+
+## The `ade` CLI
+
+`ade` is the stable command-line surface shared by humans, CI, hooks, IDEs and
+(later) AI agents. It works locally without any AI provider; a provider is never
+called implicitly.
+
+```bash
+ade init                 # create ade.config.json with defaults
+ade doctor               # diagnose Node, config, tools, context
+ade config validate      # validate the resolved configuration
+ade context generate     # build the project context
+ade review --json        # deterministic review, machine-readable
+ade review --staged      # scope to staged changes
+ade fix --dry-run        # preview safe, mechanical fixes
+```
+
+Review findings are normalized (`rule`, `severity`, `file`, `message`,
+`suggestion`, `origin`) and always state their `origin` — `deterministic`
+(ADE's own checks and tool orchestration) or `provider` (an optional adapter).
+Exit codes are documented and CI-friendly: `0` success, `1` problems found,
+`2` usage error. See [docs/CLI.md](docs/CLI.md) for the full reference,
+installation, the optional provider adapter, and security notes.
 
 ## Project Configuration And Context
 

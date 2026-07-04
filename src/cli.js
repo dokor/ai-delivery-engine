@@ -6,10 +6,11 @@
  * installed as a devDependency (Node 22 refuses --experimental-strip-types
  * for files under node_modules/).
  *
- * For local development, use the pnpm scripts (e.g. `pnpm backlog:run`)
- * which run TypeScript directly via --experimental-strip-types.
+ * Command syntax: `ade <group> <action>` (canonical, e.g. `ade config print`)
+ * plus top-level commands (`ade init`, `ade review`). Legacy colon forms
+ * (`ade config:print`) remain supported for backward compatibility.
  *
- * Usage: ade <command> [args...]
+ * For local development, use the pnpm scripts (e.g. `pnpm backlog:run`).
  */
 
 import { spawn } from 'node:child_process';
@@ -18,49 +19,109 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-/** Maps CLI command names to their compiled JS entry point (relative to dist/). */
+/** Command name (space-grouped or colon legacy) → compiled JS entry in dist/. */
 const COMMANDS = {
-  'backlog:run':      'index.js',
-  'backlog:review':   'reviewBacklog.js',
-  'backlog:export':   'exportBacklog.js',
-  'prompt:po':        'promptPo.js',
+  // Setup / diagnostics
+  init: 'cliInit.js',
+  doctor: 'cliDoctor.js',
+  upgrade: 'cliUpgrade.js',
+  // Configuration
+  'config validate': 'cliConfigValidate.js',
+  'config print': 'configPrint.js',
+  // Context
+  'context generate': 'contextGenerate.js',
+  'context check': 'contextCheck.js',
+  'context print': 'contextPrint.js',
+  'context pack': 'contextPack.js',
+  // Review / fix
+  review: 'cliReview.js',
+  fix: 'cliFix.js',
+  // Backlog
+  'backlog:run': 'index.js',
+  'backlog:review': 'reviewBacklog.js',
+  'backlog:export': 'exportBacklog.js',
+  // Prompts / import / specialist
+  'prompt:po': 'promptPo.js',
   'prompt:specialist': 'promptSpecialist.js',
   'prompt:specialists': 'promptSpecialists.js',
-  'import:po':        'importPo.js',
+  'import:po': 'importPo.js',
   'specialist:check': 'specialistCheck.js',
-  'project:status':   'projectStatus.js',
-  'demo:validate':    'demoValidate.js',
-  'config:print':     'configPrint.js',
+  // Status / demo
+  'project:status': 'projectStatus.js',
+  'demo:validate': 'demoValidate.js',
+  // Legacy colon aliases for grouped commands
+  'config:print': 'configPrint.js',
   'context:generate': 'contextGenerate.js',
-  'context:check':    'contextCheck.js',
-  'context:print':    'contextPrint.js',
-  'context:pack':     'contextPack.js',
+  'context:check': 'contextCheck.js',
+  'context:print': 'contextPrint.js',
+  'context:pack': 'contextPack.js',
 };
 
-const [command, ...rest] = process.argv.slice(2);
+const HELP = `AI Delivery Engine (ade)
 
-if (!command || command === '--help' || command === '-h') {
-  const names = Object.keys(COMMANDS).join('\n  ');
-  console.log(`AI Delivery Engine (ade)\n\nAvailable commands:\n  ${names}\n`);
+Usage: ade <command> [options]
+
+Setup & diagnostics:
+  ade init [--dry-run]            create ade.config.json with defaults
+  ade doctor                      diagnose Node, config, tools and context
+  ade upgrade                     show the installed version and how to upgrade
+
+Configuration:
+  ade config validate [path]      validate the resolved configuration
+  ade config print [path] [out]   print + write the resolved configuration
+
+Context:
+  ade context generate [out]      generate the project context
+  ade context check [out]         absent | up-to-date | stale (no writes)
+  ade context print [out]         print the stored context
+  ade context pack [mode] [diff]  build a budgeted context pack (chill|normal|expert)
+
+Review:
+  ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
+  ade fix [--dry-run]             apply safe, mechanical fixes
+
+Backlog & prompts:
+  ade backlog:run | backlog:review | backlog:export
+  ade prompt:po | prompt:specialist | prompt:specialists | import:po
+  ade specialist:check | project:status | demo:validate
+
+Exit codes are documented in docs/CLI.md.`;
+
+const argv = process.argv.slice(2);
+const first = argv[0];
+
+if (!first || first === '--help' || first === '-h' || first === 'help') {
+  console.log(HELP);
   process.exit(0);
 }
 
-const jsFile = COMMANDS[command];
+if (first === '--version' || first === '-v') {
+  // Defer to the upgrade command's version reporting for a single source of truth.
+  argv[0] = 'upgrade';
+}
+
+// Resolve the longest matching command: try "<group> <action>" then "<token>".
+let jsFile;
+let commandArgs;
+const twoWord = argv.length >= 2 ? `${argv[0]} ${argv[1]}` : undefined;
+
+if (twoWord && COMMANDS[twoWord]) {
+  jsFile = COMMANDS[twoWord];
+  commandArgs = argv.slice(2);
+} else if (COMMANDS[argv[0]]) {
+  jsFile = COMMANDS[argv[0]];
+  commandArgs = argv.slice(1);
+}
 
 if (!jsFile) {
-  console.error(`ade: unknown command "${command}"`);
+  console.error(`ade: unknown command "${argv.join(' ')}"`);
   console.error('Run "ade --help" for available commands.');
   process.exit(1);
 }
 
-// __dirname = <pkg>/src/  →  dist/ is one level up then down
 const jsPath = resolve(__dirname, '..', 'dist', jsFile);
 
-const child = spawn(
-  process.execPath,
-  [jsPath, ...rest],
-  { stdio: 'inherit' }
-);
+const child = spawn(process.execPath, [jsPath, ...commandArgs], { stdio: 'inherit' });
 
 child.on('exit', (code) => {
   process.exit(code ?? 0);
