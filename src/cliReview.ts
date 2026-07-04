@@ -4,6 +4,7 @@ import { checkContext } from './context/checkContext.ts';
 import { collectProjectContext } from './context/collectContext.ts';
 import { assembleContextItems } from './contextpack/assembleItems.ts';
 import { buildContextPack } from './contextpack/buildContextPack.ts';
+import { extractFragments } from './contextpack/fragments.ts';
 import { resolveMode } from './contextpack/modes.ts';
 import { writeContextPack } from './contextpack/renderPack.ts';
 import type { Finding, ReviewScope } from './engine/findings.types.ts';
@@ -114,7 +115,20 @@ async function main(): Promise<void> {
     const diffContent = changedFiles
       ? `Changed files:\n${changedFiles.map((f) => `- ${f}`).join('\n')}`
       : undefined;
-    const items = assembleContextItems({ context, config: resolution.config, mode, diffContent, diffRef: 'diff:scope' });
+
+    // Neighbour fragments: the local modules the changed files import, ranked
+    // and capped by the mode — the last "targeted context" lever of #102.
+    const fragments = changedFiles && changedFiles.length > 0
+      ? await extractFragments({
+          cwd,
+          seedFiles: changedFiles,
+          maxFragments: mode.maxFragments,
+          sensitivePatterns: resolution.config.sensitive,
+          ignore
+        })
+      : [];
+
+    const items = assembleContextItems({ context, config: resolution.config, mode, diffContent, diffRef: 'diff:scope', fragments });
     const pack = buildContextPack(items, {
       mode: mode.name,
       budget: mode.tokenBudget,

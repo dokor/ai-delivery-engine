@@ -81,6 +81,10 @@ Automated `node:test` suites under `tests/` guarding the critical path:
   content/config/mode/budget changes, read/write round-trip.
 - `tests/cli/contextPack.test.ts` — `context:pack` in a separate process:
   manifest contract, cache miss/hit, per-mode budgets.
+- `tests/contextpack/fragments.test.ts` — import parsing, local-import
+  resolution, neighbour ranking, seed/sensitive exclusion, max cap.
+- `tests/cli/reviewFragments.test.ts` — `review --provider` on a staged git
+  diff includes the imported neighbour fragments in the pack manifest.
 - `tests/engine/review.test.ts` — deterministic review engine: config/context/
   rule-hygiene findings, origin, summary, exit code.
 - `tests/engine/tools.test.ts` — tool-result → finding normalization.
