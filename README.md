@@ -1,8 +1,8 @@
 # AI Delivery Engine
 
-AI Delivery Engine is a documentation-first foundation for a future system that coordinates multiple AI agents like a small software delivery team.
+AI Delivery Engine is a documentation-first, local-first runtime for coordinating AI-assisted delivery like a small software team. It began as a documented operating model and now ships a working local runtime — an `ade` CLI, project configuration, project context, technical rule packs and token-budgeted context packs — while keeping every AI call optional and every important decision human-reviewed.
 
-The goal is not to build autonomous agents yet. The goal of this first repository iteration is to make the product intent, operating model, and MVP boundaries explicit before writing orchestration code.
+The goal is not autonomous agents yet. V1's goal is a reliable local runtime and a clear operating model: a human stays in the loop at every important transition, and no provider is ever called implicitly.
 
 ## What Problem It Solves
 
@@ -24,11 +24,11 @@ AI Delivery Engine is meant to turn ad hoc prompting into a repeatable delivery 
 
 ## V1 In One Line
 
-V1 is a manual, local-first, documentation-driven workflow for turning a project brief into a structured backlog with human review at every important step.
+V1 is a local-first runtime — a stable `ade` CLI plus a manual, documentation-driven backlog workflow — that turns a project brief into a structured backlog and gives projects configuration, context, technical rule packs and token-budgeted context packs, with human review at every important step and no implicit AI calls.
 
 ## Current MVP Status
 
-The current MVP is not an autonomous agent platform yet. It is a local semi-automatic delivery loop.
+The current MVP is not an autonomous agent platform yet. It is a local runtime and a semi-automatic delivery loop: ADE prepares, validates and reviews artifacts deterministically, and a human decides at every checkpoint.
 
 It can already:
 
