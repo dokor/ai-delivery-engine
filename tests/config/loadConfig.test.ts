@@ -118,6 +118,28 @@ describe('resolveConfig', () => {
     assert.equal(hasConfigErrors(resolution), true);
   });
 
+  it('does not flag legitimate token-budget keys as secrets', async () => {
+    project = await createTempProject();
+    await project.writeJson('ade.config.json', {
+      profiles: { chill: { tokenBudget: 4000 }, expert: { tokenBudget: 32000 } }
+    });
+
+    const resolution = await resolveConfig({ cwd: project.dir });
+
+    assert.ok(!resolution.issues.some((i) => i.code === 'SECRET_IN_CONFIG'));
+    assert.equal(hasConfigErrors(resolution), false);
+    assert.equal(resolution.config.profiles.chill?.tokenBudget, 4000);
+  });
+
+  it('still flags auth-style token keys as secrets', async () => {
+    project = await createTempProject();
+    await project.write('ade.config.json', JSON.stringify({ profiles: { agent: { authToken: 'x' } } }));
+
+    const resolution = await resolveConfig({ cwd: project.dir });
+
+    assert.ok(resolution.issues.some((i) => i.code === 'SECRET_IN_CONFIG'));
+  });
+
   it('is deterministic: identical result for repeated resolution (CLI/CI/MCP parity)', async () => {
     project = await createTempProject();
     await project.writeJson('presets/base.json', { tools: ['x'], ignore: ['dist/**'] });

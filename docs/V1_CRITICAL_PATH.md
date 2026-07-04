@@ -30,6 +30,7 @@ Guiding constraints for every workflow below:
 | Context generation | `ade context:generate [outDir]` | repo sources + resolved config | `outputs/context/context.{json,md}` | `0` generated · `1` config error |
 | Context freshness | `ade context:check [outDir]` | stored `context.json` + current sources | freshness verdict (no writes) | `0` up-to-date · `1` stale · `2` absent |
 | Context print | `ade context:print [outDir]` | stored `context.json` | Markdown to stdout | `0` printed · `1` no context |
+| Context pack | `ade context:pack [mode] [diffFile]` | resolved config + project context + optional diff | `outputs/context/context-pack.{md,manifest.json}` | `0` ok · `1` config error |
 | Backlog draft | `ade backlog:run [brief] [outDir]` | brief Markdown | `*.backlog.{json,md}` | `0` ok · `1` failure |
 | PO/PM prompt | `ade prompt:po [brief] [outDir]` | brief Markdown | `*.po-pm.prompt.md` | `0` ok · `1` failure |
 | Import PO/PM | `ade import:po [response] [outDir]` | PO/PM JSON response | `*.normalized.backlog.{json,md}` | `0` ok · `1` invalid/contract failure |
@@ -64,6 +65,15 @@ Automated `node:test` suites under `tests/` guarding the critical path:
   inventory, ignore filtering, secret/env exclusion, section customization,
   fingerprint change on config change.
 - `tests/context/checkContext.test.ts` — absent / up-to-date / stale states.
+- `tests/contextpack/buildContextPack.test.ts` — token estimation, sensitive
+  exclusion, budget reduction ladder, required-item protection, over-budget flag,
+  deterministic ordering, indicative-estimate manifest.
+- `tests/contextpack/modes.test.ts` — chill/normal/expert presets and config
+  profile overrides.
+- `tests/contextpack/cache.test.ts` — cache-key stability and invalidation on
+  content/config/mode/budget changes, read/write round-trip.
+- `tests/cli/contextPack.test.ts` — `context:pack` in a separate process:
+  manifest contract, cache miss/hit, per-mode budgets.
 - `tests/cli/cliCommands.test.ts` — CLI commands run in a **separate process**,
   asserting exit codes and JSON output contracts for `config:print` and the
   context lifecycle.

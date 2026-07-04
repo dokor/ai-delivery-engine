@@ -5,7 +5,10 @@
   "profiles": {
     "ci": { "mode": "deterministic" },
     "local": { "mode": "deterministic" },
-    "agent": { "mode": "assisted", "context": "compact", "allowProvider": true, "privacy": "strict" }
+    "agent": { "mode": "assisted", "context": "compact", "allowProvider": true, "privacy": "strict" },
+    "chill": { "context": "compact", "tokenBudget": 4000 },
+    "normal": { "context": "compact", "tokenBudget": 12000 },
+    "expert": { "context": "full", "tokenBudget": 32000 }
   },
   "rules": [
     { "id": "no-build-step", "description": "V1 runs TypeScript directly via --experimental-strip-types; no build step in the dev loop.", "severity": "warn" },

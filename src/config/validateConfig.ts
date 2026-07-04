@@ -11,6 +11,14 @@ import type {
  */
 const SECRET_KEY_REGEX = /(api[-_]?key|secret|token|password|passwd|credential|private[-_]?key)/i;
 
+/**
+ * Legitimate ADE config keys that contain a trigger substring but are not
+ * secrets — notably token *budgeting* keys (`tokenBudget`, `maxTokens`, …)
+ * which are about counting tokens, not authenticating. Auth-style keys such as
+ * `authToken` or `apiToken` do not match and remain flagged.
+ */
+const SAFE_KEY_REGEX = /^(token(budget|count|limit|estimate|s)|max[-_]?tokens|estimated[-_]?tokens)$/i;
+
 const ALLOWED_TOP_LEVEL_KEYS = new Set([
   'extends',
   'ignore',
@@ -48,7 +56,7 @@ function scanForSecrets(value: unknown, path: string, issues: ConfigIssue[]): vo
   }
   for (const [key, child] of Object.entries(value)) {
     const childPath = path ? `${path}.${key}` : key;
-    if (SECRET_KEY_REGEX.test(key)) {
+    if (SECRET_KEY_REGEX.test(key) && !SAFE_KEY_REGEX.test(key)) {
       issues.push({
         code: 'SECRET_IN_CONFIG',
         severity: 'error',
