@@ -64,7 +64,7 @@ See [CLI.md](./CLI.md), [RULE_PACKS.md](./RULE_PACKS.md), [TOKEN_BUDGET.md](./TO
 - [ ] A PO/PM response contract exists in [contracts/PO_PM_OUTPUT_CONTRACT.md](./contracts/PO_PM_OUTPUT_CONTRACT.md).
 - [ ] A specialist response contract exists in [contracts/SPECIALIST_RESPONSE_CONTRACT.md](./contracts/SPECIALIST_RESPONSE_CONTRACT.md).
 - [ ] The general demo fixture exists in [../examples/demo-project/README.md](../examples/demo-project/README.md).
-- [ ] The all-V1-roles demo fixture exists in [../examples/demo-v1-roles/README.md](../examples/demo-v1-roles/README.md).
+- [ ] Rule-pack reference fixtures exist in [../examples/rule-packs/README.md](../examples/rule-packs/README.md).
 - [ ] Specialist response examples exist in [../examples/specialist-responses/README.md](../examples/specialist-responses/README.md).
 
 ## 7. Outputs And Reports
@@ -141,11 +141,11 @@ pnpm doctor              # Node/config/tools/context healthy
 Optional explicit-path checks:
 
 ```bash
-node --experimental-strip-types src/index.ts examples/demo-v1-roles/brief.md outputs/demo-v1-roles
-node --experimental-strip-types src/importPo.ts examples/demo-v1-roles/po-pm-response.json outputs/demo-v1-roles
-node --experimental-strip-types src/promptSpecialists.ts outputs/demo-v1-roles/exported-items/manifest.json outputs/demo-v1-roles/specialist-prompts
-node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs/demo-v1-roles/specialist-check
-node --experimental-strip-types src/projectStatus.ts outputs/demo-v1-roles
+node --experimental-strip-types src/index.ts examples/demo-project/brief.md outputs/demo-project
+node --experimental-strip-types src/importPo.ts examples/demo-project/po-pm-response.json outputs/demo-project
+node --experimental-strip-types src/promptSpecialists.ts outputs/demo-project/exported-items/manifest.json outputs/demo-project/specialist-prompts
+node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs/demo-project/specialist-check
+node --experimental-strip-types src/projectStatus.ts outputs/demo-project
 ```
 
 V1 should be considered ready only when:

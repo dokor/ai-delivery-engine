@@ -88,7 +88,7 @@ It deliberately does not yet:
 - [src/github/](src/github/) GitHub integration code (issue fetching, enrichment prompts, PR creation, comments/labels) used by the GitHub issue workflow
 - [tests/](tests/) `node:test` unit tests covering backlog types, brief parsing, PO/PM agent modes, specialist prompt building, specialist checks, and safe path handling
 - [examples/demo-project/README.md](examples/demo-project/README.md) complete demo fixture for the full local V1 workflow
-- [examples/demo-v1-roles/README.md](examples/demo-v1-roles/README.md) compact demo fixture that covers every current V1 core role in one backlog
+- [examples/rule-packs/README.md](examples/rule-packs/README.md) per-stack reference fixtures for the technical rule packs
 - [examples/specialist-responses/README.md](examples/specialist-responses/README.md) fixture examples of contract-compliant specialist responses
 
 ## Recommended First Implementation Approach

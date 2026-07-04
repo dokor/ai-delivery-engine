@@ -16,15 +16,82 @@ In practical terms, it gives you a repeatable V1 workflow to:
 
 Everything in V1 is local-first. You run local commands, inspect local files, and decide manually what should happen next.
 
-## Prerequisites
+ADE also runs as a local `ade` CLI you add to **your own project** — configuration, project context, technical rule-pack review, and token-budgeted context packs — without ever calling an AI provider on its own. Two ways to use it:
 
-Before you start, make sure you have:
+- **Adopt ADE on your codebase** (new or existing project): install the CLI — start with [Set Up ADE On A New Or Existing Project](#set-up-ade-on-a-new-or-existing-project).
+- **Try the manual backlog workflow from this repository**: clone the repo and follow [Prerequisites](#prerequisites-for-running-from-source-or-the-demo) onward.
+
+## Set Up ADE On A New Or Existing Project
+
+ADE works the same whether your project is brand new or already has code. Nothing here requires an AI provider, an API key or network access.
+
+### 1. Install
+
+Per project (recommended):
+
+```bash
+npm install -D @alelouet/ai-delivery-engine
+npx ade --help
+```
+
+You can also run it one-off with `npx @alelouet/ai-delivery-engine <command>`, or install it globally with `npm install -g @alelouet/ai-delivery-engine`. Requires Node.js >= 22.
+
+### 2. Initialize the configuration
+
+```bash
+npx ade init          # creates ade.config.json with sensible defaults (idempotent)
+npx ade init --dry-run   # preview without writing
+```
+
+### 3. Tailor `ade.config.json` to your project
+
+Open the generated `ade.config.json` and adjust:
+
+- `packs` — activate the rule packs for your stack, e.g. `["development", "frontend/next"]` or `["development", "backend/java"]` (see [RULE_PACKS.md](./RULE_PACKS.md));
+- `ignore` / `sensitive` — paths ADE must skip or never read (e.g. `.env*`, `dist/**`);
+- `thresholds` — e.g. `serviceMaxLines` for the service-size rule;
+- `profiles` — budgets and granularity for context packs, incl. chill/normal/expert modes (see [TOKEN_BUDGET.md](./TOKEN_BUDGET.md)).
+
+Never store secrets in this file — a secret-like key is a validation error.
+
+### 4. Verify the setup
+
+```bash
+npx ade config validate   # the configuration resolves without errors
+npx ade doctor            # Node, config, tools and context health
+```
+
+### 5. Generate the project context
+
+```bash
+npx ade context generate  # deterministic project map (Markdown + JSON) under outputs/context/
+npx ade context check     # up-to-date | stale | absent
+```
+
+### 6. Run a local review
+
+```bash
+npx ade review            # deterministic review across the project
+npx ade review --staged   # scope to staged changes (in a git repo)
+npx ade review --json     # machine-readable output for CI
+npx ade rules list        # the active rules for your stack
+```
+
+**New project vs existing project**
+
+- *Existing project*: install, `ade init`, set `packs` to match your stack, then `ade context generate` and `ade review`. Wire `ade` into CI when ready — exit codes are documented in [CLI.md](./CLI.md).
+- *New project*: same steps; you can additionally shape the initial scope with the manual backlog workflow below, starting from a Markdown brief.
+
+Full command reference, exit codes, security notes and the optional AI provider: [CLI.md](./CLI.md).
+
+## Prerequisites (for running from source or the demo)
+
+The sections below run the manual backlog workflow **from a clone of this repository** (useful for the demo, for contributing, or for using the not-yet-published commands directly). For that you need:
 
 - Git
-- Node.js installed locally
+- Node.js >= 22 installed locally
 - `pnpm` installed locally
-
-You also need a local clone of this repository.
+- a local clone of this repository
 
 ## Install Dependencies
 
@@ -39,8 +106,6 @@ The repository uses `pnpm` scripts from [package.json](../package.json).
 ## Fastest Way To Try It
 
 If you want a plug-and-play first run, use the demo fixture in [examples/demo-project/README.md](../examples/demo-project/README.md).
-
-If you specifically want a fixture that exercises every current V1 core role in one backlog, use [examples/demo-v1-roles/README.md](../examples/demo-v1-roles/README.md).
 
 The main demo files are:
 

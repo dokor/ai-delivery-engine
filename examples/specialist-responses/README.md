@@ -63,7 +63,5 @@ They are meant to be stable examples, not proof that any automated response flow
 ## Current Fixtures
 
 - [frontend-story-002.md](./frontend-story-002.md)
-- [backend-task-005.md](./backend-task-005.md)
-- [qa-task-010.md](./qa-task-010.md)
 
 Each file references real backlog item IDs from [examples/demo-project/po-pm-response.json](../demo-project/po-pm-response.json).
