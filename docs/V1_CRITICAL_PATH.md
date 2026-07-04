@@ -30,6 +30,7 @@ Guiding constraints for every workflow below:
 | Doctor | `ade doctor` | Node, config, tools, context | diagnostic report | `0` healthy · `1` problems |
 | Review | `ade review [--staged\|--base <ref>] [--run-tools] [--provider <name>] [--json]` | resolved config + context state + files | normalized findings (human/JSON) | `0` no error findings · `1` error findings · `2` usage error |
 | Fix | `ade fix [--dry-run]` | resolved config + context state | created config / refreshed context | `0` ok · `1` error |
+| Rules | `ade rules [list\|available] [--json]` | active packs from config | rule listing (human/JSON) | `0` ok · `1` unknown pack · `2` usage error |
 | Upgrade | `ade upgrade` | installed package | version + upgrade guidance (no network) | `0` |
 | Config validate | `ade config validate [configPath]` | `ade.config.*` + presets | validation report (no writes) | `0` valid · `1` validation error |
 | Config resolution | `ade config print [configPath] [outDir]` | `ade.config.{ts,js,mjs,json}` + presets | `outputs/config/ade.config.resolved.json` + provenance | `0` valid · `1` validation error (unknown key, bad enum, cycle, secret) |
@@ -86,6 +87,12 @@ Automated `node:test` suites under `tests/` guarding the critical path:
 - `tests/engine/projectFiles.test.ts` — ignore-aware file listing.
 - `tests/cli/cliFoundation.test.ts` — `init`, `doctor`, `review`, `fix` in a
   separate process: exit codes, idempotence, dry-run, JSON contract.
+- `tests/rules/registry.test.ts` — built-in packs present, rule completeness,
+  activation and de-duplication.
+- `tests/rules/serviceSize.test.ts` — line counting and the deterministic
+  service-size rule (threshold, globs, pack activation).
+- `tests/cli/rules.test.ts` — `ade rules` in a separate process and review
+  surfacing the service-size rule from an active pack.
 - `tests/cli/cliCommands.test.ts` — CLI commands run in a **separate process**,
   asserting exit codes and JSON output contracts for `config:print` and the
   context lifecycle.

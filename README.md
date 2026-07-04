@@ -46,7 +46,8 @@ It can already:
 - resolve a modular, inherited, validated `ade.config` (presets, profiles, rules, ignore/sensitive globs) with visible provenance and secret rejection;
 - generate a deterministic, versionable project context (stack, modules, commands, conventions, entry points, ADRs) as Markdown + JSON, with a freshness check;
 - assemble a budgeted, cacheable context pack (chill/normal/expert modes) with a transparent manifest to reduce LLM token consumption, without ever calling a provider;
-- run a stable `ade` CLI (`init`, `doctor`, `config`, `context`, `review`, `fix`, `upgrade`) with normalized findings, JSON output and documented exit codes, usable in CI without any LLM or secret;
+- run a stable `ade` CLI (`init`, `doctor`, `config`, `context`, `review`, `fix`, `rules`, `upgrade`) with normalized findings, JSON output and documented exit codes, usable in CI without any LLM or secret;
+- activate technical rule packs (Next.js, React, Angular, WordPress, Java, cross-cutting development) with deterministic, tool-orchestration and AI-guidance rules, including a configurable service-size check;
 - summarize the local workflow state from generated files under `outputs/`;
 - list and enrich GitHub issues, and prepare issue development (branch + specialist prompts), through `gh` CLI scripts driven by Claude Code (see [GitHub Issue Workflow](#github-issue-workflow-claude-code) below).
 
@@ -73,6 +74,7 @@ It deliberately does not yet:
 - [docs/V1_APPROVAL_GATES.md](docs/V1_APPROVAL_GATES.md) the human approval gates for the V1 workflow
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
 - [docs/CLI.md](docs/CLI.md) the `ade` command-line surface: installation, commands, result model, exit codes, optional provider, and security notes
+- [docs/RULE_PACKS.md](docs/RULE_PACKS.md) technical profiles and rule packs (Next.js, React, Angular, WordPress, Java, cross-cutting) with rule kinds and the configurable service-size rule
 - [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) V1 workflows with their critical inputs/outputs, exit codes, and guarding tests
 - [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md) measuring and tuning LLM token consumption via budgeted context packs and chill/normal/expert modes
 - [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
@@ -421,6 +423,7 @@ ade config validate      # validate the resolved configuration
 ade context generate     # build the project context
 ade review --json        # deterministic review, machine-readable
 ade review --staged      # scope to staged changes
+ade rules list           # rules of the active packs (see docs/RULE_PACKS.md)
 ade fix --dry-run        # preview safe, mechanical fixes
 ```
 
