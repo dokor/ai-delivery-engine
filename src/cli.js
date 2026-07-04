@@ -34,6 +34,7 @@ const COMMANDS = {
   'context:generate': 'contextGenerate.js',
   'context:check':    'contextCheck.js',
   'context:print':    'contextPrint.js',
+  'context:pack':     'contextPack.js',
 };
 
 const [command, ...rest] = process.argv.slice(2);
