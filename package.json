@@ -34,6 +34,10 @@
     "backlog:export": "node --experimental-strip-types src/exportBacklog.ts",
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
     "backlog:run": "node --experimental-strip-types src/index.ts",
+    "config:print": "node --experimental-strip-types src/configPrint.ts",
+    "context:generate": "node --experimental-strip-types src/contextGenerate.ts",
+    "context:check": "node --experimental-strip-types src/contextCheck.ts",
+    "context:print": "node --experimental-strip-types src/contextPrint.ts",
     "demo:validate": "node --experimental-strip-types src/demoValidate.ts",
     "import:po": "node --experimental-strip-types src/importPo.ts",
     "project:status": "node --experimental-strip-types src/projectStatus.ts",
@@ -42,6 +46,7 @@
     "prompt:specialist": "node --experimental-strip-types src/promptSpecialist.ts",
     "specialist:check": "node --experimental-strip-types src/specialistCheck.ts",
     "test": "node --experimental-strip-types --test tests/**/*.test.ts",
+    "test:coverage": "node --experimental-strip-types --test --experimental-test-coverage tests/**/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "issues:enrich": "bash scripts/issues-enrich.sh",
     "issue:dev": "bash scripts/issue-dev.sh"

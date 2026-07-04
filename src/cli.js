@@ -30,6 +30,10 @@ const COMMANDS = {
   'specialist:check': 'specialistCheck.js',
   'project:status':   'projectStatus.js',
   'demo:validate':    'demoValidate.js',
+  'config:print':     'configPrint.js',
+  'context:generate': 'contextGenerate.js',
+  'context:check':    'contextCheck.js',
+  'context:print':    'contextPrint.js',
 };
 
 const [command, ...rest] = process.argv.slice(2);
