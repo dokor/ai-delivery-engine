@@ -45,6 +45,7 @@ It can already:
 - check saved specialist responses locally with deterministic Markdown and JSON reports;
 - resolve a modular, inherited, validated `ade.config` (presets, profiles, rules, ignore/sensitive globs) with visible provenance and secret rejection;
 - generate a deterministic, versionable project context (stack, modules, commands, conventions, entry points, ADRs) as Markdown + JSON, with a freshness check;
+- assemble a budgeted, cacheable context pack (chill/normal/expert modes) with a transparent manifest to reduce LLM token consumption, without ever calling a provider;
 - summarize the local workflow state from generated files under `outputs/`;
 - list and enrich GitHub issues, and prepare issue development (branch + specialist prompts), through `gh` CLI scripts driven by Claude Code (see [GitHub Issue Workflow](#github-issue-workflow-claude-code) below).
 
@@ -71,6 +72,7 @@ It deliberately does not yet:
 - [docs/V1_APPROVAL_GATES.md](docs/V1_APPROVAL_GATES.md) the human approval gates for the V1 workflow
 - [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
 - [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) V1 workflows with their critical inputs/outputs, exit codes, and guarding tests
+- [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md) measuring and tuning LLM token consumption via budgeted context packs and chill/normal/expert modes
 - [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
 - [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
 - [docs/MVP.md](docs/MVP.md)
@@ -463,6 +465,30 @@ pnpm context:print      # prints the stored context as Markdown
 Freshness is tracked by a `fingerprint` (a content hash of the sources plus the
 resolved config) — no wall-clock timestamps — so `context:check` reports `stale`
 exactly when the config, rules or relevant sources change.
+
+### Context pack — `ade context:pack` (token budgeting)
+
+To reduce what an LLM would receive, ADE assembles a **context pack**: a minimal,
+budgeted bundle for a single interaction — the diff, applicable rules, a compact
+project/module context, and (in richer modes) neighbouring fragments and docs —
+plus a transparent manifest. ADE never calls a provider; it only prepares the
+context.
+
+```bash
+pnpm context:pack             # normal mode
+pnpm context:pack chill       # cheapest, least context
+pnpm context:pack expert outputs/changes.diff   # richest, with a diff
+```
+
+Three **modes** trade token cost for precision — `chill` (~4k budget), `normal`
+(~12k) and `expert` (~32k) — and map onto `ade.config` profiles so any single
+lever (budget, granularity, ignore/sensitive, rule scope) can be overridden. The
+generated `context-pack.manifest.json` shows included/excluded items with a
+`reason`, an indicative token estimate, any reductions applied, and the cache
+key. Packs are cached by the project fingerprint and invalidated automatically
+when config, rules or sources change.
+
+Full guide: [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md).
 
 See [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) for the full list of V1
 workflows, their inputs/outputs, exit codes, and the tests that guard them.
