@@ -293,16 +293,16 @@ Jouer les rôles Tech Lead et QA sur le diff. Deux cas possibles :
 
 **11. Notifier — uniquement quand toutes les reviews passent**
 ```bash
-gh issue comment <N> --body "PR #${PR_NUMBER} prête pour review : cc @alelouet"
+gh issue comment <N> --body "PR #${PR_NUMBER} prête pour review : cc @dokor"
 gh issue edit <N> --remove-label "in-progress" --add-label "pr-ready"
-gh pr edit ${PR_NUMBER} --add-assignee "alelouet"
+gh pr edit ${PR_NUMBER} --add-assignee "dokor"
 ```
 
 ---
 
 ## Workflow 3 — Notification et merge
 
-Ce workflow est **entièrement manuel** : @alelouet reçoit la notification GitHub (assignation + commentaire), fait une review finale de la PR, et merge si tout est en ordre.
+Ce workflow est **entièrement manuel** : @dokor reçoit la notification GitHub (assignation + commentaire), fait une review finale de la PR, et merge si tout est en ordre.
 
 Claude Code ne merge jamais une PR sans validation humaine explicite.
 
