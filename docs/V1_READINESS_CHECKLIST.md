@@ -1,6 +1,9 @@
 # V1 Readiness Checklist
 
-This checklist defines when the current local-first V1 workflow is ready to be considered complete.
+This checklist defines when V1 is ready to be considered complete. V1 has two
+faces: the **manual, documentation-driven backlog workflow** (sections 3, 5–6)
+and the **local runtime** — the `ade` CLI, configuration, project context,
+rule packs and token-budgeted context packs (section 4). Both must hold.
 
 It is a readiness gate, not a roadmap extension. If an item below is not true yet, V1 is not ready. If a capability is intentionally out of scope for V1, it should stay out of scope rather than being treated as a blocker to solve immediately.
 
@@ -33,7 +36,21 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] A specialist response can be checked locally with `pnpm specialist:check`.
 - [ ] A human still makes the final decision at every major checkpoint.
 
-## 4. Role Coverage
+## 4. Local Runtime (CLI, Config, Context, Rule Packs)
+
+See [CLI.md](./CLI.md), [RULE_PACKS.md](./RULE_PACKS.md), [TOKEN_BUDGET.md](./TOKEN_BUDGET.md).
+
+- [ ] The `ade` CLI dispatches its commands (`ade --help`) and works from the built `dist/` output.
+- [ ] `ade init` bootstraps `ade.config.json` (idempotent) and `ade doctor` diagnoses Node, config, tools and context.
+- [ ] `ade config validate` / `ade config print` resolve the configuration, merge `extends` presets with visible provenance, and reject secret-like keys.
+- [ ] `ade context generate` / `check` / `print` produce a deterministic, versionable project context (Markdown + JSON) with a freshness fingerprint and no sensitive content.
+- [ ] `ade context pack [mode]` builds a budgeted context pack with a transparent manifest; chill/normal/expert modes bound token consumption and reductions are observable.
+- [ ] `ade rules available` / `ade rules list` expose the technical rule packs, and `ade review` runs the deterministic pack rules (e.g. service size).
+- [ ] `ade review` emits normalized findings (human + `--json`) that state their `origin` (`deterministic` | `provider`), and never calls a provider implicitly.
+- [ ] `ade fix --dry-run` previews safe mechanical fixes; exit codes are documented in [CLI.md](./CLI.md) and CI-friendly.
+- [ ] All runtime commands work with no LLM, API key or network access by default.
+
+## 5. Role Coverage
 
 - [ ] Current V1 roles are documented in [AGENTS.md](./AGENTS.md).
 - [ ] Reusable V1 role templates exist under [../templates/](../templates/).
@@ -42,7 +59,7 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] V2 roles remain explicitly deferred and are not required for V1 readiness:
   `performance`, `accessibility`, `finance-cost`, `marketing`.
 
-## 5. Contracts And Fixtures
+## 6. Contracts And Fixtures
 
 - [ ] A PO/PM response contract exists in [contracts/PO_PM_OUTPUT_CONTRACT.md](./contracts/PO_PM_OUTPUT_CONTRACT.md).
 - [ ] A specialist response contract exists in [contracts/SPECIALIST_RESPONSE_CONTRACT.md](./contracts/SPECIALIST_RESPONSE_CONTRACT.md).
@@ -50,7 +67,7 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] The all-V1-roles demo fixture exists in [../examples/demo-v1-roles/README.md](../examples/demo-v1-roles/README.md).
 - [ ] Specialist response examples exist in [../examples/specialist-responses/README.md](../examples/specialist-responses/README.md).
 
-## 6. Outputs And Reports
+## 7. Outputs And Reports
 
 - [ ] Deterministic backlog JSON and Markdown outputs are produced.
 - [ ] PO/PM prompt Markdown output is produced.
@@ -63,7 +80,7 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] Specialist check JSON and Markdown reports are produced.
 - [ ] Project status JSON is produced.
 
-## 7. Safety And Boundaries
+## 8. Safety And Boundaries
 
 - [ ] No model call is required inside the repository to complete the workflow.
 - [ ] No external API is required for V1 usage.
@@ -76,7 +93,7 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] File I/O is protected against path traversal via `assertSafePath`.
 - [ ] JSON inputs are bounded by a 10 MB size limit.
 
-## 8. Manual Approval Gates
+## 9. Manual Approval Gates
 
 - [ ] The brief is accepted by a human before the team relies on it.
 - [ ] The PO/PM response is accepted by a human before import is treated as final.
@@ -85,7 +102,7 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] Specialist responses are accepted by a human after `specialist:check`.
 - [ ] Implementation readiness is accepted by a human and never inferred automatically.
 
-## 9. Known V1 Limitations
+## 10. Known V1 Limitations
 
 - [ ] PO/PM responses are still copied manually from an assistant into local files.
 - [ ] Specialist responses are still copied manually from an assistant into local files.
@@ -95,15 +112,30 @@ It is a readiness gate, not a roadmap extension. If an item below is not true ye
 - [ ] There is no role orchestration engine yet.
 - [ ] There are no autonomous agents yet.
 
-## 10. Suggested Final Validation Sequence
+## 11. Suggested Final Validation Sequence
 
-Run this from the repository root before declaring V1 ready:
+Run this from the repository root before declaring V1 ready.
+
+Manual workflow + suite:
 
 ```bash
 pnpm typecheck
 pnpm test
+pnpm build
 pnpm demo:validate
 pnpm project:status
+```
+
+Local runtime sign-off (no LLM, key or network required):
+
+```bash
+pnpm config:print        # config resolves with visible provenance, no errors
+pnpm context:generate    # deterministic context (Markdown + JSON)
+pnpm context:check       # reports up-to-date
+node --experimental-strip-types src/contextPack.ts normal   # budgeted pack + manifest
+pnpm rules list          # active rule packs
+pnpm review              # deterministic review, normalized findings
+pnpm doctor              # Node/config/tools/context healthy
 ```
 
 Optional explicit-path checks:
