@@ -74,6 +74,7 @@ It deliberately does not yet:
 - [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
 - [docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md](docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md)
 - [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
+- [docs/DECISIONS/ADR-0002-context-token-budget.md](docs/DECISIONS/ADR-0002-context-token-budget.md) decision note for reducing LLM token consumption via targeted, budgeted, reusable context packs (issue #102)
 - [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, Customer Success, and SEO perspectives, including capability-aware guidance for Front-end and Back-end (see [templates/backend-capability-guidance.md](templates/backend-capability-guidance.md))
 - [scripts/](scripts/) `issues-enrich.sh` and `issue-dev.sh`, the shell entry points for the GitHub issue workflow
 - [src/github/](src/github/) GitHub integration code (issue fetching, enrichment prompts, PR creation, comments/labels) used by the GitHub issue workflow
