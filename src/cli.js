@@ -33,9 +33,10 @@ const COMMANDS = {
   'context check': 'contextCheck.js',
   'context print': 'contextPrint.js',
   'context pack': 'contextPack.js',
-  // Review / fix
+  // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
+  rules: 'cliRules.js',
   // Backlog
   'backlog:run': 'index.js',
   'backlog:review': 'reviewBacklog.js',
@@ -79,6 +80,7 @@ Context:
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
   ade fix [--dry-run]             apply safe, mechanical fixes
+  ade rules [list|available] [--json]  list active rule packs / rules
 
 Backlog & prompts:
   ade backlog:run | backlog:review | backlog:export

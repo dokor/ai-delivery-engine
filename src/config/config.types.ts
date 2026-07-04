@@ -66,6 +66,8 @@ export interface AdeConfig {
   tools?: string[];
   /** Deterministic project rules. */
   rules?: AdeRule[];
+  /** Technical rule packs to activate (e.g. `development`, `frontend/next`, `backend/java`). */
+  packs?: string[];
   /** Named workflow profiles. */
   profiles?: Record<string, AdeProfile>;
   /** Context source and output configuration. */
@@ -86,6 +88,7 @@ export interface ResolvedAdeConfig {
   sensitive: string[];
   tools: string[];
   rules: AdeRule[];
+  packs: string[];
   profiles: Record<string, AdeProfile>;
   context: AdeContextConfig;
   thresholds: Record<string, number>;

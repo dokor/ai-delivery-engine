@@ -2,6 +2,8 @@
   "ignore": [".env*", "dist/**", "node_modules/**", ".idea/**", "outputs/**"],
   "sensitive": [".env*", "**/*.pem", "**/*.key", "**/secrets.*"],
   "tools": ["typecheck", "test"],
+  "packs": ["development"],
+  "thresholds": { "serviceMaxLines": 250 },
   "profiles": {
     "ci": { "mode": "deterministic" },
     "local": { "mode": "deterministic" },

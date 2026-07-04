@@ -25,6 +25,7 @@ const ALLOWED_TOP_LEVEL_KEYS = new Set([
   'sensitive',
   'tools',
   'rules',
+  'packs',
   'profiles',
   'context',
   'thresholds',
@@ -161,7 +162,7 @@ export function validateLayer(
     sanitized.extends = value.extends;
   }
 
-  for (const key of ['ignore', 'sensitive', 'tools'] as const) {
+  for (const key of ['ignore', 'sensitive', 'tools', 'packs'] as const) {
     if (value[key] === undefined) {
       continue;
     }

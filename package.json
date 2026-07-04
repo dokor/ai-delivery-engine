@@ -39,6 +39,7 @@
     "init": "node --experimental-strip-types src/cliInit.ts",
     "doctor": "node --experimental-strip-types src/cliDoctor.ts",
     "review": "node --experimental-strip-types src/cliReview.ts",
+    "rules": "node --experimental-strip-types src/cliRules.ts",
     "fix": "node --experimental-strip-types src/cliFix.ts",
     "upgrade": "node --experimental-strip-types src/cliUpgrade.ts",
     "context:generate": "node --experimental-strip-types src/contextGenerate.ts",
