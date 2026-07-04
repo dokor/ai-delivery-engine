@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.3.0...ai-delivery-engine-v0.4.0) (2026-07-04)
+
+
+### Features
+
+* **cli:** structure the ade CLI (init, doctor, config, context, review, fix, rules, upgrade) ([#79](https://github.com/dokor/ai-delivery-engine/issues/79)) ([dd8f2dd](https://github.com/dokor/ai-delivery-engine/commit/dd8f2dd423d8756882a9fb18377dca4042b8dbee))
+* **engine:** CLI-independent review engine with normalized findings ([#79](https://github.com/dokor/ai-delivery-engine/issues/79)) ([945d4ed](https://github.com/dokor/ai-delivery-engine/commit/945d4ede64872630bc680593bcd054b92d910ee7))
+* **config:** modular, inherited, validated configuration with provenance ([#83](https://github.com/dokor/ai-delivery-engine/issues/83)) ([0a3f7b7](https://github.com/dokor/ai-delivery-engine/commit/0a3f7b7a10943522ce4e60c0217a1eee239d24de))
+* **context:** compact, deterministic, versionable project context ([#84](https://github.com/dokor/ai-delivery-engine/issues/84)) ([11e033e](https://github.com/dokor/ai-delivery-engine/commit/11e033e4102336215e369ca20ff5c7c389d2bb19))
+* **context:** targeted, budgeted context pack with a transparent manifest ([#106](https://github.com/dokor/ai-delivery-engine/issues/106)) ([85c296b](https://github.com/dokor/ai-delivery-engine/commit/85c296be86529c47de04f6c4f81515ac6f3ab7be))
+* **context:** chill/normal/expert context modes ([#107](https://github.com/dokor/ai-delivery-engine/issues/107)) ([5e80ab7](https://github.com/dokor/ai-delivery-engine/commit/5e80ab7488f4ce49970454d308257236b6a756c0))
+* **context:** cache context packs by fingerprint with automatic invalidation ([#108](https://github.com/dokor/ai-delivery-engine/issues/108)) ([d617aac](https://github.com/dokor/ai-delivery-engine/commit/d617aac0633b4c0ed9a50feab703bdea2055348d))
+* **context:** ranked neighbour fragment extraction for diff-scoped review packs ([#102](https://github.com/dokor/ai-delivery-engine/issues/102)) ([4e476c1](https://github.com/dokor/ai-delivery-engine/commit/4e476c17f6b5355fd1902fd5480178079e4f1f64))
+* **rules:** technical profiles and initial rule packs (Next/React/Angular/WordPress/Java + cross-cutting) ([#100](https://github.com/dokor/ai-delivery-engine/issues/100)) ([b0a12c6](https://github.com/dokor/ai-delivery-engine/commit/b0a12c6850e4630115898863db4079cd968b87bc))
+* **roles:** promote the SEO specialist to a V1 core role ([e8310f9](https://github.com/dokor/ai-delivery-engine/commit/e8310f970407972a27646d5234307f4e9bab36f0))
+
 ## [0.3.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.2.0...ai-delivery-engine-v0.3.0) (2026-07-02)
 
 
