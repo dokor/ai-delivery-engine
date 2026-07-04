@@ -140,6 +140,25 @@ describe('resolveConfig', () => {
     assert.ok(resolution.issues.some((i) => i.code === 'SECRET_IN_CONFIG'));
   });
 
+  it('unions activated rule packs across layers', async () => {
+    project = await createTempProject();
+    await project.writeJson('presets/base.json', { packs: ['development'] });
+    await project.writeJson('ade.config.json', { extends: ['./presets/base.json'], packs: ['backend/java'] });
+
+    const resolution = await resolveConfig({ cwd: project.dir });
+
+    assert.deepEqual(resolution.config.packs, ['development', 'backend/java']);
+    assert.equal(hasConfigErrors(resolution), false);
+  });
+
+  it('rejects a non-array packs field', async () => {
+    project = await createTempProject();
+    await project.write('ade.config.json', JSON.stringify({ packs: 'development' }));
+
+    const resolution = await resolveConfig({ cwd: project.dir });
+    assert.ok(resolution.issues.some((i) => i.code === 'INVALID_TYPE' && i.path === 'packs'));
+  });
+
   it('is deterministic: identical result for repeated resolution (CLI/CI/MCP parity)', async () => {
     project = await createTempProject();
     await project.writeJson('presets/base.json', { tools: ['x'], ignore: ['dist/**'] });

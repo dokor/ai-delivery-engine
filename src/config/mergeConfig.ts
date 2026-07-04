@@ -12,6 +12,7 @@ export function emptyResolvedConfig(): ResolvedAdeConfig {
     sensitive: [],
     tools: [],
     rules: [],
+    packs: [],
     profiles: {},
     context: {},
     thresholds: {},
@@ -89,6 +90,11 @@ export function mergeConfigLayer(
   if (layer.tools !== undefined) {
     accumulator.tools = unionStrings(accumulator.tools, layer.tools);
     recordProvenance(provenance, 'tools', sourceLabel);
+  }
+
+  if (layer.packs !== undefined) {
+    accumulator.packs = unionStrings(accumulator.packs, layer.packs);
+    recordProvenance(provenance, 'packs', sourceLabel);
   }
 
   if (layer.rules !== undefined) {
