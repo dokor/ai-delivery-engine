@@ -34,24 +34,28 @@ Recommended early persistence:
 - JSON or YAML for sample backlog data
 - Git history for change tracking
 
-## Future Runtime Components
+## Delivered Runtime Structure
 
-When implementation starts, the recommended structure is:
+The V1 runtime is a single local-first package (no web app, no database). The
+code lives under `src/`, organized by concern:
 
 ```txt
-apps/
-  api/
-  web/
-packages/
-  agents/
-  backlog/
-  prompts/
-  shared/
-workflows/
-  manual/
-  n8n/
-docs/
+src/
+  cli.js            # `ade` command dispatcher (grouped + legacy commands)
+  cli/              # shared CLI helpers (paths, logging, safe path, JSON)
+  config/           # ade.config resolution, merge, validation
+  context/          # deterministic project context + freshness
+  contextpack/      # budgeted context packs, modes, cache, fragments
+  engine/           # CLI-independent review engine + normalized findings
+  rules/            # technical rule packs (frontend/backend/development)
+  agents/ prompts/ backlog/ export/ specialist/ review/ status/ github/
+docs/               # documentation and decision records
+examples/           # demo and reference fixtures
+templates/          # reusable manual role templates
 ```
+
+Future components (web/API apps, additional integrations) remain planned for
+later milestones and are intentionally not part of V1.
 
 ## Boundaries
 
