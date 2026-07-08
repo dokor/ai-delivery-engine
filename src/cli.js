@@ -33,6 +33,7 @@ const COMMANDS = {
   'context check': 'contextCheck.js',
   'context print': 'contextPrint.js',
   'context pack': 'contextPack.js',
+  'harness demo': 'harnessDemo.js',
   // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
@@ -56,6 +57,7 @@ const COMMANDS = {
   'context:check': 'contextCheck.js',
   'context:print': 'contextPrint.js',
   'context:pack': 'contextPack.js',
+  'harness:demo': 'harnessDemo.js',
 };
 
 const HELP = `AI Delivery Engine (ade)
@@ -76,6 +78,7 @@ Context:
   ade context check [out]         absent | up-to-date | stale (no writes)
   ade context print [out]         print the stored context
   ade context pack [mode] [diff]  build a budgeted context pack (chill|normal|expert)
+  ade harness demo                run a deterministic Delivery Harness demo
 
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]

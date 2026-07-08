@@ -38,6 +38,7 @@ Guiding constraints for every workflow below:
 | Context freshness | `ade context:check [outDir]` | stored `context.json` + current sources | freshness verdict (no writes) | `0` up-to-date · `1` stale · `2` absent |
 | Context print | `ade context:print [outDir]` | stored `context.json` | Markdown to stdout | `0` printed · `1` no context |
 | Context pack | `ade context:pack [mode] [diffFile]` | resolved config + project context + optional diff | `outputs/context/context-pack.{md,manifest.json}` | `0` ok · `1` config error |
+| Delivery Harness demo | `ade harness demo` / `ade harness:demo` | versioned task request + filtered context pack + mock provider | `outputs/harness/agent-execution-{request,result}.json` | `0` ok · `1` failure |
 | Backlog draft | `ade backlog:run [brief] [outDir]` | brief Markdown | `*.backlog.{json,md}` | `0` ok · `1` failure |
 | PO/PM prompt | `ade prompt:po [brief] [outDir]` | brief Markdown | `*.po-pm.prompt.md` | `0` ok · `1` failure |
 | Import PO/PM | `ade import:po [response] [outDir]` | PO/PM JSON response | `*.normalized.backlog.{json,md}` | `0` ok · `1` invalid/contract failure |
@@ -83,6 +84,9 @@ Automated `node:test` suites under `tests/` guarding the critical path:
   manifest contract, cache miss/hit, per-mode budgets.
 - `tests/contextpack/fragments.test.ts` — import parsing, local-import
   resolution, neighbour ranking, seed/sensitive exclusion, max cap.
+- `tests/harness/runner.test.ts` — Delivery Harness request/result contract,
+  interchangeable mock providers, sensitive context traceability, timeout,
+  validation command failure and permission refusal.
 - `tests/cli/reviewFragments.test.ts` — `review --provider` on a staged git
   diff includes the imported neighbour fragments in the pack manifest.
 - `tests/engine/review.test.ts` — deterministic review engine: config/context/

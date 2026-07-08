@@ -47,6 +47,7 @@ src/
   context/          # deterministic project context + freshness
   contextpack/      # budgeted context packs, modes, cache, fragments
   engine/           # CLI-independent review engine + normalized findings
+  harness/          # versioned agent execution requests/results + runner
   rules/            # technical rule packs (frontend/backend/development)
   agents/ prompts/ backlog/ export/ specialist/ review/ status/ github/
 docs/               # documentation and decision records
@@ -73,6 +74,7 @@ later milestones and are intentionally not part of V1.
 - syncing backlog items to GitHub
 - generating implementation prompts
 - creating QA checklists
+- running agent tasks through a Delivery Harness with isolated workspaces
 
 ## Recommended First Implementation Approach
 
