@@ -46,6 +46,7 @@ src/
   config/           # ade.config resolution, merge, validation
   context/          # deterministic project context + freshness
   contextpack/      # budgeted context packs, modes, cache, fragments
+  blueprint/        # delivery blueprint selection + graph compilation
   engine/           # CLI-independent review engine + normalized findings
   harness/          # versioned agent execution requests/results + runner
   rules/            # technical rule packs (frontend/backend/development)

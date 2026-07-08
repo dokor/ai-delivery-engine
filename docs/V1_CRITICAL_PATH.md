@@ -39,6 +39,7 @@ Guiding constraints for every workflow below:
 | Context print | `ade context:print [outDir]` | stored `context.json` | Markdown to stdout | `0` printed · `1` no context |
 | Context pack | `ade context:pack [mode] [diffFile]` | resolved config + project context + optional diff | `outputs/context/context-pack.{md,manifest.json}` | `0` ok · `1` config error |
 | Delivery Harness demo | `ade harness demo` / `ade harness:demo` | versioned task request + filtered context pack + mock provider | `outputs/harness/agent-execution-{request,result}.json` | `0` ok · `1` failure |
+| Blueprint compile | `ade blueprint compile [brief]` / `ade blueprint:compile` | brief Markdown | `outputs/blueprints/*.delivery-plan.{json,md}` | `0` valid graph · `1` failure/invalid graph |
 | Backlog draft | `ade backlog:run [brief] [outDir]` | brief Markdown | `*.backlog.{json,md}` | `0` ok · `1` failure |
 | PO/PM prompt | `ade prompt:po [brief] [outDir]` | brief Markdown | `*.po-pm.prompt.md` | `0` ok · `1` failure |
 | Import PO/PM | `ade import:po [response] [outDir]` | PO/PM JSON response | `*.normalized.backlog.{json,md}` | `0` ok · `1` invalid/contract failure |
@@ -87,6 +88,9 @@ Automated `node:test` suites under `tests/` guarding the critical path:
 - `tests/harness/runner.test.ts` — Delivery Harness request/result contract,
   interchangeable mock providers, sensitive context traceability, timeout,
   validation command failure and permission refusal.
+- `tests/blueprint/compiler.test.ts` — deterministic blueprint selection,
+  graph validation, dependency readiness, traceable issue suggestions and
+  preservation of human decisions during recompilation.
 - `tests/cli/reviewFragments.test.ts` — `review --provider` on a staged git
   diff includes the imported neighbour fragments in the pack manifest.
 - `tests/engine/review.test.ts` — deterministic review engine: config/context/
