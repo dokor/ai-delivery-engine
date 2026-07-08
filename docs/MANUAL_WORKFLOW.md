@@ -26,7 +26,8 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 10. Save specialist responses locally as Markdown.
 11. Run the specialist response checker.
 12. Close a demo delivery run into a delivery dossier when repository, production and validation evidence are available.
-13. Decide what is ready for implementation.
+13. Observe a demo run timeline with costs, controls, decisions, error and retry evidence.
+14. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -52,6 +53,8 @@ Typical generated files under `outputs/`:
 - `delivery/sample-delivery-run.delivery-closure.json`
 - `delivery/sample-delivery-run.delivery-closure.md`
 - `delivery/sample-delivery-run.delivery-closure.notification.md`
+- `run-observability/sample-observable-run.run-observability.json`
+- `run-observability/sample-observable-run.run-observability.md`
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
@@ -62,6 +65,14 @@ pnpm delivery:close
 ```
 
 It produces a JSON result, an operations dossier and a final notification. `completed` requires repository, version, production and validation evidence, unless an explicit approved exception is present. Sensitive artifacts, evidence and variable values are excluded or masked in generated Markdown.
+
+The run observability command reads a structured run trace and writes a support/audit report under `outputs/run-observability/` by default:
+
+```bash
+pnpm run:observe
+```
+
+It exposes the run status, current node, next node, blocking reason, budget consumption by role/provider, pause recommendation and control actions (`pause`, `resume`, `retry`, `cancel`, `request_review`, `takeover`). Logs, errors, links and artifacts are sanitized before they appear in JSON or Markdown.
 
 ## Specialist Loop Summary
 

@@ -17,6 +17,8 @@ import { checkSpecialistResponse } from './specialist/specialistCheck.ts';
 import { writeSpecialistCheckReport } from './specialist/specialistCheckWriter.ts';
 import { closeDeliveryRun, parseDeliveryClosureInput } from './delivery/closure.ts';
 import { writeDeliveryClosureResult } from './delivery/writer.ts';
+import { observeRun, parseObservableRunInput } from './observability/runReport.ts';
+import { writeObservableRunReport } from './observability/writer.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -31,6 +33,8 @@ const DEMO_SPECIALIST_RESPONSE_PATH = 'examples/specialist-responses/frontend-st
 const DEMO_SPECIALIST_CHECK_DIRECTORY = 'outputs/demo-project/specialist-check';
 const DEMO_DELIVERY_RUN_PATH = 'src/examples/sample-delivery-run.json';
 const DEMO_DELIVERY_OUTPUT_DIRECTORY = 'outputs/demo-project/delivery';
+const DEMO_OBSERVABLE_RUN_PATH = 'src/examples/sample-observable-run.json';
+const DEMO_OBSERVABILITY_OUTPUT_DIRECTORY = 'outputs/demo-project/run-observability';
 
 type ValidationStep = {
   label: string;
@@ -177,6 +181,21 @@ const STEPS: ValidationStep[] = [
         'sample-delivery-run.delivery-closure'
       );
     }
+  },
+  {
+    label: 'Observe demo run',
+    run: async () => {
+      const sourcePath = resolve(process.cwd(), DEMO_OBSERVABLE_RUN_PATH);
+      const rawInput = await readJsonFileSafe(sourcePath, 'Invalid observable run JSON');
+      const input = parseObservableRunInput(rawInput);
+      const report = observeRun(input);
+
+      await writeObservableRunReport(
+        report,
+        resolve(process.cwd(), DEMO_OBSERVABILITY_OUTPUT_DIRECTORY),
+        'sample-observable-run.run-observability'
+      );
+    }
   }
 ];
 
@@ -194,7 +213,9 @@ const EXPECTED_FILES: ExpectedFile[] = [
   { label: 'Specialist check Markdown', path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.md` },
   { label: 'Delivery closure JSON', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.json` },
   { label: 'Delivery dossier Markdown', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.md` },
-  { label: 'Delivery notification Markdown', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.notification.md` }
+  { label: 'Delivery notification Markdown', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.notification.md` },
+  { label: 'Run observability JSON', path: `${DEMO_OBSERVABILITY_OUTPUT_DIRECTORY}/sample-observable-run.run-observability.json` },
+  { label: 'Run observability Markdown', path: `${DEMO_OBSERVABILITY_OUTPUT_DIRECTORY}/sample-observable-run.run-observability.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {

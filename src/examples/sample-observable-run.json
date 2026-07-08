@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-42",
+  "projectName": "SaaS reservation",
+  "budget": {
+    "tokenBudget": 100000,
+    "costBudget": 20,
+    "currency": "EUR",
+    "alertThresholdPercent": 40,
+    "pauseOnThreshold": true
+  },
+  "nodes": [
+    {
+      "id": "brief-blueprint",
+      "title": "Brief and blueprint validated",
+      "role": "po-pm",
+      "provider": "deterministic",
+      "status": "completed",
+      "durationMs": 1200,
+      "summary": "Brief normalized and delivery blueprint selected.",
+      "links": [
+        {
+          "label": "Blueprint artifact",
+          "path": "outputs/demo-project/brief.delivery-plan.md",
+          "kind": "artifact"
+        }
+      ],
+      "cost": {
+        "tokensIn": 1200,
+        "tokensOut": 800,
+        "estimatedCost": 0
+      }
+    },
+    {
+      "id": "reservation-agent",
+      "title": "Implement reservation flow",
+      "role": "backend",
+      "provider": "codex",
+      "status": "completed",
+      "dependsOn": ["brief-blueprint"],
+      "durationMs": 680000,
+      "summary": "Reservation API implementation recovered after a validation error.",
+      "logs": [
+        "Validation failed once with API_KEY=<masked-by-report> in the raw log.",
+        "Retry completed after human review."
+      ],
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "error",
+          "durationMs": 320000,
+          "summary": "Initial implementation failed validation.",
+          "error": "Smoke test failed with PAYMENT_TOKEN=tok_should_not_render",
+          "logs": ["provider token sk-demo-should-not-render appeared in raw debug output"],
+          "cost": {
+            "tokensIn": 18000,
+            "tokensOut": 7000,
+            "estimatedCost": 5.1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "completed",
+          "durationMs": 360000,
+          "summary": "Retry passed after correcting validation assumptions.",
+          "cost": {
+            "tokensIn": 12000,
+            "tokensOut": 5000,
+            "estimatedCost": 3.4
+          }
+        }
+      ],
+      "links": [
+        {
+          "label": "Pull request",
+          "url": "https://github.com/example/saas-reservation/pull/42",
+          "kind": "pull-request"
+        }
+      ],
+      "artifacts": [
+        {
+          "label": "Runtime secrets dump",
+          "path": "ops/secrets.md",
+          "kind": "artifact",
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "id": "payment-provider-decision",
+      "title": "Choose payment provider",
+      "role": "product-owner",
+      "provider": "human",
+      "status": "waiting_decision",
+      "dependsOn": ["reservation-agent"],
+      "summary": "A human decision is required before notifications and staging."
+    },
+    {
+      "id": "notifications",
+      "title": "Prepare notification flow",
+      "role": "frontend",
+      "provider": "codex",
+      "status": "ready",
+      "dependsOn": ["payment-provider-decision"],
+      "cost": {
+        "tokensIn": 9000,
+        "tokensOut": 2500,
+        "estimatedCost": 2.7
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "payment-provider",
+      "nodeId": "payment-provider-decision",
+      "question": "Which payment provider should gate the first staging run?",
+      "status": "pending"
+    },
+    {
+      "id": "retry-reservation",
+      "nodeId": "reservation-agent",
+      "question": "Retry the reservation agent after validation failure?",
+      "status": "resolved",
+      "selectedOption": "retry-with-existing-context",
+      "resolvedAt": "2026-07-08T12:00:00.000Z"
+    }
+  ],
+  "controls": [
+    {
+      "id": "ctrl-pause-budget",
+      "type": "pause",
+      "requestedBy": "system",
+      "at": "2026-07-08T11:50:00.000Z",
+      "reason": "Budget threshold reached.",
+      "result": "accepted"
+    },
+    {
+      "id": "ctrl-retry-reservation",
+      "type": "retry",
+      "nodeId": "reservation-agent",
+      "requestedBy": "human",
+      "at": "2026-07-08T12:01:00.000Z",
+      "reason": "Human approved retry after validation failure.",
+      "result": "accepted"
+    },
+    {
+      "id": "ctrl-resume-after-retry",
+      "type": "resume",
+      "nodeId": "reservation-agent",
+      "requestedBy": "human",
+      "at": "2026-07-08T12:10:00.000Z",
+      "reason": "Retry succeeded and execution can continue.",
+      "result": "accepted"
+    },
+    {
+      "id": "ctrl-takeover-payment",
+      "type": "takeover",
+      "nodeId": "payment-provider-decision",
+      "requestedBy": "human",
+      "at": "2026-07-08T12:15:00.000Z",
+      "reason": "Human owner takes over the pending payment provider choice.",
+      "result": "pending"
+    }
+  ]
+}
