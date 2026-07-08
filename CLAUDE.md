@@ -313,4 +313,4 @@ Claude Code ne merge jamais une PR sans validation humaine explicite.
 
 - **L'issue doit avoir le label `backlog-refined` avant tout développement** (ajouté automatiquement après enrichissement).
 - **Ne jamais merger sans validation humaine.** Même si tous les tests passent.
-- **Toujours lancer `pnpm typecheck &&
+- **Toujours lancer `pnpm typecheck`
