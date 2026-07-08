@@ -48,6 +48,7 @@ src/
   contextpack/      # budgeted context packs, modes, cache, fragments
   blueprint/        # delivery blueprint selection + graph compilation
   delivery/         # run closure, delivery dossier and final notification
+  observability/    # observable run timeline, budget, controls and audit report
   engine/           # CLI-independent review engine + normalized findings
   harness/          # versioned agent execution requests/results + runner
   rules/            # technical rule packs (frontend/backend/development)
