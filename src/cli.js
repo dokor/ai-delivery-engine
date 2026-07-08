@@ -35,6 +35,7 @@ const COMMANDS = {
   'context pack': 'contextPack.js',
   'harness demo': 'harnessDemo.js',
   'blueprint compile': 'blueprintCompile.js',
+  'delivery close': 'deliveryClose.js',
   // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
@@ -60,6 +61,7 @@ const COMMANDS = {
   'context:pack': 'contextPack.js',
   'harness:demo': 'harnessDemo.js',
   'blueprint:compile': 'blueprintCompile.js',
+  'delivery:close': 'deliveryClose.js',
 };
 
 const HELP = `AI Delivery Engine (ade)
@@ -82,6 +84,7 @@ Context:
   ade context pack [mode] [diff]  build a budgeted context pack (chill|normal|expert)
   ade harness demo                run a deterministic Delivery Harness demo
   ade blueprint compile [brief]   compile a brief into a delivery blueprint/graph
+  ade delivery close [run] [out]  close a run into delivery dossier artifacts
 
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
@@ -91,7 +94,7 @@ Review:
 Backlog & prompts:
   ade backlog:run | backlog:review | backlog:export
   ade prompt:po | prompt:specialist | prompt:specialists | import:po
-  ade specialist:check | project:status | demo:validate
+  ade specialist:check | project:status | delivery:close | demo:validate
 
 Exit codes are documented in docs/CLI.md.`;
 

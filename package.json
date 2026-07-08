@@ -48,6 +48,7 @@
     "context:pack": "node --experimental-strip-types src/contextPack.ts",
     "harness:demo": "node --experimental-strip-types src/harnessDemo.ts",
     "blueprint:compile": "node --experimental-strip-types src/blueprintCompile.ts",
+    "delivery:close": "node --experimental-strip-types src/deliveryClose.ts",
     "demo:validate": "node --experimental-strip-types src/demoValidate.ts",
     "import:po": "node --experimental-strip-types src/importPo.ts",
     "project:status": "node --experimental-strip-types src/projectStatus.ts",

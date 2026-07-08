@@ -25,7 +25,8 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 9. Use the export manifest and generate specialist prompts when needed.
 10. Save specialist responses locally as Markdown.
 11. Run the specialist response checker.
-12. Decide what is ready for implementation.
+12. Close a demo delivery run into a delivery dossier when repository, production and validation evidence are available.
+13. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -48,8 +49,19 @@ Typical generated files under `outputs/`:
 - `specialist-prompts/*.prompt.md`
 - `frontend-story-002.specialist-check.md`
 - `frontend-story-002.specialist-check.json`
+- `delivery/sample-delivery-run.delivery-closure.json`
+- `delivery/sample-delivery-run.delivery-closure.md`
+- `delivery/sample-delivery-run.delivery-closure.notification.md`
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
+
+The delivery closure command reads a structured run summary and writes final delivery evidence under `outputs/delivery/` by default:
+
+```bash
+pnpm delivery:close
+```
+
+It produces a JSON result, an operations dossier and a final notification. `completed` requires repository, version, production and validation evidence, unless an explicit approved exception is present. Sensitive artifacts, evidence and variable values are excluded or masked in generated Markdown.
 
 ## Specialist Loop Summary
 

@@ -15,6 +15,8 @@ import { reviewBacklog } from './review/backlogReview.ts';
 import { writeBacklogReviewReport } from './review/reviewWriter.ts';
 import { checkSpecialistResponse } from './specialist/specialistCheck.ts';
 import { writeSpecialistCheckReport } from './specialist/specialistCheckWriter.ts';
+import { closeDeliveryRun, parseDeliveryClosureInput } from './delivery/closure.ts';
+import { writeDeliveryClosureResult } from './delivery/writer.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -27,6 +29,8 @@ const DEMO_OUTPUT_DIRECTORY = 'outputs/demo-project';
 const DEMO_EXPORT_DIRECTORY = 'outputs/demo-project/exported-items';
 const DEMO_SPECIALIST_RESPONSE_PATH = 'examples/specialist-responses/frontend-story-002.md';
 const DEMO_SPECIALIST_CHECK_DIRECTORY = 'outputs/demo-project/specialist-check';
+const DEMO_DELIVERY_RUN_PATH = 'src/examples/sample-delivery-run.json';
+const DEMO_DELIVERY_OUTPUT_DIRECTORY = 'outputs/demo-project/delivery';
 
 type ValidationStep = {
   label: string;
@@ -158,6 +162,21 @@ const STEPS: ValidationStep[] = [
         'frontend-story-002.specialist-check'
       );
     }
+  },
+  {
+    label: 'Close demo delivery run',
+    run: async () => {
+      const sourcePath = resolve(process.cwd(), DEMO_DELIVERY_RUN_PATH);
+      const rawInput = await readJsonFileSafe(sourcePath, 'Invalid delivery closure JSON');
+      const input = parseDeliveryClosureInput(rawInput);
+      const result = closeDeliveryRun(input);
+
+      await writeDeliveryClosureResult(
+        result,
+        resolve(process.cwd(), DEMO_DELIVERY_OUTPUT_DIRECTORY),
+        'sample-delivery-run.delivery-closure'
+      );
+    }
   }
 ];
 
@@ -172,7 +191,10 @@ const EXPECTED_FILES: ExpectedFile[] = [
   { label: 'Export manifest', path: `${DEMO_EXPORT_DIRECTORY}/manifest.json` },
   { label: 'Project status JSON', path: `${DEMO_OUTPUT_DIRECTORY}/project-status.json` },
   { label: 'Specialist check JSON', path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.json` },
-  { label: 'Specialist check Markdown', path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.md` }
+  { label: 'Specialist check Markdown', path: `${DEMO_SPECIALIST_CHECK_DIRECTORY}/frontend-story-002.specialist-check.md` },
+  { label: 'Delivery closure JSON', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.json` },
+  { label: 'Delivery dossier Markdown', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.md` },
+  { label: 'Delivery notification Markdown', path: `${DEMO_DELIVERY_OUTPUT_DIRECTORY}/sample-delivery-run.delivery-closure.notification.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {

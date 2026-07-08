@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "runId": "demo-run-001",
+  "projectName": "ADE Demo Delivery",
+  "repository": {
+    "url": "https://github.com/example/ade-demo",
+    "branch": "main",
+    "commit": "abc1234",
+    "pullRequestUrl": "https://github.com/example/ade-demo/pull/42",
+    "releaseUrl": "https://github.com/example/ade-demo/releases/tag/v1.0.0",
+    "access": "verified"
+  },
+  "staging": {
+    "url": "https://staging.example.test",
+    "status": "validated"
+  },
+  "production": {
+    "url": "https://demo.example.test",
+    "status": "validated"
+  },
+  "validations": [
+    {
+      "name": "typecheck",
+      "status": "passed",
+      "evidenceRef": "ci-typecheck"
+    },
+    {
+      "name": "tests",
+      "status": "passed",
+      "evidenceRef": "ci-tests"
+    },
+    {
+      "name": "smoke-production",
+      "status": "passed",
+      "evidenceRef": "smoke-prod"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision-release-window",
+      "status": "approved",
+      "summary": "Release window approved by the project owner."
+    }
+  ],
+  "operations": {
+    "architecture": "Node.js CLI package with generated local artifacts.",
+    "localRunbook": "Install dependencies, then run pnpm demo:validate and pnpm delivery:close.",
+    "deployment": "Publish from GitHub Actions after human approval.",
+    "monitoring": "Inspect CI checks and production smoke-test logs after release.",
+    "rollback": "Revert the release tag or redeploy the previous package version.",
+    "variables": [
+      {
+        "name": "NODE_ENV",
+        "required": true,
+        "description": "Runtime environment name."
+      },
+      {
+        "name": "GITHUB_TOKEN",
+        "required": true,
+        "sensitive": true,
+        "value": "ghp_example_should_not_render"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "title": "Architecture notes",
+      "path": "docs/ARCHITECTURE.md",
+      "kind": "architecture"
+    },
+    {
+      "title": "Rollback runbook",
+      "path": "docs/GITHUB_WORKFLOW.md",
+      "kind": "rollback"
+    },
+    {
+      "title": "Secrets checklist",
+      "path": "ops/secrets.md",
+      "kind": "runbook",
+      "sensitive": true
+    }
+  ],
+  "budgets": [
+    {
+      "label": "GitHub Actions minutes",
+      "amount": 20,
+      "unit": "minutes/month",
+      "recurring": true,
+      "note": "Expected demo usage."
+    }
+  ],
+  "risks": [
+    "Production smoke tests remain shallow until deeper observability exists."
+  ],
+  "manualActions": [
+    "Human reviewer must approve the final PR before merge."
+  ],
+  "evidence": [
+    {
+      "id": "ci-typecheck",
+      "kind": "validation",
+      "label": "TypeScript check",
+      "url": "https://github.com/example/ade-demo/actions/runs/1"
+    },
+    {
+      "id": "smoke-prod",
+      "kind": "production",
+      "label": "Production smoke test",
+      "url": "https://demo.example.test/health"
+    },
+    {
+      "id": "runtime-secret",
+      "kind": "artifact",
+      "label": "Deployment token evidence",
+      "ref": "GITHUB_TOKEN=ghp_example_should_not_render",
+      "sensitive": true
+    }
+  ]
+}

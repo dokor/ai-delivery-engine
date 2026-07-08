@@ -54,6 +54,7 @@ Legacy colon forms (`ade config:print`) remain supported.
 | `ade context check [out]` | Report absent / up-to-date / stale (no writes). |
 | `ade context print [out]` | Print the stored context as Markdown. |
 | `ade context pack [mode] [diff]` | Build a budgeted context pack (`chill`/`normal`/`expert`). |
+| `ade delivery close [run] [out]` | Close a structured run summary into JSON, dossier Markdown and final notification artifacts. |
 
 ### Review & fix
 
