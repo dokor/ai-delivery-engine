@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-42",
+  "projectName": "SaaS reservation",
+  "target": "staging",
+  "policy": {
+    "target": "staging",
+    "requiredSignalIds": ["typecheck", "unit-tests", "security-specialist"],
+    "requiredProfiles": ["backend", "security", "qa", "finance-cost"],
+    "blockingSeverities": ["error", "critical"],
+    "allowHumanOverride": true
+  },
+  "profiles": [
+    { "role": "backend", "required": true, "measured": true },
+    { "role": "security", "required": true, "measured": true },
+    { "role": "qa", "required": true, "measured": true },
+    {
+      "role": "finance-cost",
+      "required": true,
+      "measured": false,
+      "note": "No reliable provider cost measurement exists yet; keep cost review as recommendation."
+    }
+  ],
+  "signals": [
+    {
+      "id": "typecheck",
+      "name": "TypeScript typecheck",
+      "kind": "tool",
+      "tool": "pnpm typecheck",
+      "status": "passed",
+      "severity": "info",
+      "executed": true,
+      "evidence": [{ "label": "typecheck output", "path": "outputs/quality/typecheck.log" }]
+    },
+    {
+      "id": "unit-tests",
+      "name": "Unit tests",
+      "kind": "tool",
+      "tool": "pnpm test",
+      "status": "passed",
+      "severity": "info",
+      "executed": true
+    },
+    {
+      "id": "security-specialist",
+      "name": "Security specialist response check",
+      "kind": "specialist-check",
+      "profile": "security",
+      "status": "failed",
+      "severity": "error",
+      "executed": true,
+      "summary": "Security response referenced SECRET_TOKEN=should_not_render and needs correction.",
+      "evidence": [
+        {
+          "label": "raw security finding",
+          "log": "SECRET_TOKEN=should_not_render",
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "id": "qa-specialist",
+      "name": "QA specialist response check",
+      "kind": "specialist-check",
+      "profile": "qa",
+      "status": "warning",
+      "severity": "warning",
+      "executed": true,
+      "summary": "QA asks for broader smoke coverage before production."
+    },
+    {
+      "id": "ai-review-summary",
+      "name": "Optional AI review",
+      "kind": "ai-review",
+      "provider": "manual-assistant",
+      "status": "warning",
+      "severity": "warning",
+      "executed": true,
+      "summary": "AI review suggests adding e2e coverage, non-blocking for staging."
+    }
+  ],
+  "overrides": [
+    {
+      "approved": true,
+      "by": "project-owner",
+      "at": "2026-07-08T12:30:00.000Z",
+      "reason": "Security finding is accepted for staging only; production remains blocked until corrected.",
+      "appliesTo": ["security-specialist:failed"]
+    }
+  ],
+  "revalidationCycles": [
+    {
+      "id": "cycle-security-redaction",
+      "status": "open",
+      "rejectedAt": "2026-07-08T12:10:00.000Z",
+      "reason": "Security specialist response leaked a secret-like token in raw notes.",
+      "fixes": ["Regenerate the security response without raw token values."],
+      "revalidatedSignalIds": ["security-specialist"]
+    }
+  ]
+}

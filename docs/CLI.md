@@ -56,6 +56,7 @@ Legacy colon forms (`ade config:print`) remain supported.
 | `ade context pack [mode] [diff]` | Build a budgeted context pack (`chill`/`normal`/`expert`). |
 | `ade delivery close [run] [out]` | Close a structured run summary into JSON, dossier Markdown and final notification artifacts. |
 | `ade run observe [run] [out]` | Render a structured run trace into timeline, budget, controls and audit artifacts. |
+| `ade quality gate [input] [out]` | Evaluate staging/production quality evidence into a versioned gate report. |
 
 ### Review & fix
 
