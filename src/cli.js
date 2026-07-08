@@ -34,6 +34,7 @@ const COMMANDS = {
   'context print': 'contextPrint.js',
   'context pack': 'contextPack.js',
   'harness demo': 'harnessDemo.js',
+  'blueprint compile': 'blueprintCompile.js',
   // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
@@ -58,6 +59,7 @@ const COMMANDS = {
   'context:print': 'contextPrint.js',
   'context:pack': 'contextPack.js',
   'harness:demo': 'harnessDemo.js',
+  'blueprint:compile': 'blueprintCompile.js',
 };
 
 const HELP = `AI Delivery Engine (ade)
@@ -79,6 +81,7 @@ Context:
   ade context print [out]         print the stored context
   ade context pack [mode] [diff]  build a budgeted context pack (chill|normal|expert)
   ade harness demo                run a deterministic Delivery Harness demo
+  ade blueprint compile [brief]   compile a brief into a delivery blueprint/graph
 
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
