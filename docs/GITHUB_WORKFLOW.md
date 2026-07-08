@@ -29,7 +29,22 @@ export GITHUB_REPO=dokor/ai-delivery-engine
 export GITHUB_REPO=dokor/argos
 ```
 
-### 3. Claude Code installé
+### 3. Reviewer GitHub par défaut (optionnel)
+
+Le workflow de notification utilise `GITHUB_REVIEW_USER` pour commenter et
+assigner la PR à la bonne personne. Pour utiliser l'utilisateur GitHub courant :
+
+```bash
+export GITHUB_REVIEW_USER="$(gh api user --jq .login)"
+```
+
+Tu peux aussi définir explicitement un reviewer du repo :
+
+```bash
+export GITHUB_REVIEW_USER=<username-github>
+```
+
+### 4. Claude Code installé
 
 Claude Code (CLI Anthropic) est l'orchestrateur LLM. Il lit `CLAUDE.md` et applique
 les templates ADE. Installation : https://docs.claude.ai/claude-code
@@ -115,7 +130,7 @@ pnpm issue:dev 42
 8. Applique les corrections suggérées par les reviews
 9. `pnpm typecheck && pnpm test` — validation finale
 10. `gh pr create` — crée la PR avec reviews incluses dans le body
-11. `gh issue comment` — commente l'issue avec le lien PR + @alelouet
+11. `gh issue comment` — commente l'issue avec le lien PR + `@${GITHUB_REVIEW_USER}`
 12. Labels : retire `in-progress`, ajoute `pr-ready`
 
 ### Structure de la PR générée
@@ -149,7 +164,7 @@ Closes #42
 
 ## Boucle 3 — Review et merge final (manuel)
 
-**Objectif :** @alelouet valide la PR et merge.
+**Objectif :** l'utilisateur configuré via `GITHUB_REVIEW_USER` valide la PR et merge.
 
 ### Notification reçue
 
