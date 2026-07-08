@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { join, relative, resolve } from 'node:path';
+import { relative, resolve } from 'node:path';
 
 import { logFailure, logLines } from './cli/logger.ts';
 import { resolveOutputDirectory } from './cli/paths.ts';
