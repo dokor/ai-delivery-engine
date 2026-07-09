@@ -23,6 +23,8 @@ import { evaluateQualityGate, parseQualityGateInput } from './quality/gate.ts';
 import { writeQualityGateReport } from './quality/writer.ts';
 import { parseDelegationPlanInput, planDelegation } from './delegation/plan.ts';
 import { writeDelegationPlanReport } from './delegation/writer.ts';
+import { executeGraph, parseGraphExecutionInput } from './orchestration/graphExecution.ts';
+import { writeGraphExecutionReport } from './orchestration/writer.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -43,6 +45,8 @@ const DEMO_QUALITY_GATE_PATH = 'src/examples/sample-quality-gate.json';
 const DEMO_QUALITY_GATE_OUTPUT_DIRECTORY = 'outputs/demo-project/quality-gate';
 const DEMO_DELEGATION_PLAN_PATH = 'src/examples/sample-delegation-plan.json';
 const DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY = 'outputs/demo-project/delegation-plan';
+const DEMO_GRAPH_EXECUTION_PATH = 'src/examples/sample-graph-execution.json';
+const DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY = 'outputs/demo-project/graph-execution';
 
 type ValidationStep = {
   label: string;
@@ -234,6 +238,21 @@ const STEPS: ValidationStep[] = [
         'sample-delegation-plan.delegation-plan'
       );
     }
+  },
+  {
+    label: 'Execute demo delivery graph',
+    run: async () => {
+      const sourcePath = resolve(process.cwd(), DEMO_GRAPH_EXECUTION_PATH);
+      const rawInput = await readJsonFileSafe(sourcePath, 'Invalid graph execution JSON');
+      const input = parseGraphExecutionInput(rawInput);
+      const report = executeGraph(input);
+
+      await writeGraphExecutionReport(
+        report,
+        resolve(process.cwd(), DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY),
+        'sample-graph-execution.graph-execution'
+      );
+    }
   }
 ];
 
@@ -257,7 +276,9 @@ const EXPECTED_FILES: ExpectedFile[] = [
   { label: 'Quality gate JSON', path: `${DEMO_QUALITY_GATE_OUTPUT_DIRECTORY}/sample-quality-gate.quality-gate.json` },
   { label: 'Quality gate Markdown', path: `${DEMO_QUALITY_GATE_OUTPUT_DIRECTORY}/sample-quality-gate.quality-gate.md` },
   { label: 'Delegation plan JSON', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.json` },
-  { label: 'Delegation plan Markdown', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.md` }
+  { label: 'Delegation plan Markdown', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.md` },
+  { label: 'Graph execution JSON', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.json` },
+  { label: 'Graph execution Markdown', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {

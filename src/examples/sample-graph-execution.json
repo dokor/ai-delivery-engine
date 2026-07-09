@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-42",
+  "projectName": "SaaS reservation",
+  "blueprintVersion": "blueprint-v2-demo",
+  "completedNodeIds": ["brief-intake"],
+  "budget": {
+    "tokenBudget": 50000,
+    "costBudget": 10,
+    "currency": "USD"
+  },
+  "providers": [
+    {
+      "id": "mock-po",
+      "name": "Mock PO/PM provider",
+      "roles": ["po-pm", "tech-lead"],
+      "mock": true
+    },
+    {
+      "id": "mock-delivery",
+      "name": "Mock delivery provider",
+      "roles": ["backend", "qa"],
+      "mock": true
+    }
+  ],
+  "gates": [
+    {
+      "id": "gate-brief-ready",
+      "status": "passed",
+      "summary": "Brief is complete enough for deterministic backlog generation."
+    },
+    {
+      "id": "gate-human-scope",
+      "status": "pending",
+      "summary": "Human must approve scope expansion before implementation planning."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "decision-priority",
+      "status": "approved",
+      "summary": "Proceed with the booking flow first."
+    },
+    {
+      "id": "decision-scope-expansion",
+      "status": "pending",
+      "summary": "Waiting for human approval on payment provider scope."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "brief-intake",
+      "title": "Normalize the initial brief",
+      "role": "po-pm",
+      "providerId": "mock-po",
+      "priority": "high",
+      "dependsOn": [],
+      "requiredGateIds": ["gate-brief-ready"],
+      "decisionIds": [],
+      "inputRefs": ["examples/demo-project/brief.md"],
+      "expectedOutputs": ["brief.normalized"],
+      "mockOutput": "Brief normalized before this resumed execution.",
+      "estimatedTokens": 3000,
+      "estimatedCost": 0.4
+    },
+    {
+      "id": "backlog-draft",
+      "title": "Generate backlog draft",
+      "role": "po-pm",
+      "providerId": "mock-po",
+      "priority": "high",
+      "dependsOn": ["brief-intake"],
+      "requiredGateIds": ["gate-brief-ready"],
+      "decisionIds": ["decision-priority"],
+      "inputRefs": ["run:run-42:blueprint:blueprint-v2-demo:node:brief-intake:output:brief.normalized"],
+      "expectedOutputs": ["backlog.draft.json", "backlog.draft.md"],
+      "mockOutput": "Generated deterministic backlog draft.",
+      "estimatedTokens": 9000,
+      "estimatedCost": 1.8
+    },
+    {
+      "id": "qa-review",
+      "title": "Review generated backlog",
+      "role": "qa",
+      "providerId": "mock-delivery",
+      "priority": "medium",
+      "dependsOn": ["backlog-draft"],
+      "requiredGateIds": ["gate-brief-ready"],
+      "decisionIds": [],
+      "inputRefs": ["backlog.draft.json"],
+      "expectedOutputs": ["backlog-review.json", "backlog-review.md"],
+      "mockOutput": "Reviewed backlog with deterministic QA findings.",
+      "estimatedTokens": 7000,
+      "estimatedCost": 1.1
+    },
+    {
+      "id": "implementation-plan",
+      "title": "Plan implementation handoff",
+      "role": "backend",
+      "providerId": "mock-delivery",
+      "priority": "medium",
+      "dependsOn": ["qa-review"],
+      "requiredGateIds": ["gate-human-scope"],
+      "decisionIds": ["decision-scope-expansion"],
+      "inputRefs": ["backlog-review.json"],
+      "expectedOutputs": ["implementation-plan.md"],
+      "mockOutput": "Implementation planning is blocked until human scope approval.",
+      "estimatedTokens": 12000,
+      "estimatedCost": 2.4
+    }
+  ]
+}

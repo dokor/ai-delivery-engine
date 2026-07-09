@@ -29,7 +29,8 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 13. Observe a demo run timeline with costs, controls, decisions, error and retry evidence.
 14. Evaluate a demo quality gate before staging or production promotion.
 15. Plan local-first delegation to isolated agents and Git/PR branches.
-16. Decide what is ready for implementation.
+16. Execute a local-first delivery graph with mock providers and handoffs.
+17. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -61,6 +62,8 @@ Typical generated files under `outputs/`:
 - `quality-gate/sample-quality-gate.quality-gate.md`
 - `delegation-plan/sample-delegation-plan.delegation-plan.json`
 - `delegation-plan/sample-delegation-plan.delegation-plan.md`
+- `graph-execution/sample-graph-execution.graph-execution.json`
+- `graph-execution/sample-graph-execution.graph-execution.md`
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
@@ -95,6 +98,14 @@ pnpm delegation:plan
 ```
 
 It selects only tasks whose dependencies and gates are satisfied, assigns a compatible agent capability, records the intended isolated workspace and branch, and blocks unsafe tasks with concrete reasons. It does not launch agents, create branches, commit, push, open PRs or merge. Git guardrails require visible commits, pull requests and no automatic merge; sensitive context references are masked in JSON and Markdown.
+
+The graph execution command reads a structured delivery graph and writes a deterministic execution report under `outputs/graph-execution/` by default:
+
+```bash
+pnpm graph:execute
+```
+
+It executes only nodes whose dependencies, gates, decisions, provider capability and budget are satisfied, using mock providers by default. Completed nodes are treated as resumed and are not replayed. The report links each generated output to the node, run and blueprint version, records handoffs between nodes, and explains blocked nodes with next actions. It does not call external providers or execute arbitrary shell commands.
 
 ## Specialist Loop Summary
 
