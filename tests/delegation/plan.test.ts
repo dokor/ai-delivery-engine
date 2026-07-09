@@ -122,6 +122,13 @@ test('rejects unsupported schema versions', () => {
   );
 });
 
+test('rejects duplicate task ids', () => {
+  const input = baseInput();
+  input.tasks = [input.tasks[0], { ...input.tasks[1], id: input.tasks[0].id }];
+
+  assert.throws(() => parseDelegationPlanInput(input), /duplicate task id "issue-121"/);
+});
+
 test('blocks all tasks when Git policy allows invisible or merged work', () => {
   const input = baseInput();
   input.gitPolicy.requirePullRequest = false;

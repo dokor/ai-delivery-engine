@@ -181,6 +181,13 @@ export function parseDelegationPlanInput(value: unknown): DelegationPlanInput {
   if (tasks.length === 0) {
     throw new Error('Invalid delegation plan input: "tasks" must contain at least one task.');
   }
+  const taskIds = new Set<string>();
+  for (const task of tasks) {
+    if (taskIds.has(task.id)) {
+      throw new Error(`Invalid delegation plan input: duplicate task id "${task.id}".`);
+    }
+    taskIds.add(task.id);
+  }
   return {
     schemaVersion: DELEGATION_PLAN_SCHEMA_VERSION,
     runId: requiredString(value.runId, 'runId'),
