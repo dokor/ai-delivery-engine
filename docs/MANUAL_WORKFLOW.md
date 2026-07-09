@@ -27,7 +27,8 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 11. Run the specialist response checker.
 12. Close a demo delivery run into a delivery dossier when repository, production and validation evidence are available.
 13. Observe a demo run timeline with costs, controls, decisions, error and retry evidence.
-14. Decide what is ready for implementation.
+14. Evaluate a demo quality gate before staging or production promotion.
+15. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -55,6 +56,8 @@ Typical generated files under `outputs/`:
 - `delivery/sample-delivery-run.delivery-closure.notification.md`
 - `run-observability/sample-observable-run.run-observability.json`
 - `run-observability/sample-observable-run.run-observability.md`
+- `quality-gate/sample-quality-gate.quality-gate.json`
+- `quality-gate/sample-quality-gate.quality-gate.md`
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
@@ -73,6 +76,14 @@ pnpm run:observe
 ```
 
 It exposes the run status, current node, next node, blocking reason, budget consumption by role/provider, pause recommendation and control actions (`pause`, `resume`, `retry`, `cancel`, `request_review`, `takeover`). Logs, errors, links and artifacts are sanitized before they appear in JSON or Markdown.
+
+The quality gate command reads structured validation evidence and writes a versioned gate report under `outputs/quality-gate/` by default:
+
+```bash
+pnpm quality:gate
+```
+
+It separates deterministic evidence (`tool`, `ade-rule`, `specialist-check`) from optional `ai-review` notes, applies staging/production policies, reports blocking findings, audit-ready overrides and targeted revalidation cycles. Profiles without reliable measurements produce recommendations rather than false blockers, and sensitive evidence is excluded or masked.
 
 ## Specialist Loop Summary
 
