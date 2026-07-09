@@ -28,7 +28,8 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 12. Close a demo delivery run into a delivery dossier when repository, production and validation evidence are available.
 13. Observe a demo run timeline with costs, controls, decisions, error and retry evidence.
 14. Evaluate a demo quality gate before staging or production promotion.
-15. Decide what is ready for implementation.
+15. Plan local-first delegation to isolated agents and Git/PR branches.
+16. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -58,6 +59,8 @@ Typical generated files under `outputs/`:
 - `run-observability/sample-observable-run.run-observability.md`
 - `quality-gate/sample-quality-gate.quality-gate.json`
 - `quality-gate/sample-quality-gate.quality-gate.md`
+- `delegation-plan/sample-delegation-plan.delegation-plan.json`
+- `delegation-plan/sample-delegation-plan.delegation-plan.md`
 
 `outputs/` is the local working directory for generated artifacts. Use it as the inspection area for deterministic drafts, copyable prompts, imported backlog files, review reports, exported Markdown items, and the export manifest before any future synchronization or deeper automation exists.
 
@@ -84,6 +87,14 @@ pnpm quality:gate
 ```
 
 It separates deterministic evidence (`tool`, `ade-rule`, `specialist-check`) from optional `ai-review` notes, applies staging/production policies, reports blocking findings, audit-ready overrides and targeted revalidation cycles. Profiles without reliable measurements produce recommendations rather than false blockers, and sensitive evidence is excluded or masked.
+
+The delegation planning command reads a structured set of candidate issues, dependencies, gates, agent capabilities, budget and Git/PR policy, then writes an auditable plan under `outputs/delegation-plan/` by default:
+
+```bash
+pnpm delegation:plan
+```
+
+It selects only tasks whose dependencies and gates are satisfied, assigns a compatible agent capability, records the intended isolated workspace and branch, and blocks unsafe tasks with concrete reasons. It does not launch agents, create branches, commit, push, open PRs or merge. Git guardrails require visible commits, pull requests and no automatic merge; sensitive context references are masked in JSON and Markdown.
 
 ## Specialist Loop Summary
 
