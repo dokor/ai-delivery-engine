@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-42",
+  "projectName": "SaaS reservation",
+  "completedTaskIds": ["blueprint-128", "run-121"],
+  "gitPolicy": {
+    "defaultBranch": "main",
+    "protectedBranches": ["main"],
+    "requirePullRequest": true,
+    "requireVisibleCommit": true,
+    "allowAutoMerge": false
+  },
+  "budget": {
+    "tokenBudget": 60000,
+    "costBudget": 12,
+    "currency": "USD"
+  },
+  "agents": [
+    {
+      "id": "codex-local",
+      "name": "Codex local coding agent",
+      "provider": "local-cli",
+      "roles": ["backend", "qa", "tech-lead"],
+      "contextKinds": ["issue", "blueprint", "quality-gate", "run-observability"],
+      "maxConcurrentTasks": 1,
+      "permissions": {
+        "allowNetwork": false,
+        "allowedShellCommands": ["pnpm typecheck", "pnpm test", "pnpm demo:validate"],
+        "writeScopes": ["workspace"],
+        "secretRefs": ["GITHUB_TOKEN"]
+      }
+    }
+  ],
+  "gates": [
+    {
+      "id": "gate-backlog-ready",
+      "status": "passed",
+      "summary": "Issue refined and acceptance criteria present."
+    },
+    {
+      "id": "gate-quality",
+      "status": "passed",
+      "summary": "Deterministic validation is green."
+    },
+    {
+      "id": "gate-review",
+      "status": "pending",
+      "summary": "Human review still required before PR creation."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "issue-121",
+      "issueNumber": 121,
+      "title": "Manage Project Runs and targeted human decisions",
+      "priority": "high",
+      "role": "backend",
+      "dependsOn": ["run-121"],
+      "requiredGateIds": ["gate-backlog-ready", "gate-quality"],
+      "branchName": "feat/issue-121-project-runs",
+      "workspacePath": ".worktrees/issue-121",
+      "contextRefs": ["issues/121", "docs/ARCHITECTURE.md", "src/examples/sample-observable-run.json"],
+      "validationCommands": ["pnpm typecheck", "pnpm test"],
+      "expectedArtifacts": ["outputs/run-observability/sample-observable-run.run-observability.json"],
+      "estimatedTokens": 18000,
+      "estimatedCost": 3.5
+    },
+    {
+      "id": "issue-122",
+      "issueNumber": 122,
+      "title": "Execute the delivery graph and handoffs",
+      "priority": "high",
+      "role": "backend",
+      "dependsOn": ["issue-121", "blueprint-128"],
+      "requiredGateIds": ["gate-backlog-ready", "gate-quality"],
+      "branchName": "feat/issue-122-delivery-graph",
+      "workspacePath": ".worktrees/issue-122",
+      "contextRefs": ["issues/122", "outputs/demo-project", "docs/MANUAL_WORKFLOW.md"],
+      "validationCommands": ["pnpm typecheck", "pnpm test", "pnpm demo:validate"],
+      "expectedArtifacts": ["outputs/demo-project/project-status.json"],
+      "estimatedTokens": 22000,
+      "estimatedCost": 4.1
+    },
+    {
+      "id": "issue-123",
+      "issueNumber": 123,
+      "title": "Delegate tasks to isolated agents and pilot Git/PR",
+      "priority": "medium",
+      "role": "backend",
+      "dependsOn": ["issue-122"],
+      "requiredGateIds": ["gate-backlog-ready", "gate-review"],
+      "branchName": "main",
+      "workspacePath": ".worktrees/issue-123",
+      "contextRefs": ["issues/123", "docs/CLI.md"],
+      "validationCommands": ["pnpm typecheck", "pnpm test"],
+      "expectedArtifacts": ["outputs/delegation-plan/sample-delegation-plan.delegation-plan.json"],
+      "estimatedTokens": 26000,
+      "estimatedCost": 5.2
+    }
+  ]
+}

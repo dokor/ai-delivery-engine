@@ -57,6 +57,7 @@ Legacy colon forms (`ade config:print`) remain supported.
 | `ade delivery close [run] [out]` | Close a structured run summary into JSON, dossier Markdown and final notification artifacts. |
 | `ade run observe [run] [out]` | Render a structured run trace into timeline, budget, controls and audit artifacts. |
 | `ade quality gate [input] [out]` | Evaluate staging/production quality evidence into a versioned gate report. |
+| `ade delegation plan [input] [out]` | Plan isolated agent delegation, Git branches, validations and blocked tasks without executing agents. |
 
 ### Review & fix
 

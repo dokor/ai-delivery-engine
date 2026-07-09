@@ -21,6 +21,8 @@ import { observeRun, parseObservableRunInput } from './observability/runReport.t
 import { writeObservableRunReport } from './observability/writer.ts';
 import { evaluateQualityGate, parseQualityGateInput } from './quality/gate.ts';
 import { writeQualityGateReport } from './quality/writer.ts';
+import { parseDelegationPlanInput, planDelegation } from './delegation/plan.ts';
+import { writeDelegationPlanReport } from './delegation/writer.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -39,6 +41,8 @@ const DEMO_OBSERVABLE_RUN_PATH = 'src/examples/sample-observable-run.json';
 const DEMO_OBSERVABILITY_OUTPUT_DIRECTORY = 'outputs/demo-project/run-observability';
 const DEMO_QUALITY_GATE_PATH = 'src/examples/sample-quality-gate.json';
 const DEMO_QUALITY_GATE_OUTPUT_DIRECTORY = 'outputs/demo-project/quality-gate';
+const DEMO_DELEGATION_PLAN_PATH = 'src/examples/sample-delegation-plan.json';
+const DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY = 'outputs/demo-project/delegation-plan';
 
 type ValidationStep = {
   label: string;
@@ -215,6 +219,21 @@ const STEPS: ValidationStep[] = [
         'sample-quality-gate.quality-gate'
       );
     }
+  },
+  {
+    label: 'Plan demo delegation',
+    run: async () => {
+      const sourcePath = resolve(process.cwd(), DEMO_DELEGATION_PLAN_PATH);
+      const rawInput = await readJsonFileSafe(sourcePath, 'Invalid delegation plan JSON');
+      const input = parseDelegationPlanInput(rawInput);
+      const report = planDelegation(input);
+
+      await writeDelegationPlanReport(
+        report,
+        resolve(process.cwd(), DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY),
+        'sample-delegation-plan.delegation-plan'
+      );
+    }
   }
 ];
 
@@ -236,7 +255,9 @@ const EXPECTED_FILES: ExpectedFile[] = [
   { label: 'Run observability JSON', path: `${DEMO_OBSERVABILITY_OUTPUT_DIRECTORY}/sample-observable-run.run-observability.json` },
   { label: 'Run observability Markdown', path: `${DEMO_OBSERVABILITY_OUTPUT_DIRECTORY}/sample-observable-run.run-observability.md` },
   { label: 'Quality gate JSON', path: `${DEMO_QUALITY_GATE_OUTPUT_DIRECTORY}/sample-quality-gate.quality-gate.json` },
-  { label: 'Quality gate Markdown', path: `${DEMO_QUALITY_GATE_OUTPUT_DIRECTORY}/sample-quality-gate.quality-gate.md` }
+  { label: 'Quality gate Markdown', path: `${DEMO_QUALITY_GATE_OUTPUT_DIRECTORY}/sample-quality-gate.quality-gate.md` },
+  { label: 'Delegation plan JSON', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.json` },
+  { label: 'Delegation plan Markdown', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {

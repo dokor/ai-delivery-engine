@@ -51,6 +51,7 @@
     "delivery:close": "node --experimental-strip-types src/deliveryClose.ts",
     "run:observe": "node --experimental-strip-types src/runObserve.ts",
     "quality:gate": "node --experimental-strip-types src/qualityGate.ts",
+    "delegation:plan": "node --experimental-strip-types src/delegationPlan.ts",
     "demo:validate": "node --experimental-strip-types src/demoValidate.ts",
     "import:po": "node --experimental-strip-types src/importPo.ts",
     "project:status": "node --experimental-strip-types src/projectStatus.ts",

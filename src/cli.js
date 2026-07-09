@@ -38,6 +38,7 @@ const COMMANDS = {
   'delivery close': 'deliveryClose.js',
   'run observe': 'runObserve.js',
   'quality gate': 'qualityGate.js',
+  'delegation plan': 'delegationPlan.js',
   // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
@@ -66,6 +67,7 @@ const COMMANDS = {
   'delivery:close': 'deliveryClose.js',
   'run:observe': 'runObserve.js',
   'quality:gate': 'qualityGate.js',
+  'delegation:plan': 'delegationPlan.js',
 };
 
 const HELP = `AI Delivery Engine (ade)
@@ -91,6 +93,7 @@ Context:
   ade delivery close [run] [out]  close a run into delivery dossier artifacts
   ade run observe [run] [out]     render observable run timeline, budget and controls
   ade quality gate [input] [out]  evaluate staging/production quality gate evidence
+  ade delegation plan [input] [out]  plan isolated agent delegation without executing agents
 
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
@@ -100,7 +103,7 @@ Review:
 Backlog & prompts:
   ade backlog:run | backlog:review | backlog:export
   ade prompt:po | prompt:specialist | prompt:specialists | import:po
-  ade specialist:check | project:status | delivery:close | run:observe | quality:gate | demo:validate
+  ade specialist:check | project:status | delivery:close | run:observe | quality:gate | delegation:plan | demo:validate
 
 Exit codes are documented in docs/CLI.md.`;
 

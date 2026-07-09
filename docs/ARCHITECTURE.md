@@ -50,6 +50,7 @@ src/
   delivery/         # run closure, delivery dossier and final notification
   observability/    # observable run timeline, budget, controls and audit report
   quality/          # staging/production quality gates and validation reports
+  delegation/       # local-first agent delegation planning and Git/PR guardrails
   engine/           # CLI-independent review engine + normalized findings
   harness/          # versioned agent execution requests/results + runner
   rules/            # technical rule packs (frontend/backend/development)
