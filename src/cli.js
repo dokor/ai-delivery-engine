@@ -34,6 +34,7 @@ const COMMANDS = {
   'context print': 'contextPrint.js',
   'context pack': 'contextPack.js',
   'harness demo': 'harnessDemo.js',
+  'loop run': 'executionLoopRun.js',
   'blueprint compile': 'blueprintCompile.js',
   'delivery close': 'deliveryClose.js',
   'run observe': 'runObserve.js',
@@ -64,6 +65,7 @@ const COMMANDS = {
   'context:print': 'contextPrint.js',
   'context:pack': 'contextPack.js',
   'harness:demo': 'harnessDemo.js',
+  'loop:run': 'executionLoopRun.js',
   'blueprint:compile': 'blueprintCompile.js',
   'delivery:close': 'deliveryClose.js',
   'run:observe': 'runObserve.js',
@@ -91,6 +93,7 @@ Context:
   ade context print [out]         print the stored context
   ade context pack [mode] [diff]  build a budgeted context pack (chill|normal|expert)
   ade harness demo                run a deterministic Delivery Harness demo
+  ade loop run [input] [out]      run a bounded execution loop with targeted correction
   ade blueprint compile [brief]   compile a brief into a delivery blueprint/graph
   ade delivery close [run] [out]  close a run into delivery dossier artifacts
   ade run observe [run] [out]     render observable run timeline, budget and controls
@@ -106,7 +109,7 @@ Review:
 Backlog & prompts:
   ade backlog:run | backlog:review | backlog:export
   ade prompt:po | prompt:specialist | prompt:specialists | import:po
-  ade specialist:check | project:status | delivery:close | run:observe | quality:gate | delegation:plan | graph:execute | demo:validate
+  ade specialist:check | project:status | loop:run | delivery:close | run:observe | quality:gate | delegation:plan | graph:execute | demo:validate
 
 Exit codes are documented in docs/CLI.md.`;
 

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-42",
+  "projectName": "SaaS reservation",
+  "loopId": "loop-development-auth",
+  "nodeId": "develop-authentication",
+  "loopType": "development",
+  "trigger": {
+    "ready": true,
+    "reason": "Issue is ready, dependencies are completed and gates are passed."
+  },
+  "goal": {
+    "summary": "Implement authentication node until validations pass.",
+    "successCriteria": [
+      "typecheck passes",
+      "unit tests pass",
+      "loop evidence can be attached to Project Run"
+    ]
+  },
+  "agent": {
+    "id": "mock-implementer",
+    "provider": "mock-implementer",
+    "role": "back-end"
+  },
+  "task": {
+    "id": "task-auth",
+    "title": "Implement authentication",
+    "acceptanceCriteria": ["login", "session", "tests"]
+  },
+  "memory": {
+    "contextRefs": ["brief:auth", "graph:develop-authentication"],
+    "artifacts": ["outputs/graph-execution/sample-graph-execution.graph-execution.json"],
+    "diagnostics": []
+  },
+  "permissions": {
+    "shell": true,
+    "network": false,
+    "github": false,
+    "allowedTools": ["typecheck", "test"]
+  },
+  "workspace": {
+    "root": ".",
+    "isolation": "current-worktree",
+    "writable": false
+  },
+  "stopConditions": {
+    "timeoutMs": 1000,
+    "maxAttempts": 3,
+    "maxToolCalls": 2,
+    "tokenBudget": 1200,
+    "costBudget": 0.05
+  },
+  "validation": {
+    "commands": ["typecheck", "test"]
+  },
+  "correctionPolicy": {
+    "enabled": true,
+    "maxCorrections": 2,
+    "requireTargetedDiagnostic": true
+  },
+  "attemptPlans": [
+    {
+      "id": "attempt-1",
+      "summary": "Implemented auth but typecheck failed.",
+      "diagnostic": "typecheck failed on missing Session type import.",
+      "usage": {
+        "provider": "mock-implementer",
+        "model": "deterministic-mock",
+        "inputTokens": 300,
+        "outputTokens": 120,
+        "costUsd": 0
+      },
+      "validations": [
+        { "tool": "typecheck", "status": 1, "ok": false },
+        { "tool": "test", "status": 0, "ok": true }
+      ]
+    },
+    {
+      "id": "attempt-2",
+      "summary": "Applied targeted Session import correction and validations passed.",
+      "usage": {
+        "provider": "mock-implementer",
+        "model": "deterministic-mock",
+        "inputTokens": 180,
+        "outputTokens": 80,
+        "costUsd": 0
+      },
+      "validations": [
+        { "tool": "typecheck", "status": 0, "ok": true },
+        { "tool": "test", "status": 0, "ok": true }
+      ]
+    }
+  ]
+}

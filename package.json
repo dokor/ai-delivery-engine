@@ -47,6 +47,7 @@
     "context:print": "node --experimental-strip-types src/contextPrint.ts",
     "context:pack": "node --experimental-strip-types src/contextPack.ts",
     "harness:demo": "node --experimental-strip-types src/harnessDemo.ts",
+    "loop:run": "node --experimental-strip-types src/executionLoopRun.ts",
     "blueprint:compile": "node --experimental-strip-types src/blueprintCompile.ts",
     "delivery:close": "node --experimental-strip-types src/deliveryClose.ts",
     "run:observe": "node --experimental-strip-types src/runObserve.ts",

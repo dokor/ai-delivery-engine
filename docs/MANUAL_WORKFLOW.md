@@ -26,11 +26,12 @@ V1 is intentionally human-controlled. Local commands prepare or validate artifac
 10. Save specialist responses locally as Markdown.
 11. Run the specialist response checker.
 12. Close a demo delivery run into a delivery dossier when repository, production and validation evidence are available.
-13. Observe a demo run timeline with costs, controls, decisions, error and retry evidence.
-14. Evaluate a demo quality gate before staging or production promotion.
-15. Plan local-first delegation to isolated agents and Git/PR branches.
-16. Execute a local-first delivery graph with mock providers and handoffs.
-17. Decide what is ready for implementation.
+13. Run a bounded execution loop with targeted correction evidence.
+14. Observe a demo run timeline with costs, controls, decisions, error and retry evidence.
+15. Evaluate a demo quality gate before staging or production promotion.
+16. Plan local-first delegation to isolated agents and Git/PR branches.
+17. Execute a local-first delivery graph with mock providers and handoffs.
+18. Decide what is ready for implementation.
 
 ## Inputs And Outputs
 
@@ -56,6 +57,8 @@ Typical generated files under `outputs/`:
 - `delivery/sample-delivery-run.delivery-closure.json`
 - `delivery/sample-delivery-run.delivery-closure.md`
 - `delivery/sample-delivery-run.delivery-closure.notification.md`
+- `execution-loop/sample-execution-loop.execution-loop.json`
+- `execution-loop/sample-execution-loop.execution-loop.md`
 - `run-observability/sample-observable-run.run-observability.json`
 - `run-observability/sample-observable-run.run-observability.md`
 - `quality-gate/sample-quality-gate.quality-gate.json`
@@ -74,6 +77,14 @@ pnpm delivery:close
 ```
 
 It produces a JSON result, an operations dossier and a final notification. `completed` requires repository, version, production and validation evidence, unless an explicit approved exception is present. Sensitive artifacts, evidence and variable values are excluded or masked in generated Markdown.
+
+The execution loop command reads a structured loop contract and writes bounded attempt/correction evidence under `outputs/execution-loop/` by default:
+
+```bash
+pnpm loop:run
+```
+
+It runs deterministic Delivery Harness attempts, applies targeted corrections only when a concrete validation diagnostic exists, stops on success, timeout, budget, max attempts or human decision, and emits a Project Run-compatible node update. It does not call external providers, modify Git, create PRs or bypass gates.
 
 The run observability command reads a structured run trace and writes a support/audit report under `outputs/run-observability/` by default:
 

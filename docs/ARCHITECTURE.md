@@ -47,6 +47,7 @@ src/
   context/          # deterministic project context + freshness
   contextpack/      # budgeted context packs, modes, cache, fragments
   blueprint/        # delivery blueprint selection + graph compilation
+  executionLoop/    # bounded node execution loops, corrections and terminal states
   delivery/         # run closure, delivery dossier and final notification
   observability/    # observable run timeline, budget, controls and audit report
   quality/          # staging/production quality gates and validation reports
