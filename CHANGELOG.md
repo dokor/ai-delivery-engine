@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.5.0...ai-delivery-engine-v0.6.0) (2026-08-31)
+
+
+### Features
+
+* add exhaustive testing suite and deterministic processing for p… ([01aeb01](https://github.com/dokor/ai-delivery-engine/commit/01aeb019278be66a75a3ddc40d5d39b3c03f5005))
+* add exhaustive testing suite and deterministic processing for project runs ([cbc3cc1](https://github.com/dokor/ai-delivery-engine/commit/cbc3cc17c027c1f74b546435f71641cacade6d10))
+* add MCP server implementation and programmatic API ([c2b7938](https://github.com/dokor/ai-delivery-engine/commit/c2b793823e3cb6ac497d54dfcaea9194296575ba))
+* add MCP server implementation and programmatic API ([6fbaebe](https://github.com/dokor/ai-delivery-engine/commit/6fbaebe0ab96538b147d56dbc2d09a790d83cbed))
+
 ## [0.5.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.4.0...ai-delivery-engine-v0.5.0) (2026-08-27)
 
 
