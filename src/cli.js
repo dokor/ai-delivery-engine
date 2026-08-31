@@ -111,6 +111,11 @@ Backlog & prompts:
   ade prompt:po | prompt:specialist | prompt:specialists | import:po
   ade specialist:check | project:status | loop:run | delivery:close | run:observe | quality:gate | delegation:plan | graph:execute | demo:validate
 
+MCP server:
+  ade-mcp [--project-root <path>] [--allow-write]
+                                  serve ADE to an MCP client over stdio
+                                  (Claude, Codex, Cursor…); see docs/MCP.md
+
 Exit codes are documented in docs/CLI.md.`;
 
 const argv = process.argv.slice(2);

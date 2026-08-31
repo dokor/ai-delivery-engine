@@ -1,22 +1,17 @@
 import { logFailure, logLines } from './cli/logger.ts';
-import { hasConfigErrors, resolveConfig } from './config/loadConfig.ts';
-import { checkContext } from './context/checkContext.ts';
+import { resolveConfig } from './config/loadConfig.ts';
 import { collectProjectContext } from './context/collectContext.ts';
 import { assembleContextItems } from './contextpack/assembleItems.ts';
 import { buildContextPack } from './contextpack/buildContextPack.ts';
 import { extractFragments } from './contextpack/fragments.ts';
 import { resolveMode } from './contextpack/modes.ts';
 import { writeContextPack } from './contextpack/renderPack.ts';
-import type { Finding, ReviewScope } from './engine/findings.types.ts';
+import type { Finding } from './engine/findings.types.ts';
 import { getChangedFiles } from './engine/gitScope.ts';
-import { listProjectFiles } from './engine/projectFiles.ts';
 import { getProviderAdapter } from './engine/provider.types.ts';
 import { renderReviewHuman, reviewToJson } from './engine/renderFindings.ts';
-import { reviewExitCode, runReview } from './engine/review.ts';
 import { runTool, toolResultsToFindings } from './engine/tools.ts';
-import { runDeterministicPackRules } from './rules/runRulePacks.ts';
-
-const DEFAULT_IGNORES = ['node_modules/**', '.git/**', 'dist/**', 'outputs/**'];
+import { DEFAULT_REVIEW_IGNORES, runProjectReview } from './review/runProjectReview.ts';
 
 interface ReviewArgs {
   staged: boolean;
@@ -68,6 +63,10 @@ function parseArgs(argv: string[]): ReviewArgs {
  * orchestrating configured tools. `--provider <name>` prepares a budgeted
  * review pack (never calling a provider unless an adapter is registered).
  *
+ * The deterministic core lives in `review/runProjectReview.ts`, shared with the
+ * MCP server. Tool orchestration and provider packs stay here: they are opt-in
+ * CLI concerns and are injected as `extraFindings`.
+ *
  * Usage: ade review [--staged | --base <ref>] [--run-tools] [--provider <name>] [--json]
  * Exit:  0 no error findings · 1 error findings · 2 usage error
  */
@@ -81,26 +80,14 @@ async function main(): Promise<void> {
   }
 
   const resolution = await resolveConfig({ cwd });
-  const ignore = [...DEFAULT_IGNORES, ...resolution.config.ignore];
+  const ignore = [...DEFAULT_REVIEW_IGNORES, ...resolution.config.ignore];
+  const contextDir = resolution.config.context.outputDir ?? 'outputs/context';
 
-  // Determine scope.
   const changedFiles = args.staged || args.base
     ? getChangedFiles({ cwd, staged: args.staged, base: args.base })
     : undefined;
-  const scope: ReviewScope = {
-    kind: args.staged ? 'staged' : args.base ? 'base' : 'project',
-    base: args.base,
-    changedFiles
-  };
-
-  const projectFiles = await listProjectFiles(cwd, ignore);
-  const contextDir = resolution.config.context.outputDir ?? 'outputs/context';
-  const contextState = (await checkContext(cwd, resolution.config, contextDir)).state;
 
   const extraFindings: Finding[] = [];
-
-  // Deterministic rules from the active rule packs (e.g. service size).
-  extraFindings.push(...(await runDeterministicPackRules({ cwd, config: resolution.config, files: projectFiles })));
 
   // Optional tool orchestration.
   if (args.runTools && resolution.config.tools.length > 0) {
@@ -147,16 +134,21 @@ async function main(): Promise<void> {
     }
   }
 
-  const result = runReview({ resolution, contextState, projectFiles, scope, extraFindings });
+  const outcome = await runProjectReview({
+    projectRoot: cwd,
+    staged: args.staged,
+    base: args.base,
+    resolution,
+    extraFindings
+  });
 
   if (args.json) {
-    process.stdout.write(reviewToJson(result));
+    process.stdout.write(reviewToJson(outcome.result));
   } else {
-    logLines(renderReviewHuman(result));
+    logLines(renderReviewHuman(outcome.result));
   }
 
-  // Config errors always fail the review, independent of finding severity mapping.
-  process.exitCode = hasConfigErrors(resolution) ? 1 : reviewExitCode(result);
+  process.exitCode = outcome.exitCode;
 }
 
 main().catch((error: unknown) => {

@@ -3,8 +3,8 @@ import { join, relative } from 'node:path';
 
 import type { ConfigResolution } from './config.types.ts';
 
-function toRelativePath(filePath: string): string {
-  const rel = relative(process.cwd(), filePath);
+function toRelativePath(filePath: string, baseDirectory: string): string {
+  const rel = relative(baseDirectory, filePath);
   return rel === '' ? '.' : rel.replace(/\\/g, '/');
 }
 
@@ -54,10 +54,18 @@ export function renderConfigResolution(resolution: ConfigResolution): string[] {
   return lines;
 }
 
-/** Writes the resolved configuration + provenance to a stable JSON artifact. */
+/**
+ * Writes the resolved configuration + provenance to a stable JSON artifact and
+ * returns the written path, relative to `baseDirectory`.
+ *
+ * `baseDirectory` is explicit rather than defaulted to the working directory:
+ * this module is part of the core shared with the MCP server, where the working
+ * directory belongs to the client and means nothing.
+ */
 export async function writeConfigResolution(
   resolution: ConfigResolution,
-  outputsDirectory: string
+  outputsDirectory: string,
+  baseDirectory: string
 ): Promise<string> {
   const directory = join(outputsDirectory, 'config');
   await mkdir(directory, { recursive: true });
@@ -65,5 +73,5 @@ export async function writeConfigResolution(
   const outputPath = join(directory, 'ade.config.resolved.json');
   await writeFile(outputPath, `${JSON.stringify(resolution, null, 2)}\n`, 'utf8');
 
-  return toRelativePath(outputPath);
+  return toRelativePath(outputPath, baseDirectory);
 }
