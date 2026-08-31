@@ -3,8 +3,14 @@
   "version": "0.5.0",
   "description": "AI Delivery Engine orchestrates AI agents to transform project briefs into actionable delivery backlogs.",
   "type": "module",
+  "main": "dist/api.js",
+  "exports": {
+    ".": "./dist/api.js",
+    "./mcp": "./dist/mcp/stdio.js"
+  },
   "bin": {
-    "ade": "src/cli.js"
+    "ade": "src/cli.js",
+    "ade-mcp": "src/mcp-server.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +23,7 @@
   "files": [
     "dist/",
     "src/cli.js",
+    "src/mcp-server.js",
     "templates/",
     "examples/",
     "scripts/build.mjs",
@@ -37,6 +44,7 @@
     "config:print": "node --experimental-strip-types src/configPrint.ts",
     "config:validate": "node --experimental-strip-types src/cliConfigValidate.ts",
     "init": "node --experimental-strip-types src/cliInit.ts",
+    "mcp": "node --experimental-strip-types src/mcpServer.ts",
     "doctor": "node --experimental-strip-types src/cliDoctor.ts",
     "review": "node --experimental-strip-types src/cliReview.ts",
     "rules": "node --experimental-strip-types src/cliRules.ts",

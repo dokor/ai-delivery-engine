@@ -22,7 +22,7 @@ async function main(): Promise<void> {
     configPath: configArg
   });
 
-  const outputPath = await writeConfigResolution(resolution, outputsDirectory);
+  const outputPath = await writeConfigResolution(resolution, outputsDirectory, process.cwd());
 
   logLines([...renderConfigResolution(resolution), `- JSON output: ${outputPath}`]);
 
