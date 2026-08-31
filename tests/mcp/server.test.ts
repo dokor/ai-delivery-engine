@@ -136,7 +136,7 @@ describe('MCP handshake', () => {
 });
 
 describe('tools/list', () => {
-  it('exposes the seven MVP tools', async () => {
+  it('exposes the expected tool set', async () => {
     const server = createAdeMcpServer();
     const response = await server.handle({ jsonrpc: '2.0', id: 1, method: 'tools/list' });
     const result = response?.result as { tools: Array<{ name: string }> };
@@ -148,6 +148,7 @@ describe('tools/list', () => {
         'ade_explain_rule',
         'ade_get_project_context',
         'ade_list_rules',
+        'ade_project_setup',
         'ade_review_files',
         'ade_review_git_diff',
         'ade_suggest_fix'

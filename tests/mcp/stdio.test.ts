@@ -187,7 +187,7 @@ describe('ade-mcp as a real process', () => {
     assert.equal(initialize.serverInfo.name, 'ai-delivery-engine');
 
     const tools = (responses[1].result as { tools: unknown[] }).tools;
-    assert.equal(tools.length, 7);
+    assert.equal(tools.length, 8);
 
     for (const index of [2, 3]) {
       const result = responses[index].result as {

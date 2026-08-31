@@ -521,6 +521,26 @@ Full guide: [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md).
 See [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) for the full list of V1
 workflows, their inputs/outputs, exit codes, and the tests that guard them.
 
+## Project setup contract
+
+ADE publishes one versioned, machine-readable answer to "what does a repository
+need to be fully configured for ADE?", so a consumer never hard-codes files,
+labels or workflow conventions:
+
+```bash
+ade setup contract --json     # what ADE requires, no repository involved
+ade setup check --json        # how this repository scores: ready | incomplete | invalid
+```
+
+Requirements carry a criticality (required, recommended, optional) and a scope.
+ADE has no GitHub access and never mutates a repository, so requirements it
+cannot observe locally — labels, remote settings — come back as `unverifiable`
+rather than missing; a caller with GitHub access passes `observedGithubLabels`
+to have them evaluated. Defaults and templates stay owned by ADE and are fetched
+by id rather than copied.
+
+Full reference: [docs/PROJECT_SETUP_CONTRACT.md](docs/PROJECT_SETUP_CONTRACT.md).
+
 ## MCP server — `ade-mcp`
 
 ADE also runs as an MCP server, so an AI client you already use — Claude Code,
@@ -530,10 +550,11 @@ Claude Desktop, Codex CLI, Cursor — can reach its context and rules directly:
 ade-mcp --project-root /absolute/path/to/project
 ```
 
-Seven tools are exposed: `ade_get_project_context`, `ade_list_rules`,
-`ade_explain_rule`, `ade_review_files`, `ade_review_git_diff`, `ade_doctor` and
-`ade_suggest_fix`. Each delegates to the same core as the equivalent `ade`
-command, so an agent, the CLI and the CI agree by construction.
+The exposed tools are `ade_get_project_context`, `ade_list_rules`,
+`ade_explain_rule`, `ade_review_files`, `ade_review_git_diff`, `ade_doctor`,
+`ade_suggest_fix` and `ade_project_setup`. Each delegates to the same core as
+the equivalent `ade` command, so an agent, the CLI and the CI agree by
+construction.
 
 MCP adds no intelligence to ADE: the server never calls an AI provider, needs no
 API key and opens no network connection. Your client supplies — and pays for —

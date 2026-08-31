@@ -29,6 +29,8 @@ import { executeGraph, parseGraphExecutionInput } from './orchestration/graphExe
 import { writeGraphExecutionReport } from './orchestration/writer.ts';
 import { advanceProjectRun, parseProjectRunSnapshot } from './projectRun/advance.ts';
 import { writeProjectRunReport } from './projectRun/writer.ts';
+import { evaluateProjectSetup } from './setup/evaluate.ts';
+import { writeProjectSetupEvaluation } from './setup/writer.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -55,6 +57,8 @@ const DEMO_GRAPH_EXECUTION_PATH = 'src/examples/sample-graph-execution.json';
 const DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY = 'outputs/demo-project/graph-execution';
 const DEMO_PROJECT_RUN_PATH = 'src/examples/sample-project-run.json';
 const DEMO_PROJECT_RUN_OUTPUT_DIRECTORY = 'outputs/demo-project/project-run';
+const DEMO_SETUP_PROJECT_PATH = 'examples/demo-project';
+const DEMO_SETUP_OUTPUT_DIRECTORY = 'outputs/demo-project/setup';
 
 type ValidationStep = {
   label: string;
@@ -291,6 +295,23 @@ const STEPS: ValidationStep[] = [
         'sample-project-run.project-run'
       );
     }
+  },
+  {
+    label: 'Evaluate demo project setup readiness',
+    run: async () => {
+      // The demo project is deliberately not ADE-configured: the artifact shows
+      // what an incomplete repository looks like, which is the case a consumer
+      // has to handle.
+      const evaluation = await evaluateProjectSetup({
+        projectRoot: resolve(process.cwd(), DEMO_SETUP_PROJECT_PATH)
+      });
+
+      await writeProjectSetupEvaluation(
+        evaluation,
+        resolve(process.cwd(), DEMO_SETUP_OUTPUT_DIRECTORY),
+        'demo-project.project-setup'
+      );
+    }
   }
 ];
 
@@ -320,7 +341,9 @@ const EXPECTED_FILES: ExpectedFile[] = [
   { label: 'Graph execution JSON', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.json` },
   { label: 'Graph execution Markdown', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.md` },
   { label: 'Project run JSON', path: `${DEMO_PROJECT_RUN_OUTPUT_DIRECTORY}/sample-project-run.project-run.json` },
-  { label: 'Project run Markdown', path: `${DEMO_PROJECT_RUN_OUTPUT_DIRECTORY}/sample-project-run.project-run.md` }
+  { label: 'Project run Markdown', path: `${DEMO_PROJECT_RUN_OUTPUT_DIRECTORY}/sample-project-run.project-run.md` },
+  { label: 'Project setup JSON', path: `${DEMO_SETUP_OUTPUT_DIRECTORY}/demo-project.project-setup.json` },
+  { label: 'Project setup Markdown', path: `${DEMO_SETUP_OUTPUT_DIRECTORY}/demo-project.project-setup.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {

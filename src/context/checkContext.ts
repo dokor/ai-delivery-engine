@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 import type { ResolvedAdeConfig } from '../config/config.types.ts';
 import { collectProjectContext, toRelativePath } from './collectContext.ts';
@@ -19,7 +19,13 @@ export async function checkContext(
   config: ResolvedAdeConfig,
   outputDirectory: string
 ): Promise<ContextCheckResult> {
-  const contextPath = join(outputDirectory, 'context.json');
+  // `outputDirectory` is resolved against `cwd`, not against the process's
+  // working directory. A configured value such as "outputs/context" is relative
+  // to the project being checked, and any caller working on a project other
+  // than its own cwd — the MCP server, the setup evaluation — would otherwise
+  // read the wrong file and report a fresh context as absent. Absolute paths
+  // pass through unchanged.
+  const contextPath = join(resolve(cwd, outputDirectory), 'context.json');
   const relativeContextPath = toRelativePath(contextPath, cwd);
 
   const current = await collectProjectContext(cwd, config);
