@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.6.1...ai-delivery-engine-v0.7.0) (2026-08-31)
+
+
+### Features
+
+* add project setup evaluation with contract and readiness reporting ([3c86ee5](https://github.com/dokor/ai-delivery-engine/commit/3c86ee5ec8035ccf497d78761c44411bf0253abd))
+
 ## [0.6.1](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.6.0...ai-delivery-engine-v0.6.1) (2026-08-31)
 
 
