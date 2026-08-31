@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.6.0...ai-delivery-engine-v0.6.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* enable OIDC authentication for npm publishing and update workflo… ([b63653b](https://github.com/dokor/ai-delivery-engine/commit/b63653b846bdc28f2fcb5b932bac065faed1eaee))
+* enable OIDC authentication for npm publishing and update workflow dependencies ([2edbe91](https://github.com/dokor/ai-delivery-engine/commit/2edbe91f052d44ac92a5f800047f3b76433205ec))
+
 ## [0.6.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.5.0...ai-delivery-engine-v0.6.0) (2026-08-31)
 
 
