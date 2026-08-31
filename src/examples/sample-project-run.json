@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-checkout-revamp",
+  "projectName": "Checkout revamp",
+  "status": "awaiting_decision",
+  "generatedAt": "2026-08-31T08:00:00.000Z",
+  "nodes": [
+    {
+      "id": "scope",
+      "title": "Cadrer le MVP du parcours de paiement",
+      "role": "po-pm",
+      "status": "completed",
+      "dependsOn": [],
+      "attemptCount": 1,
+      "summary": "Périmètre MVP validé : panier persistant, paiement carte, reçu par e-mail.",
+      "validatedAt": "2026-08-30T16:20:00.000Z"
+    },
+    {
+      "id": "architecture",
+      "title": "Concevoir l'architecture de persistance",
+      "role": "tech-lead",
+      "status": "awaiting_decision",
+      "dependsOn": ["scope"],
+      "attemptCount": 1,
+      "summary": "Deux options instruites, chiffrées et documentées."
+    },
+    {
+      "id": "payment",
+      "title": "Implémenter le paiement carte",
+      "role": "backend",
+      "status": "pending",
+      "dependsOn": ["architecture"]
+    },
+    {
+      "id": "security-review",
+      "title": "Revue sécurité du parcours de paiement",
+      "role": "security",
+      "status": "pending",
+      "dependsOn": ["payment"]
+    },
+    {
+      "id": "production",
+      "title": "Mise en production",
+      "role": "devops",
+      "status": "pending",
+      "dependsOn": ["security-review"]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "persistence-strategy",
+      "nodeId": "architecture",
+      "question": "Quelle stratégie de persistance retenir pour les paniers ?",
+      "context": "Le panier doit survivre à une déconnexion. Le pic attendu est de 400 paniers actifs simultanés.",
+      "status": "pending",
+      "recommendedOptionId": "postgres",
+      "options": [
+        {
+          "id": "postgres",
+          "label": "Table dédiée en PostgreSQL, nettoyage par tâche planifiée",
+          "impact": {
+            "cost": 0,
+            "currency": "EUR",
+            "delayDays": 0,
+            "risk": "low",
+            "note": "Réutilise la base existante ; aucune brique nouvelle à exploiter."
+          }
+        },
+        {
+          "id": "redis",
+          "label": "Cache Redis avec expiration automatique",
+          "impact": {
+            "cost": 45,
+            "currency": "EUR",
+            "delayDays": 3,
+            "risk": "medium",
+            "note": "Plus rapide, mais ajoute une dépendance d'infrastructure à surveiller."
+          }
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "security-signoff",
+      "nodeId": "security-review",
+      "kind": "security",
+      "status": "pending",
+      "description": "Revue sécurité obligatoire avant toute exposition du parcours de paiement."
+    },
+    {
+      "id": "production-signoff",
+      "nodeId": "production",
+      "kind": "production",
+      "status": "pending",
+      "description": "Accord humain explicite avant déploiement en production."
+    }
+  ],
+  "actors": [
+    {
+      "id": "alelouet",
+      "kind": "human",
+      "displayName": "Antoine",
+      "permissions": ["control_run", "decide", "override_gate", "takeover"]
+    },
+    {
+      "id": "ade-implementer",
+      "kind": "agent",
+      "displayName": "ADE implementer agent",
+      "permissions": ["control_run"]
+    }
+  ],
+  "requestedActions": [
+    {
+      "id": "act-approve-persistence",
+      "type": "approve_decision",
+      "actorId": "alelouet",
+      "decisionId": "persistence-strategy",
+      "optionId": "postgres",
+      "at": "2026-08-31T08:05:00.000Z",
+      "reason": "On reste sur la base existante : pas de nouvelle brique à exploiter pour un MVP."
+    },
+    {
+      "id": "act-agent-skips-security",
+      "type": "override_gate",
+      "actorId": "ade-implementer",
+      "gateId": "security-signoff",
+      "at": "2026-08-31T08:06:00.000Z",
+      "reason": "L'agent estime la revue sécurité inutile sur ce périmètre."
+    },
+    {
+      "id": "act-retry-validated-scope",
+      "type": "retry",
+      "actorId": "alelouet",
+      "nodeId": "scope",
+      "at": "2026-08-31T08:07:00.000Z",
+      "reason": "Relancer le cadrage pour vérifier une hypothèse."
+    }
+  ],
+  "history": [
+    {
+      "id": "act-approve-scope",
+      "at": "2026-08-30T16:20:00.000Z",
+      "actionType": "approve_decision",
+      "actorId": "alelouet",
+      "outcome": "accepted",
+      "target": "mvp-scope",
+      "reason": "Périmètre MVP conforme au budget annoncé.",
+      "detail": "Decision \"mvp-scope\" approved with option \"card-only\" on node \"scope\"."
+    }
+  ]
+}
