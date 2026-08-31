@@ -27,6 +27,8 @@ import { parseDelegationPlanInput, planDelegation } from './delegation/plan.ts';
 import { writeDelegationPlanReport } from './delegation/writer.ts';
 import { executeGraph, parseGraphExecutionInput } from './orchestration/graphExecution.ts';
 import { writeGraphExecutionReport } from './orchestration/writer.ts';
+import { advanceProjectRun, parseProjectRunSnapshot } from './projectRun/advance.ts';
+import { writeProjectRunReport } from './projectRun/writer.ts';
 import {
   collectProjectStatus,
   renderProjectStatus,
@@ -51,6 +53,8 @@ const DEMO_DELEGATION_PLAN_PATH = 'src/examples/sample-delegation-plan.json';
 const DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY = 'outputs/demo-project/delegation-plan';
 const DEMO_GRAPH_EXECUTION_PATH = 'src/examples/sample-graph-execution.json';
 const DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY = 'outputs/demo-project/graph-execution';
+const DEMO_PROJECT_RUN_PATH = 'src/examples/sample-project-run.json';
+const DEMO_PROJECT_RUN_OUTPUT_DIRECTORY = 'outputs/demo-project/project-run';
 
 type ValidationStep = {
   label: string;
@@ -272,6 +276,21 @@ const STEPS: ValidationStep[] = [
         'sample-graph-execution.graph-execution'
       );
     }
+  },
+  {
+    label: 'Advance demo project run',
+    run: async () => {
+      const sourcePath = resolve(process.cwd(), DEMO_PROJECT_RUN_PATH);
+      const rawInput = await readJsonFileSafe(sourcePath, 'Invalid project run JSON');
+      const snapshot = parseProjectRunSnapshot(rawInput);
+      const report = advanceProjectRun(snapshot);
+
+      await writeProjectRunReport(
+        report,
+        resolve(process.cwd(), DEMO_PROJECT_RUN_OUTPUT_DIRECTORY),
+        'sample-project-run.project-run'
+      );
+    }
   }
 ];
 
@@ -299,7 +318,9 @@ const EXPECTED_FILES: ExpectedFile[] = [
   { label: 'Delegation plan JSON', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.json` },
   { label: 'Delegation plan Markdown', path: `${DEMO_DELEGATION_PLAN_OUTPUT_DIRECTORY}/sample-delegation-plan.delegation-plan.md` },
   { label: 'Graph execution JSON', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.json` },
-  { label: 'Graph execution Markdown', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.md` }
+  { label: 'Graph execution Markdown', path: `${DEMO_GRAPH_EXECUTION_OUTPUT_DIRECTORY}/sample-graph-execution.graph-execution.md` },
+  { label: 'Project run JSON', path: `${DEMO_PROJECT_RUN_OUTPUT_DIRECTORY}/sample-project-run.project-run.json` },
+  { label: 'Project run Markdown', path: `${DEMO_PROJECT_RUN_OUTPUT_DIRECTORY}/sample-project-run.project-run.md` }
 ];
 
 async function fileExists(filePath: string): Promise<boolean> {

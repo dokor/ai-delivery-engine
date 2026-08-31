@@ -38,6 +38,7 @@ const COMMANDS = {
   'blueprint compile': 'blueprintCompile.js',
   'delivery close': 'deliveryClose.js',
   'run observe': 'runObserve.js',
+  'run advance': 'projectRunAdvance.js',
   'quality gate': 'qualityGate.js',
   'delegation plan': 'delegationPlan.js',
   'graph execute': 'graphExecute.js',
@@ -69,6 +70,7 @@ const COMMANDS = {
   'blueprint:compile': 'blueprintCompile.js',
   'delivery:close': 'deliveryClose.js',
   'run:observe': 'runObserve.js',
+  'run:advance': 'projectRunAdvance.js',
   'quality:gate': 'qualityGate.js',
   'delegation:plan': 'delegationPlan.js',
   'graph:execute': 'graphExecute.js',
@@ -97,6 +99,7 @@ Context:
   ade blueprint compile [brief]   compile a brief into a delivery blueprint/graph
   ade delivery close [run] [out]  close a run into delivery dossier artifacts
   ade run observe [run] [out]     render observable run timeline, budget and controls
+  ade run advance [run] [out]     apply Project Run actions, recompute state and next node
   ade quality gate [input] [out]  evaluate staging/production quality gate evidence
   ade delegation plan [input] [out]  plan isolated agent delegation without executing agents
   ade graph execute [input] [out] execute a delivery graph with deterministic mock providers

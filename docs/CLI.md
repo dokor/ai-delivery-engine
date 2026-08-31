@@ -60,6 +60,7 @@ Legacy colon forms (`ade config:print`) remain supported.
 | `ade quality gate [input] [out]` | Evaluate staging/production quality evidence into a versioned gate report. |
 | `ade delegation plan [input] [out]` | Plan isolated agent delegation, Git branches, validations and blocked tasks without executing agents. |
 | `ade graph execute [input] [out]` | Execute a delivery graph with deterministic mock providers, handoffs, resume state and blocked-node reporting. |
+| `ade run advance [run] [out]` | Apply Project Run actions (pause, resume, retry, cancel, decisions, gate override, takeover), recompute the run state and name the next node or the exact blocker. Refusals are audited, validated nodes are never replayed. |
 
 ### Review & fix
 
