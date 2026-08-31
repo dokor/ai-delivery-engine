@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # requis pour la provenance npm (OIDC)
+      id-token: write # requis pour l'authentification OIDC (trusted publishing)
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,12 +55,19 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
+      # Le trusted publishing exige npm >= 11.5.1, or Node 22 embarque npm 10.9.x.
+      # Sans cette ligne, le CLI ignore l'OIDC et retombe sur un token — ce qui
+      # produit exactement le 404 qui a fait échouer 0.5.0 et 0.6.0.
+      - run: npm install -g npm@latest
+
       - run: pnpm install --no-frozen-lockfile
 
       - run: pnpm typecheck
 
       - run: pnpm test
 
-      - run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Authentification par OIDC : aucun token npm à faire tourner, et la
+      # provenance est générée automatiquement (le flag --provenance devient
+      # inutile). Prérequis : le trusted publisher doit être déclaré sur
+      # npmjs.com pour ce paquet, en pointant ce fichier de workflow.
+      - run: npm publish --access public
