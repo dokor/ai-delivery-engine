@@ -131,7 +131,7 @@ Or point at Node and the installed entrypoint, avoiding the shim entirely:
 
 ## Tools
 
-All seven are read-only unless stated otherwise.
+All are read-only unless stated otherwise.
 
 | Tool | What it does | Equivalent command |
 |---|---|---|
@@ -142,6 +142,7 @@ All seven are read-only unless stated otherwise.
 | `ade_review_git_diff` | Same review scoped to a diff: `staged: true` or `base: "<ref>"`. | `ade review --staged` / `--base` |
 | `ade_doctor` | Node version, configuration validity, configured tools, context freshness. | `ade doctor` |
 | `ade_suggest_fix` | Lists mechanical fixes. **Plans only by default**; `apply: true` requires a write-enabled server. | `ade fix --dry-run` |
+| `ade_project_setup` | `mode: "contract"` returns the versioned catalogue of what a repository needs to be ADE-ready; `mode: "check"` (default) evaluates one repository as ready, incomplete or invalid. | `ade setup contract` / `ade setup check` |
 
 `ade_review_git_diff` runs `git diff --name-only` and nothing else. When no diff
 can be determined — not a git repository, git unavailable — the result says so

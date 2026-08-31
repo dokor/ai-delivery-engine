@@ -75,6 +75,34 @@ export type {
   ReviewScope
 } from './engine/findings.types.ts';
 
+// --- Project setup contract --------------------------------------------------
+// The versioned answer to "what does a repository need to be ADE-ready?", plus
+// the evaluation of one repository against it. Consumed by ade-control-plane.
+export {
+  getProjectSetupContract,
+  getSetupRequirements,
+  getSetupTemplate,
+  projectSetupContractToJson
+} from './setup/requirements.ts';
+export { evaluateProjectSetup } from './setup/evaluate.ts';
+export { writeProjectSetupEvaluation } from './setup/writer.ts';
+export { PROJECT_SETUP_CONTRACT_VERSION } from './setup/setup.types.ts';
+export type {
+  EvaluateProjectSetupOptions,
+  ProjectReadiness,
+  ProjectSetupContract,
+  ProjectSetupContractVersion,
+  ProjectSetupEvaluation,
+  ProjectSetupWrittenFiles,
+  RequirementCriticality,
+  RequirementEvaluation,
+  RequirementKind,
+  RequirementScope,
+  RequirementStatus,
+  RequirementTemplate,
+  SetupRequirement
+} from './setup/setup.types.ts';
+
 // --- Diagnostics -------------------------------------------------------------
 export { doctorExitCode, renderDoctorReport, runDoctor } from './doctor/runDoctor.ts';
 export type {

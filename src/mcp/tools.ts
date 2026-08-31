@@ -5,6 +5,8 @@ import { renderReviewHuman } from '../engine/renderFindings.ts';
 import { doctorExitCode, renderDoctorReport, runDoctor } from '../doctor/runDoctor.ts';
 import { renderFixReport, runFix } from '../fix/runFix.ts';
 import { runProjectReview } from '../review/runProjectReview.ts';
+import { evaluateProjectSetup } from '../setup/evaluate.ts';
+import { getProjectSetupContract, projectSetupContractToJson } from '../setup/requirements.ts';
 import { buildActiveRulesReport, renderRulesReport } from '../rules/renderRules.ts';
 import { getAllPacks, listPackIds } from '../rules/registry.ts';
 import type { PackRule } from '../rules/rulePack.types.ts';
@@ -16,7 +18,7 @@ import {
 } from './safety.ts';
 
 /**
- * The seven MVP tools of the ADE MCP server.
+ * The tools of the ADE MCP server.
  *
  * Every tool delegates to the shared programmatic core, so a tool result is by
  * construction the same as the corresponding CLI command's result. No tool
@@ -434,6 +436,54 @@ export const TOOLS: McpToolDefinition[] = [
       const lines = renderDoctorReport(report);
       lines.push(`- Exit code an equivalent CLI run would return: ${doctorExitCode(report)}`);
       return lines.join('\n');
+    }
+  },
+
+  {
+    name: 'ade_project_setup',
+    description:
+      "Answers what a repository needs to be fully configured for ADE. mode \"contract\" returns the versioned requirement catalogue with no project involved; mode \"check\" evaluates a repository as ready, incomplete or invalid. Read-only, no AI call, no GitHub access — label requirements come back as unverifiable unless you pass observedGithubLabels.",
+    inputSchema: {
+      type: 'object',
+      properties: {
+        mode: {
+          type: 'string',
+          description:
+            'What to return. "check" (default) evaluates a repository; "contract" returns the requirement catalogue and needs no project root.',
+          enum: ['check', 'contract']
+        },
+        projectRoot: PROJECT_ROOT_PROPERTY,
+        observedGithubLabels: {
+          type: 'array',
+          description:
+            'Label names observed on the remote repository. Supply them to have GitHub label requirements evaluated instead of reported as unverifiable.',
+          items: { type: 'string' }
+        }
+      },
+      additionalProperties: false
+    },
+    annotations: {
+      title: 'Project setup contract',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false
+    },
+    handler: async (args, context) => {
+      const mode = readEnum(args, 'mode', ['check', 'contract'] as const, 'check');
+
+      if (mode === 'contract') {
+        return projectSetupContractToJson(getProjectSetupContract());
+      }
+
+      const projectRoot = await resolveProjectRoot(
+        readOptionalString(args, 'projectRoot'),
+        context.env
+      );
+      const observedGithubLabels = readOptionalStringArray(args, 'observedGithubLabels');
+      const evaluation = await evaluateProjectSetup({ projectRoot, observedGithubLabels });
+
+      return evaluation.markdown;
     }
   },
 

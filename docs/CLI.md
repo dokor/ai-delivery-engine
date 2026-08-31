@@ -61,6 +61,8 @@ Legacy colon forms (`ade config:print`) remain supported.
 | `ade delegation plan [input] [out]` | Plan isolated agent delegation, Git branches, validations and blocked tasks without executing agents. |
 | `ade graph execute [input] [out]` | Execute a delivery graph with deterministic mock providers, handoffs, resume state and blocked-node reporting. |
 | `ade run advance [run] [out]` | Apply Project Run actions (pause, resume, retry, cancel, decisions, gate override, takeover), recompute the run state and name the next node or the exact blocker. Refusals are audited, validated nodes are never replayed. |
+| `ade setup contract [--json\|--human] [--template <id>]` | Print the versioned catalogue of what a repository needs to be ADE-ready, or the ADE-owned content that satisfies one requirement. See [PROJECT_SETUP_CONTRACT.md](./PROJECT_SETUP_CONTRACT.md). |
+| `ade setup check [out] [--json]` | Evaluate this repository against that contract: `ready`, `incomplete` or `invalid`. Exit `0` when ready, `1` otherwise. |
 
 ### Review & fix
 

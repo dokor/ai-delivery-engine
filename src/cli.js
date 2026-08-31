@@ -39,6 +39,8 @@ const COMMANDS = {
   'delivery close': 'deliveryClose.js',
   'run observe': 'runObserve.js',
   'run advance': 'projectRunAdvance.js',
+  'setup contract': 'setupContract.js',
+  'setup check': 'setupCheck.js',
   'quality gate': 'qualityGate.js',
   'delegation plan': 'delegationPlan.js',
   'graph execute': 'graphExecute.js',
@@ -71,6 +73,8 @@ const COMMANDS = {
   'delivery:close': 'deliveryClose.js',
   'run:observe': 'runObserve.js',
   'run:advance': 'projectRunAdvance.js',
+  'setup:contract': 'setupContract.js',
+  'setup:check': 'setupCheck.js',
   'quality:gate': 'qualityGate.js',
   'delegation:plan': 'delegationPlan.js',
   'graph:execute': 'graphExecute.js',
@@ -100,6 +104,11 @@ Context:
   ade delivery close [run] [out]  close a run into delivery dossier artifacts
   ade run observe [run] [out]     render observable run timeline, budget and controls
   ade run advance [run] [out]     apply Project Run actions, recompute state and next node
+
+Project setup contract:
+  ade setup contract [--json|--human] [--template <id>]
+                                  what a repository needs to be ADE-ready
+  ade setup check [out] [--json]  evaluate this repository: ready | incomplete | invalid
   ade quality gate [input] [out]  evaluate staging/production quality gate evidence
   ade delegation plan [input] [out]  plan isolated agent delegation without executing agents
   ade graph execute [input] [out] execute a delivery graph with deterministic mock providers
