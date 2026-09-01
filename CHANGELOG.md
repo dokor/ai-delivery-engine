@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.7.0...ai-delivery-engine-v0.8.0) (2026-09-01)
+
+
+### Features
+
+* plan repository-owned GitHub issue lifecycle ([74713d0](https://github.com/dokor/ai-delivery-engine/commit/74713d061033e8c696cc8535ff157afbbc7c4108))
+* resolve issue lifecycle from repository policy ([36d1d9e](https://github.com/dokor/ai-delivery-engine/commit/36d1d9ea630c3a7510b3b9d0bd1baf5808993168))
+
 ## [0.7.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.6.1...ai-delivery-engine-v0.7.0) (2026-08-31)
 
 
