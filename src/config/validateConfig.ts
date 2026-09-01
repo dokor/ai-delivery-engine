@@ -29,7 +29,8 @@ const ALLOWED_TOP_LEVEL_KEYS = new Set([
   'profiles',
   'context',
   'thresholds',
-  'output'
+  'output',
+  'issueLifecycle'
 ]);
 
 const PROFILE_MODES = new Set(['deterministic', 'assisted']);
@@ -37,6 +38,7 @@ const PROFILE_CONTEXTS = new Set(['compact', 'full']);
 const PROFILE_PRIVACY = new Set(['strict', 'standard']);
 const RULE_SEVERITIES = new Set(['info', 'warn', 'error']);
 const OUTPUT_FORMATS = new Set(['markdown', 'json']);
+const ISSUE_RETRY_POLICIES = new Set(['safe', 'reconcile-first', 'never']);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -120,6 +122,44 @@ function validateProfiles(value: unknown, issues: ConfigIssue[]): Record<string,
     }
   }
   return value as Record<string, AdeProfile>;
+}
+
+function validateIssueLifecycle(value: unknown, issues: ConfigIssue[]): AdeConfig['issueLifecycle'] | undefined {
+  if (!isRecord(value)) {
+    issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle` must be an object.', path: 'issueLifecycle' });
+    return undefined;
+  }
+  const lifecycle: NonNullable<AdeConfig['issueLifecycle']> = {};
+  if (value.priority !== undefined) {
+    if (typeof value.priority === 'number' && Number.isInteger(value.priority) && value.priority >= 0 && value.priority <= 100) lifecycle.priority = value.priority;
+    else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.priority` must be an integer between 0 and 100.', path: 'issueLifecycle.priority' });
+  }
+  if (value.retryPolicy !== undefined) {
+    if (typeof value.retryPolicy === 'string' && ISSUE_RETRY_POLICIES.has(value.retryPolicy)) lifecycle.retryPolicy = value.retryPolicy as NonNullable<AdeConfig['issueLifecycle']>['retryPolicy'];
+    else issues.push({ code: 'INVALID_ENUM', severity: 'error', message: '`issueLifecycle.retryPolicy` must be safe|reconcile-first|never.', path: 'issueLifecycle.retryPolicy' });
+  }
+  if (value.enrichment !== undefined) {
+    if (!isRecord(value.enrichment)) {
+      issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment` must be an object.', path: 'issueLifecycle.enrichment' });
+    } else {
+      const enrichment: NonNullable<NonNullable<AdeConfig['issueLifecycle']>['enrichment']> = {};
+      if (value.enrichment.enabled !== undefined) {
+        if (typeof value.enrichment.enabled === 'boolean') enrichment.enabled = value.enrichment.enabled;
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment.enabled` must be a boolean.', path: 'issueLifecycle.enrichment.enabled' });
+      }
+      if (value.enrichment.profile !== undefined) {
+        if (typeof value.enrichment.profile === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value.enrichment.profile)) enrichment.profile = value.enrichment.profile;
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment.profile` must be a safe profile name.', path: 'issueLifecycle.enrichment.profile' });
+      }
+      if (value.enrichment.minimumAcceptanceCriteria !== undefined) {
+        const count = value.enrichment.minimumAcceptanceCriteria;
+        if (typeof count === 'number' && Number.isInteger(count) && count >= 1 && count <= 20) enrichment.minimumAcceptanceCriteria = count;
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment.minimumAcceptanceCriteria` must be an integer between 1 and 20.', path: 'issueLifecycle.enrichment.minimumAcceptanceCriteria' });
+      }
+      lifecycle.enrichment = enrichment;
+    }
+  }
+  return lifecycle;
 }
 
 /**
@@ -214,6 +254,11 @@ export function validateLayer(
     } else {
       issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`output` must be an object.', path: 'output' });
     }
+  }
+
+  if (value.issueLifecycle !== undefined) {
+    const lifecycle = validateIssueLifecycle(value.issueLifecycle, issues);
+    if (lifecycle) sanitized.issueLifecycle = lifecycle;
   }
 
   return { sanitized, issues };

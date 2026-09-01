@@ -50,6 +50,22 @@ export interface AdeOutputConfig {
   formats?: Array<'markdown' | 'json'>;
 }
 
+/** Repository-owned policy for admitting GitHub issues into an ADE delivery. */
+export interface AdeIssueLifecycleConfig {
+  /** Controls whether ADE may request PO/PM enrichment before development. */
+  enrichment?: {
+    enabled?: boolean;
+    /** Name of the repository profile that owns the enrichment instructions. */
+    profile?: string;
+    /** Number of unchecked acceptance criteria required before development. */
+    minimumAcceptanceCriteria?: number;
+  };
+  /** Scheduler priority used when ADE creates the GitHub work metadata. */
+  priority?: number;
+  /** Retry policy written to the GitHub work metadata. */
+  retryPolicy?: 'safe' | 'reconcile-first' | 'never';
+}
+
 /**
  * User-facing configuration, as written in `ade.config.{ts,js,mjs,json}` or a
  * preset. Every field is optional so an empty config is valid and works
@@ -76,6 +92,8 @@ export interface AdeConfig {
   thresholds?: Record<string, number>;
   /** Output configuration. */
   output?: AdeOutputConfig;
+  /** Repository-owned policy for the GitHub issue lifecycle. */
+  issueLifecycle?: AdeIssueLifecycleConfig;
 }
 
 /**
@@ -93,6 +111,7 @@ export interface ResolvedAdeConfig {
   context: AdeContextConfig;
   thresholds: Record<string, number>;
   output: AdeOutputConfig;
+  issueLifecycle: AdeIssueLifecycleConfig;
 }
 
 /** Which source(s) contributed a given configuration key. */

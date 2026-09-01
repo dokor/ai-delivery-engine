@@ -16,7 +16,8 @@ export function emptyResolvedConfig(): ResolvedAdeConfig {
     profiles: {},
     context: {},
     thresholds: {},
-    output: {}
+    output: {},
+    issueLifecycle: {}
   };
 }
 
@@ -125,6 +126,22 @@ export function mergeConfigLayer(
   if (layer.output !== undefined) {
     accumulator.output = { ...accumulator.output, ...layer.output };
     recordProvenance(provenance, 'output', sourceLabel);
+  }
+
+  if (layer.issueLifecycle !== undefined) {
+    accumulator.issueLifecycle = {
+      ...accumulator.issueLifecycle,
+      ...layer.issueLifecycle,
+      ...(layer.issueLifecycle.enrichment
+        ? {
+            enrichment: {
+              ...accumulator.issueLifecycle.enrichment,
+              ...layer.issueLifecycle.enrichment
+            }
+          }
+        : {})
+    };
+    recordProvenance(provenance, 'issueLifecycle', sourceLabel);
   }
 }
 

@@ -44,6 +44,7 @@ const COMMANDS = {
   'quality gate': 'qualityGate.js',
   'delegation plan': 'delegationPlan.js',
   'graph execute': 'graphExecute.js',
+  'issue plan': 'cliIssuePlan.js',
   // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
@@ -112,6 +113,8 @@ Project setup contract:
   ade quality gate [input] [out]  evaluate staging/production quality gate evidence
   ade delegation plan [input] [out]  plan isolated agent delegation without executing agents
   ade graph execute [input] [out] execute a delivery graph with deterministic mock providers
+  ade issue plan --json < input.json
+                                  resolve the repository-owned next GitHub issue lifecycle step
 
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
