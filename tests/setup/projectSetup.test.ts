@@ -47,7 +47,7 @@ async function readyProject(): Promise<string> {
   await project.write('docs/DECISIONS/ADR-0001.md', '# ADR 1\n');
   await project.write(
     'ade.config.json',
-    `${JSON.stringify({ ...JSON.parse(defaultConfigJson()), packs: ['development'] }, null, 2)}\n`
+    `${JSON.stringify({ ...JSON.parse(defaultConfigJson()), packs: ['development'], issueLifecycle: { enrichment: { enabled: true, profile: 'local' }, deliveryPlan: { implementationProfile: 'local', reviewProfiles: ['ci'] } } }, null, 2)}\n`
   );
 
   // Generate the project context so `context.generated` is satisfied.
@@ -146,6 +146,8 @@ describe('evaluating a ready repository', () => {
       `expected ready, missing: ${evaluation.missingRequiredIds.join(', ')}`
     );
     assert.deepEqual(evaluation.missingRequiredIds, []);
+    assert.deepEqual(evaluation.missingExecutionCapabilityIds, []);
+    assert.ok(evaluation.executionCapabilities.every((capability) => capability.status === 'available'));
     assert.deepEqual(evaluation.configurationErrors, []);
     assert.equal(evaluation.generatedAt, AT);
   });

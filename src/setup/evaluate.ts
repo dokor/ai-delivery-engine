@@ -10,6 +10,7 @@ import { getSetupRequirements } from './requirements.ts';
 import {
   PROJECT_SETUP_CONTRACT_VERSION,
   type EvaluateProjectSetupOptions,
+  type ExecutionCapabilityEvaluation,
   type ProjectReadiness,
   type ProjectSetupEvaluation,
   type RequirementEvaluation,
@@ -199,6 +200,24 @@ function deriveReadiness(
   return missingRequired ? 'incomplete' : 'ready';
 }
 
+function resolveExecutionCapabilities(resolution: ConfigResolution): ExecutionCapabilityEvaluation[] {
+  const configured = resolution.issues.every((issue) => issue.severity !== 'error');
+  const profiles = resolution.config.profiles;
+  const lifecycle = resolution.config.issueLifecycle;
+  const delivery = lifecycle.deliveryPlan;
+  const implementationProfile = delivery?.implementationProfile;
+  const deliveryPlanAvailable = configured && Boolean(implementationProfile && profiles[implementationProfile]);
+  const enrichmentProfile = lifecycle.enrichment?.profile;
+  const enrichmentAvailable = configured && lifecycle.enrichment?.enabled === true && Boolean(enrichmentProfile && profiles[enrichmentProfile]);
+  return [
+    { id: 'issue-plan', status: configured ? 'available' : 'missing', detail: configured ? 'ADE can resolve the repository issue lifecycle.' : 'Resolve ADE configuration errors before planning issues.' },
+    { id: 'issue-enrichment', status: enrichmentAvailable ? 'available' : 'missing', detail: enrichmentAvailable ? 'The configured enrichment profile is resolvable.' : 'Configure issueLifecycle.enrichment with an existing profile to enable enrichment.' },
+    { id: 'delivery-plan', status: deliveryPlanAvailable ? 'available' : 'missing', detail: deliveryPlanAvailable ? 'The configured implementation profile is resolvable.' : 'Configure issueLifecycle.deliveryPlan.implementationProfile with an existing profile.' },
+    { id: 'deterministic-review', status: configured ? 'available' : 'missing', detail: configured ? 'ADE deterministic staged review is available.' : 'Resolve ADE configuration errors before deterministic review.' },
+    { id: 'profile-invocations', status: deliveryPlanAvailable ? 'available' : 'missing', detail: deliveryPlanAvailable ? 'ADE can provide review and correction profile invocations.' : 'A delivery plan is required before profile invocations can be resolved.' }
+  ];
+}
+
 function renderMarkdown(evaluation: Omit<ProjectSetupEvaluation, 'markdown'>): string {
   const lines: string[] = [
     `# ADE project setup — ${evaluation.projectName}`,
@@ -298,6 +317,8 @@ export async function evaluateProjectSetup(
     `Missing optional: ${missingOptionalIds.length}`,
     `Not verifiable locally: ${unverifiableIds.length}`
   ];
+  const executionCapabilities = resolveExecutionCapabilities(resolution);
+  const missingExecutionCapabilityIds = executionCapabilities.filter((capability) => capability.status === 'missing').map((capability) => capability.id);
 
   const withoutMarkdown: Omit<ProjectSetupEvaluation, 'markdown'> = {
     version: PROJECT_SETUP_CONTRACT_VERSION,
@@ -310,6 +331,8 @@ export async function evaluateProjectSetup(
     missingRequiredIds,
     missingOptionalIds,
     unverifiableIds,
+    executionCapabilities,
+    missingExecutionCapabilityIds,
     summaryLines
   };
 
