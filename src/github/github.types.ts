@@ -11,6 +11,7 @@ export type GitHubIssue = {
   labels: string[];
   state: 'open' | 'closed';
   url: string;
+  updatedAt?: string;
 };
 
 export type GitHubPR = {
