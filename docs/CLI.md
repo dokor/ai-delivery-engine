@@ -63,6 +63,47 @@ Legacy colon forms (`ade config:print`) remain supported.
 | `ade run advance [run] [out]` | Apply Project Run actions (pause, resume, retry, cancel, decisions, gate override, takeover), recompute the run state and name the next node or the exact blocker. Refusals are audited, validated nodes are never replayed. |
 | `ade setup contract [--json\|--human] [--template <id>]` | Print the versioned catalogue of what a repository needs to be ADE-ready, or the ADE-owned content that satisfies one requirement. See [PROJECT_SETUP_CONTRACT.md](./PROJECT_SETUP_CONTRACT.md). |
 | `ade setup check [out] [--json]` | Evaluate this repository against that contract: `ready`, `incomplete` or `invalid`. Exit `0` when ready, `1` otherwise. |
+| `ade issue plan --json < input.json` | Resolve the repository-owned next issue-lifecycle step. |
+| `ade delivery plan --json < input.json` | Resolve the versioned ADE delivery contract consumed by schedulers and Git/PR control planes. |
+
+### Delivery-plan contract
+
+`ade delivery plan --json` reads a GitHub issue from standard input and returns
+`ade.delivery-plan/v1`. The result is either `supported`, with the admission
+decision, implementation profile, deterministic rule ids, specialist review
+profiles, bounded correction policy, human gates and publication readiness; or
+`unsupported`, with a machine-readable reason. A caller can supply
+`negotiation.acceptedVersions` and `negotiation.requiredCapabilities`; ADE
+returns `NO_MUTUAL_CONTRACT_VERSION` or `MISSING_REQUIRED_CAPABILITY` rather
+than silently falling back.
+
+The repository, not a scheduler, selects delivery behavior in
+`issueLifecycle.deliveryPlan`:
+
+```json
+{
+  "profiles": {
+    "implementation": { "mode": "assisted", "context": "full", "allowProvider": true },
+    "security": { "mode": "assisted", "context": "compact", "allowProvider": true }
+  },
+  "rules": [{ "id": "security/no-secrets", "severity": "error" }],
+  "issueLifecycle": {
+    "deliveryPlan": {
+      "implementationProfile": "implementation",
+      "reviewProfiles": ["security"],
+      "validationRuleIds": ["security/no-secrets"],
+      "maxCorrectionAttempts": 1,
+      "requireHumanApprovalBeforePublish": true
+    }
+  }
+}
+```
+
+An absent `implementationProfile`, an unknown profile/rule, or incompatible
+negotiation returns `unsupported`: consumers must not infer profiles from issue
+keywords or substitute local prompts. The contract exposes only config source
+labels, configured profile/rule/pack identifiers and policy keys as provenance;
+it never includes credentials, environment values or prompt contents.
 
 ### Review & fix
 

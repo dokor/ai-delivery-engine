@@ -151,6 +151,28 @@ describe('resolveConfig', () => {
     assert.equal(hasConfigErrors(resolution), false);
   });
 
+  it('resolves repository-owned delivery-plan policy and validates bounded identifiers', async () => {
+    project = await createTempProject();
+    await project.writeJson('ade.config.json', {
+      profiles: { implementation: { mode: 'assisted' }, security: { mode: 'assisted' } },
+      rules: [{ id: 'security/no-secrets', severity: 'error' }],
+      issueLifecycle: {
+        deliveryPlan: {
+          implementationProfile: 'implementation',
+          reviewProfiles: ['security'],
+          validationRuleIds: ['security/no-secrets'],
+          maxCorrectionAttempts: 2
+        }
+      }
+    });
+
+    const resolution = await resolveConfig({ cwd: project.dir });
+
+    assert.equal(hasConfigErrors(resolution), false);
+    assert.equal(resolution.config.issueLifecycle.deliveryPlan?.implementationProfile, 'implementation');
+    assert.deepEqual(resolution.config.issueLifecycle.deliveryPlan?.validationRuleIds, ['security/no-secrets']);
+  });
+
   it('rejects a non-array packs field', async () => {
     project = await createTempProject();
     await project.write('ade.config.json', JSON.stringify({ packs: 'development' }));

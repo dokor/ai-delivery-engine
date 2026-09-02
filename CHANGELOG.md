@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Features
+
+* expose `ade.delivery-plan/v1` through `ade delivery plan --json` and the API. Schedulers must negotiate this contract and configure `issueLifecycle.deliveryPlan`; no issue-keyword routing or local prompt fallback is supported.
+
+### Migration
+
+* Consumers of the former `ade issue plan --json` lifecycle-only result should negotiate `ade.delivery-plan/v1` and declare an `implementationProfile` in `issueLifecycle.deliveryPlan`. An absent policy now returns the explicit `MISSING_DELIVERY_PLAN_POLICY` status rather than an inferred workflow.
+
 ## [0.8.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.7.0...ai-delivery-engine-v0.8.0) (2026-09-01)
 
 

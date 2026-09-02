@@ -64,6 +64,23 @@ export interface AdeIssueLifecycleConfig {
   priority?: number;
   /** Retry policy written to the GitHub work metadata. */
   retryPolicy?: 'safe' | 'reconcile-first' | 'never';
+  /**
+   * Repository-owned delivery policy exposed to scheduling consumers.  ADE
+   * selects only the profiles and rules named here; callers must not infer
+   * workflow choices from issue text.
+   */
+  deliveryPlan?: {
+    /** Profile used to prepare implementation context. Required to advertise the delivery-plan capability. */
+    implementationProfile?: string;
+    /** Assisted or deterministic profiles requested for a specialist review pass. */
+    reviewProfiles?: string[];
+    /** Deterministic ADE rule ids to run before a change is considered reviewed. Defaults to all configured rules. */
+    validationRuleIds?: string[];
+    /** Maximum correction and re-review attempts after a failed validation or review. */
+    maxCorrectionAttempts?: number;
+    /** Publication always remains a human decision; this can add an explicit repository gate. */
+    requireHumanApprovalBeforePublish?: boolean;
+  };
 }
 
 /**

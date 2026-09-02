@@ -139,6 +139,14 @@ export function mergeConfigLayer(
               ...layer.issueLifecycle.enrichment
             }
           }
+        : {}),
+      ...(layer.issueLifecycle.deliveryPlan
+        ? {
+            deliveryPlan: {
+              ...accumulator.issueLifecycle.deliveryPlan,
+              ...layer.issueLifecycle.deliveryPlan
+            }
+          }
         : {})
     };
     recordProvenance(provenance, 'issueLifecycle', sourceLabel);
