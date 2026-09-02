@@ -13,7 +13,7 @@ async function main(): Promise<void> {
 }
 
 function isIssue(value: unknown): value is GitHubIssue {
-  return isRecord(value) && Number.isInteger(value.number) && value.number > 0 && typeof value.title === 'string' && value.title.length > 0 && value.title.length <= 500 && typeof value.body === 'string' && value.body.length <= 32_000 && Array.isArray(value.labels) && value.labels.length <= 50 && value.labels.every((label) => typeof label === 'string' && label.length <= 100) && (value.state === 'open' || value.state === 'closed') && typeof value.url === 'string' && value.url.length <= 2_000 && (value.updatedAt === undefined || typeof value.updatedAt === 'string' && !Number.isNaN(Date.parse(value.updatedAt)));
+  return isRecord(value) && typeof value.number === 'number' && Number.isInteger(value.number) && value.number > 0 && typeof value.title === 'string' && value.title.length > 0 && value.title.length <= 500 && typeof value.body === 'string' && value.body.length <= 32_000 && Array.isArray(value.labels) && value.labels.length <= 50 && value.labels.every((label) => typeof label === 'string' && label.length <= 100) && (value.state === 'open' || value.state === 'closed') && typeof value.url === 'string' && value.url.length <= 2_000 && (value.updatedAt === undefined || typeof value.updatedAt === 'string' && !Number.isNaN(Date.parse(value.updatedAt)));
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }
