@@ -10,6 +10,13 @@
 
 * Consumers of the former `ade issue plan --json` lifecycle-only result should negotiate `ade.delivery-plan/v1` and declare an `implementationProfile` in `issueLifecycle.deliveryPlan`. An absent policy now returns the explicit `MISSING_DELIVERY_PLAN_POLICY` status rather than an inferred workflow.
 
+## [0.10.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.9.0...ai-delivery-engine-v0.10.0) (2026-09-02)
+
+
+### Features
+
+* expose ADE profile invocations ([027a922](https://github.com/dokor/ai-delivery-engine/commit/027a922d07212fe7ea4c92f6fe05a360d857f5d6))
+
 ## [0.9.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.8.0...ai-delivery-engine-v0.9.0) (2026-09-02)
 
 
