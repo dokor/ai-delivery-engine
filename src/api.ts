@@ -22,6 +22,16 @@ export type {
   ResolvedAdeConfig
 } from './config/config.types.ts';
 
+// --- GitHub delivery planning ------------------------------------------------
+export { DELIVERY_PLAN_CONTRACT_VERSION, planDelivery } from './github/deliveryPlan.ts';
+export type {
+  DeliveryPlan,
+  DeliveryPlanCapability,
+  DeliveryPlanNegotiation,
+  DeliveryPlanResult,
+  PlanDeliveryOptions
+} from './github/deliveryPlan.ts';
+
 // --- Project context ---------------------------------------------------------
 export { collectProjectContext, toRelativePath } from './context/collectContext.ts';
 export { checkContext } from './context/checkContext.ts';

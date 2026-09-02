@@ -39,6 +39,8 @@ const PROFILE_PRIVACY = new Set(['strict', 'standard']);
 const RULE_SEVERITIES = new Set(['info', 'warn', 'error']);
 const OUTPUT_FORMATS = new Set(['markdown', 'json']);
 const ISSUE_RETRY_POLICIES = new Set(['safe', 'reconcile-first', 'never']);
+const PROFILE_NAME_REGEX = /^[a-z][a-z0-9-]{0,63}$/;
+const RULE_ID_REGEX = /^[a-z][a-z0-9._/-]{0,127}$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -148,7 +150,7 @@ function validateIssueLifecycle(value: unknown, issues: ConfigIssue[]): AdeConfi
         else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment.enabled` must be a boolean.', path: 'issueLifecycle.enrichment.enabled' });
       }
       if (value.enrichment.profile !== undefined) {
-        if (typeof value.enrichment.profile === 'string' && /^[a-z][a-z0-9-]{0,63}$/.test(value.enrichment.profile)) enrichment.profile = value.enrichment.profile;
+        if (typeof value.enrichment.profile === 'string' && PROFILE_NAME_REGEX.test(value.enrichment.profile)) enrichment.profile = value.enrichment.profile;
         else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment.profile` must be a safe profile name.', path: 'issueLifecycle.enrichment.profile' });
       }
       if (value.enrichment.minimumAcceptanceCriteria !== undefined) {
@@ -157,6 +159,34 @@ function validateIssueLifecycle(value: unknown, issues: ConfigIssue[]): AdeConfi
         else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.enrichment.minimumAcceptanceCriteria` must be an integer between 1 and 20.', path: 'issueLifecycle.enrichment.minimumAcceptanceCriteria' });
       }
       lifecycle.enrichment = enrichment;
+    }
+  }
+  if (value.deliveryPlan !== undefined) {
+    if (!isRecord(value.deliveryPlan)) {
+      issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.deliveryPlan` must be an object.', path: 'issueLifecycle.deliveryPlan' });
+    } else {
+      const deliveryPlan: NonNullable<NonNullable<AdeConfig['issueLifecycle']>['deliveryPlan']> = {};
+      if (value.deliveryPlan.implementationProfile !== undefined) {
+        if (typeof value.deliveryPlan.implementationProfile === 'string' && PROFILE_NAME_REGEX.test(value.deliveryPlan.implementationProfile)) deliveryPlan.implementationProfile = value.deliveryPlan.implementationProfile;
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.deliveryPlan.implementationProfile` must be a safe profile name.', path: 'issueLifecycle.deliveryPlan.implementationProfile' });
+      }
+      for (const key of ['reviewProfiles', 'validationRuleIds'] as const) {
+        if (value.deliveryPlan[key] === undefined) continue;
+        const items = value.deliveryPlan[key];
+        const identifierRegex = key === 'reviewProfiles' ? PROFILE_NAME_REGEX : RULE_ID_REGEX;
+        if (isStringArray(items) && items.length <= 32 && items.every((item) => identifierRegex.test(item))) deliveryPlan[key] = [...new Set(items)];
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: `\`issueLifecycle.deliveryPlan.${key}\` must contain at most 32 safe identifiers.`, path: `issueLifecycle.deliveryPlan.${key}` });
+      }
+      if (value.deliveryPlan.maxCorrectionAttempts !== undefined) {
+        const attempts = value.deliveryPlan.maxCorrectionAttempts;
+        if (typeof attempts === 'number' && Number.isInteger(attempts) && attempts >= 0 && attempts <= 5) deliveryPlan.maxCorrectionAttempts = attempts;
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.deliveryPlan.maxCorrectionAttempts` must be an integer between 0 and 5.', path: 'issueLifecycle.deliveryPlan.maxCorrectionAttempts' });
+      }
+      if (value.deliveryPlan.requireHumanApprovalBeforePublish !== undefined) {
+        if (typeof value.deliveryPlan.requireHumanApprovalBeforePublish === 'boolean') deliveryPlan.requireHumanApprovalBeforePublish = value.deliveryPlan.requireHumanApprovalBeforePublish;
+        else issues.push({ code: 'INVALID_TYPE', severity: 'error', message: '`issueLifecycle.deliveryPlan.requireHumanApprovalBeforePublish` must be a boolean.', path: 'issueLifecycle.deliveryPlan.requireHumanApprovalBeforePublish' });
+      }
+      lifecycle.deliveryPlan = deliveryPlan;
     }
   }
   return lifecycle;

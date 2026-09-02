@@ -45,6 +45,7 @@ const COMMANDS = {
   'delegation plan': 'delegationPlan.js',
   'graph execute': 'graphExecute.js',
   'issue plan': 'cliIssuePlan.js',
+  'delivery plan': 'cliDeliveryPlan.js',
   // Review / fix / rules
   review: 'cliReview.js',
   fix: 'cliFix.js',
@@ -115,6 +116,8 @@ Project setup contract:
   ade graph execute [input] [out] execute a delivery graph with deterministic mock providers
   ade issue plan --json < input.json
                                   resolve the repository-owned next GitHub issue lifecycle step
+  ade delivery plan --json < input.json
+                                  resolve the versioned ADE delivery contract for a GitHub issue
 
 Review:
   ade review [--staged|--base <ref>] [--run-tools] [--provider <name>] [--json]
