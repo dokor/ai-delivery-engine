@@ -17,6 +17,9 @@ test('admits an issue with an objective and enough acceptance criteria', () => {
   const plan = planIssueLifecycle({ issue: issue('## Objective\nShip it\n\n## Acceptance criteria\n- [ ] A\n- [ ] B\n- [ ] C') });
   assert.equal(plan.stage, 'ready-for-development');
   assert.equal(plan.action, 'develop');
+  assert.deepEqual(plan.implementationHandoff?.acceptanceCriteria, ['A', 'B', 'C']);
+  assert.equal(plan.implementationHandoff?.objective, 'Ship it');
+  assert.equal(plan.implementationHandoff?.issue.number, 42);
 });
 
 test('preserves a durable waiting-human state without replaying work', () => {
