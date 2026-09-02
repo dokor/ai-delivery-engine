@@ -10,6 +10,7 @@ const DELIVERY_PLAN_CAPABILITIES = [
   'implementation-context',
   'deterministic-validation',
   'specialist-review',
+  'profile-invocations',
   'correction-and-rereview',
   'human-publication-gate',
   'safe-provenance'
@@ -37,8 +38,8 @@ export interface DeliveryPlan {
   enrichment: { profile: string; reason: string } | null;
   implementation: { profile: string; mode: 'deterministic' | 'assisted'; context: 'compact' | 'full'; providerAllowed: boolean };
   validations: Array<{ ruleId: string; severity: 'info' | 'warn' | 'error'; appliesTo: string[] }>;
-  reviews: Array<{ profile: string; mode: 'deterministic' | 'assisted'; providerAllowed: boolean; reason: string }>;
-  correction: { maximumAttempts: number; reReview: boolean };
+  reviews: Array<{ profile: string; mode: 'deterministic' | 'assisted'; providerAllowed: boolean; reason: string; invocation: DeliveryProfileInvocation }>;
+  correction: { maximumAttempts: number; reReview: boolean; invocation: DeliveryProfileInvocation | null };
   humanGates: Array<{ id: 'accept-enrichment' | 'approve-specialist-review' | 'approve-publication'; required: boolean; reason: string }>;
   publication: { ready: boolean; reason: string };
   provenance: DeliveryPlanProvenance;
@@ -67,6 +68,14 @@ export interface PlanDeliveryOptions {
   configuration: ResolvedAdeConfig;
   negotiation?: DeliveryPlanNegotiation;
   provenance?: Pick<DeliveryPlanProvenance, 'configSources' | 'configKeys'>;
+}
+
+/** A bounded ADE-owned instruction a provider adapter may forward verbatim. */
+export interface DeliveryProfileInvocation {
+  version: 'ade.profile-invocation/v1';
+  profile: string;
+  kind: 'implementation' | 'specialist-review' | 'correction';
+  instructions: string;
 }
 
 /**
@@ -118,7 +127,7 @@ export function planDelivery(options: PlanDeliveryOptions): DeliveryPlanResult {
         return { ruleId, severity: rule.severity ?? 'error', appliesTo: [...(rule.appliesTo ?? [])] };
       }),
       reviews,
-      correction: { maximumAttempts: policy.maxCorrectionAttempts ?? 1, reReview: reviews.length > 0 },
+      correction: { maximumAttempts: policy.maxCorrectionAttempts ?? 1, reReview: reviews.length > 0, invocation: reviews.length > 0 ? invocation(policy.implementationProfile, 'correction') : null },
       humanGates: [
         { id: 'accept-enrichment', required: lifecycle.action === 'enrich', reason: lifecycle.action === 'enrich' ? 'A human must accept issue enrichment before development.' : 'No enrichment is pending.' },
         { id: 'approve-specialist-review', required: reviews.length > 0, reason: reviews.length > 0 ? 'Specialist review output remains human-reviewed.' : 'No specialist review profiles are configured.' },
@@ -152,8 +161,15 @@ function implementationInvocation(profile: string, value: AdeProfile): DeliveryP
   return { profile, mode: value.mode ?? 'deterministic', context: value.context ?? 'compact', providerAllowed: value.allowProvider === true };
 }
 
-function profileInvocation(profile: string, value: AdeProfile): DeliveryPlan['reviews'][number] {
-  return { profile, mode: value.mode ?? 'deterministic', providerAllowed: value.allowProvider === true, reason: 'Selected by issueLifecycle.deliveryPlan.reviewProfiles.' };
+function profileInvocation(profile: string, value: AdeProfile, kind: 'specialist-review' | 'correction' = 'specialist-review'): DeliveryPlan['reviews'][number] {
+  return { profile, mode: value.mode ?? 'deterministic', providerAllowed: value.allowProvider === true, reason: 'Selected by issueLifecycle.deliveryPlan.reviewProfiles.', invocation: invocation(profile, kind) };
+}
+
+function invocation(profile: string, kind: DeliveryProfileInvocation['kind']): DeliveryProfileInvocation {
+  const instructions = kind === 'correction'
+    ? `Apply only the smallest corrections required by ADE review findings using the ${profile} profile. Do not commit, push, publish, or expose credentials.`
+    : `Perform the ADE ${profile} specialist review. Inspect the staged change and configured deterministic evidence. Do not edit files, commit, push, publish, or expose credentials.`;
+  return { version: 'ade.profile-invocation/v1', profile, kind, instructions };
 }
 
 function buildProvenance(options: PlanDeliveryOptions, implementationProfile: string, reviewProfileIds: string[], ruleIds: string[]): DeliveryPlanProvenance {
