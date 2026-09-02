@@ -114,6 +114,13 @@ export type RequirementEvaluation = {
  */
 export type ProjectReadiness = 'ready' | 'incomplete' | 'invalid';
 
+/** A read-only ADE operation that has been resolved against this checkout. */
+export type ExecutionCapabilityEvaluation = {
+  id: 'issue-plan' | 'issue-enrichment' | 'delivery-plan' | 'deterministic-review' | 'profile-invocations';
+  status: 'available' | 'missing';
+  detail: string;
+};
+
 export type ProjectSetupEvaluation = {
   version: ProjectSetupContractVersion;
   adeVersion: string;
@@ -130,6 +137,10 @@ export type ProjectSetupEvaluation = {
   missingOptionalIds: string[];
   /** Ids ADE could not check locally; a consumer may resolve these itself. */
   unverifiableIds: string[];
+  /** Capability verdicts derived from the resolved repository configuration. */
+  executionCapabilities: ExecutionCapabilityEvaluation[];
+  /** Exact unavailable execution capability ids, safe to persist and display. */
+  missingExecutionCapabilityIds: string[];
   summaryLines: string[];
   markdown: string;
 };
