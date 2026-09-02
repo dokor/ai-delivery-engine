@@ -43,6 +43,8 @@ test('returns a versioned repository-owned plan with bounded correction and huma
   assert.equal(result.plan.implementation.profile, 'implementation');
   assert.deepEqual(result.plan.validations.map((validation) => validation.ruleId), ['security/no-secrets']);
   assert.deepEqual(result.plan.reviews.map((review) => review.profile), ['security', 'qa']);
+  assert.match(result.plan.reviews[0]?.invocation.instructions ?? '', /ADE security specialist review/);
+  assert.match(result.plan.correction.invocation?.instructions ?? '', /smallest corrections/);
   assert.equal(result.plan.correction.maximumAttempts, 2);
   assert.equal(result.plan.humanGates.find((gate) => gate.id === 'approve-publication')?.required, true);
   assert.equal(result.plan.publication.ready, false);
