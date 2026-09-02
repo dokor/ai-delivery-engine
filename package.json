@@ -1,6 +1,6 @@
 {
   "name": "@alelouet/ai-delivery-engine",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "AI Delivery Engine orchestrates AI agents to transform project briefs into actionable delivery backlogs.",
   "type": "module",
   "main": "dist/api.js",
