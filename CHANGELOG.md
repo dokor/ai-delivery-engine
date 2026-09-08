@@ -10,6 +10,15 @@
 
 * Consumers of the former `ade issue plan --json` lifecycle-only result should negotiate `ade.delivery-plan/v1` and declare an `implementationProfile` in `issueLifecycle.deliveryPlan`. An absent policy now returns the explicit `MISSING_DELIVERY_PLAN_POLICY` status rather than an inferred workflow.
 
+## [0.12.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.11.0...ai-delivery-engine-v0.12.0) (2026-09-08)
+
+
+### Features
+
+* add provider-agnostic agent instructions ([d9e751e](https://github.com/dokor/ai-delivery-engine/commit/d9e751e2aafff3d156a35e11149a145a26aa6419))
+* make ADE agent instructions provider-neutral ([4d5902d](https://github.com/dokor/ai-delivery-engine/commit/4d5902d6e69f5e890f538eb527877023002e4175))
+* ship canonical AGENTS.md setup template ([2d2064f](https://github.com/dokor/ai-delivery-engine/commit/2d2064f7750695e4491b8d354546b415eb87bed3))
+
 ## [0.11.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.10.0...ai-delivery-engine-v0.11.0) (2026-09-02)
 
 
