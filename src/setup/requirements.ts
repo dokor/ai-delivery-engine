@@ -22,7 +22,7 @@ import {
 /**
  * Labels the supported ADE GitHub issue workflow relies on.
  *
- * These are the workflow labels documented in CLAUDE.md, not this repository's
+ * These are the workflow labels documented in AGENTS.md, not this repository's
  * own taxonomy (`area:`, `type:`, `priority:`…). Declaring the latter would make
  * the contract inapplicable to consuming projects.
  */
@@ -154,11 +154,11 @@ export function getSetupRequirements(): SetupRequirement[] {
       kind: 'agent-instructions',
       scope: 'local',
       criticality: 'recommended',
-      title: 'Agent instruction file',
+      title: 'Provider-neutral agent instruction file',
       description:
-        'A CLAUDE.md or AGENTS.md at the repository root, describing the commands, workflows and gates an agent must respect.',
-      path: 'CLAUDE.md',
-      remediation: 'Add a CLAUDE.md (or AGENTS.md) describing available commands, workflows and human approval gates.'
+        'An AGENTS.md at the repository root is the canonical ADE instruction contract shared by Codex, Claude Code and other coding agents. Provider-specific files may only act as adapters.',
+      path: 'AGENTS.md',
+      remediation: 'Add a root AGENTS.md describing available commands, ADE workflows, delivery gates and human approval boundaries. Provider-specific files such as CLAUDE.md should defer to it.'
     },
     {
       id: 'docs.readme',
