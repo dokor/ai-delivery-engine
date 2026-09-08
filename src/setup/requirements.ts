@@ -22,7 +22,7 @@ import {
 /**
  * Labels the supported ADE GitHub issue workflow relies on.
  *
- * These are the workflow labels documented in CLAUDE.md, not this repository's
+ * These are the workflow labels documented in AGENTS.md, not this repository's
  * own taxonomy (`area:`, `type:`, `priority:`…). Declaring the latter would make
  * the contract inapplicable to consuming projects.
  */
@@ -154,11 +154,15 @@ export function getSetupRequirements(): SetupRequirement[] {
       kind: 'agent-instructions',
       scope: 'local',
       criticality: 'recommended',
-      title: 'Agent instruction file',
+      title: 'Provider-neutral agent instruction file',
       description:
-        'A CLAUDE.md or AGENTS.md at the repository root, describing the commands, workflows and gates an agent must respect.',
-      path: 'CLAUDE.md',
-      remediation: 'Add a CLAUDE.md (or AGENTS.md) describing available commands, workflows and human approval gates.'
+        'An AGENTS.md at the repository root is the canonical ADE instruction contract shared by Codex, Claude Code and other coding agents. Provider-specific files may only act as adapters.',
+      path: 'AGENTS.md',
+      remediation: 'Add a root AGENTS.md describing available commands, ADE workflows, delivery gates and human approval boundaries. Provider-specific files such as CLAUDE.md should defer to it.',
+      template: {
+        id: 'AGENTS.md',
+        description: 'Provider-neutral ADE agent instructions for a repository.'
+      }
     },
     {
       id: 'docs.readme',
@@ -264,6 +268,32 @@ export function getSetupTemplate(templateId: string): string | undefined {
 }
 
 const SETUP_TEMPLATE_BODIES: Record<string, string> = {
+  'AGENTS.md': `# Agent Instructions
+
+This repository is managed with AI Delivery Engine (ADE).
+
+AGENTS.md is the canonical provider-neutral instruction file for Codex, Claude Code and other coding agents.
+
+## Delivery rules
+
+- Follow the structured ADE implementation handoff for the current execution.
+- Do not start implementation until ADE admits the issue for development.
+- Keep changes bounded to the validated objective, scope and acceptance criteria.
+- Run the repository checks relevant to the change.
+- Follow ADE-selected specialist reviews and correction gates.
+- If an external orchestrator owns commit, push, issue metadata or pull-request creation, do not perform those operations yourself.
+- Never merge generated work automatically; human review remains the final merge gate.
+
+## Instruction priority
+
+1. Platform and safety restrictions.
+2. Structured ADE execution / implementation handoff.
+3. This AGENTS.md.
+4. Repository-local documentation and skills.
+5. Free-form issue/comment prose as reference material.
+
+Provider-specific files such as CLAUDE.md may point to this file but should not redefine the ADE workflow.
+`,
   '.github/ISSUE_TEMPLATE/ade-feature.md': `---
 name: Feature
 about: A change ADE can refine and implement

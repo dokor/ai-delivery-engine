@@ -1,214 +1,171 @@
 # AI Delivery Engine
 
-AI Delivery Engine is a documentation-first, local-first runtime for coordinating AI-assisted delivery like a small software team. It began as a documented operating model and now ships a working local runtime — an `ade` CLI, project configuration, project context, technical rule packs and token-budgeted context packs — while keeping every AI call optional and every important decision human-reviewed.
+AI Delivery Engine (**ADE**) is a documentation-first, local-first delivery runtime for coordinating AI-assisted software work with explicit contracts, deterministic validation and human approval gates.
 
-The goal is not autonomous agents yet. V1's goal is a reliable local runtime and a clear operating model: a human stays in the loop at every important transition, and no provider is ever called implicitly.
+ADE is **provider-neutral**. It does not define one workflow for Claude Code and another for Codex. The repository workflow, readiness rules, specialist perspectives, validation gates and publication boundaries are the same regardless of which compatible coding provider executes a step.
 
-## What Problem It Solves
+The canonical coding-agent instruction file is the root [`AGENTS.md`](AGENTS.md). Provider-specific files such as [`CLAUDE.md`](CLAUDE.md) are adapters only and must defer to that common contract.
 
-Teams can already use AI to write specs, generate UI ideas, suggest code, and draft tests. The hard part is delivery coordination:
+## What ADE owns
 
-- who owns each step
-- what context is passed forward
-- how backlog items are created and refined
-- where human approval is required
-- what should stay manual before automation is trusted
+ADE turns ad hoc prompting into a repeatable delivery workflow by owning:
 
-AI Delivery Engine is meant to turn ad hoc prompting into a repeatable delivery workflow.
+- project setup/readiness contracts;
+- project configuration and context;
+- issue planning and refinement/enrichment;
+- validated implementation handoffs;
+- technical rule packs;
+- specialist profiles and review instructions;
+- deterministic validation;
+- bounded correction/review loops;
+- explicit human approval boundaries.
 
-## Target Users
+A coding provider implements the work ADE has admitted. It does not redefine the lifecycle.
 
-- solo founders and freelancers shipping client work
-- small product teams that want AI help without losing control
-- tech leads who want structured AI collaboration instead of one-off prompts
+## Provider-neutral delivery flow
 
-## V1 In One Line
+```text
+Issue / work request
+→ ADE planning
+→ refinement/enrichment when needed
+→ validated implementation handoff
+→ Codex / Claude Code / compatible coding provider
+→ deterministic validation
+→ ADE specialist reviews
+→ bounded corrections
+→ publication gate
+→ PR
+→ explicit human review / merge
+```
 
-V1 is a local-first runtime — a stable `ade` CLI plus a manual, documentation-driven backlog workflow — that turns a project brief into a structured backlog and gives projects configuration, context, technical rule packs and token-budgeted context packs, with human review at every important step and no implicit AI calls.
+Provider choice must not alter:
 
-## Current MVP Status
+- readiness criteria;
+- objective or scope;
+- acceptance criteria;
+- specialist selection;
+- validation requirements;
+- publication ownership;
+- final human merge approval.
 
-The current MVP is not an autonomous agent platform yet. It is a local runtime and a semi-automatic delivery loop: ADE prepares, validates and reviews artifacts deterministically, and a human decides at every checkpoint.
+## Agent instruction convention
 
-It can already:
+New ADE-enabled repositories should expose a root `AGENTS.md` describing the commands, delivery gates, validation expectations and human approval boundaries that every coding agent must follow.
 
-- read a local project brief;
-- generate a deterministic PO/PM backlog draft;
-- generate a manual PO/PM prompt to copy into an AI assistant;
-- ask the AI assistant for an importable JSON response;
-- import and validate a manually saved PO/PM JSON response;
-- generate specialist prompts from individual exported backlog items;
-- produce normalized JSON and Markdown backlog outputs;
-- run deterministic backlog quality checks;
-- export one Markdown file per backlog item for manual review;
-- generate batch specialist prompts from the export manifest for supported owner roles, with a generated local index;
-- check saved specialist responses locally with deterministic Markdown and JSON reports;
-- resolve a modular, inherited, validated `ade.config` (presets, profiles, rules, ignore/sensitive globs) with visible provenance and secret rejection;
-- generate a deterministic, versionable project context (stack, modules, commands, conventions, entry points, ADRs) as Markdown + JSON, with a freshness check;
-- assemble a budgeted, cacheable context pack (chill/normal/expert modes) with a transparent manifest to reduce LLM token consumption, without ever calling a provider;
-- run a stable `ade` CLI (`init`, `doctor`, `config`, `context`, `review`, `fix`, `rules`, `upgrade`) with normalized findings, JSON output and documented exit codes, usable in CI without any LLM or secret;
-- activate technical rule packs (Next.js, React, Angular, WordPress, Java, cross-cutting development) with deterministic, tool-orchestration and AI-guidance rules, including a configurable service-size check;
-- summarize the local workflow state from generated files under `outputs/`;
-- list and enrich GitHub issues, and prepare issue development (branch + specialist prompts), through `gh` CLI scripts driven by Claude Code (see [GitHub Issue Workflow](#github-issue-workflow-claude-code) below).
+Provider-specific files are optional adapters:
 
-It deliberately does not yet:
+```text
+AGENTS.md        ← canonical ADE/repository agent contract
+CLAUDE.md        ← optional Claude Code adapter → AGENTS.md
+other provider   ← receives the same AGENTS.md + ADE handoff
+```
 
-- call OpenAI, Claude, Ollama, or any other model provider directly from ADE's own code (Claude Code plays that role manually today);
-- run autonomous agents without a human approval gate;
-- merge pull requests automatically;
-- use n8n;
-- use a database;
-- provide a web dashboard.
+For an execution, use this authority order:
 
-## Repository Map
+1. platform and safety restrictions;
+2. the structured ADE execution / implementation handoff;
+3. the repository root `AGENTS.md`;
+4. repository-local technical documentation and ADE-selected skills;
+5. free-form issue/comment prose as reference material.
 
-- [docs/VISION.md](docs/VISION.md)
-- [docs/ROADMAP.md](docs/ROADMAP.md)
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- [docs/AGENTS.md](docs/AGENTS.md)
-- [docs/roles/](docs/roles/) detailed role specifications (responsibilities, scope boundaries, follow-up work): [Security](docs/roles/security.md), [Data & Analytics](docs/roles/data-analytics.md), [SEO](docs/roles/seo.md), and [Cleanup](docs/roles/cleanup.md) (cross-cutting hygiene)
-- [docs/WORKFLOW.md](docs/WORKFLOW.md)
-- [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
-- [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md)
-- [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md) context handoff map between V1 roles
-- [docs/V1_APPROVAL_GATES.md](docs/V1_APPROVAL_GATES.md) the human approval gates for the V1 workflow
-- [docs/V1_READINESS_CHECKLIST.md](docs/V1_READINESS_CHECKLIST.md)
-- [docs/CLI.md](docs/CLI.md) the `ade` command-line surface: installation, commands, result model, exit codes, optional provider, and security notes
-- [docs/RULE_PACKS.md](docs/RULE_PACKS.md) technical profiles and rule packs (Next.js, React, Angular, WordPress, Java, cross-cutting) with rule kinds and the configurable service-size rule
-- [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) V1 workflows with their critical inputs/outputs, exit codes, and guarding tests
-- [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md) measuring and tuning LLM token consumption via budgeted context packs and chill/normal/expert modes
-- [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md) the three GitHub automation loops (issue enrichment, issue development, human review/merge) driven by Claude Code
-- [docs/BACKLOG_MODEL.md](docs/BACKLOG_MODEL.md)
-- [docs/MVP.md](docs/MVP.md)
-- [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md)
-- [docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md](docs/contracts/SPECIALIST_RESPONSE_CONTRACT.md)
-- [docs/DECISIONS/ADR-0001-documentation-first.md](docs/DECISIONS/ADR-0001-documentation-first.md)
-- [templates/](templates/) reusable manual role templates for UX/UI, Front-end, Back-end, QA, Tech Lead, Legal & Compliance, Security, DevOps, Data & Analytics, Customer Success, and SEO perspectives, including capability-aware guidance for Front-end and Back-end (see [templates/backend-capability-guidance.md](templates/backend-capability-guidance.md))
-- [scripts/](scripts/) `issues-enrich.sh` and `issue-dev.sh`, the shell entry points for the GitHub issue workflow
-- [src/github/](src/github/) GitHub integration code (issue fetching, enrichment prompts, PR creation, comments/labels) used by the GitHub issue workflow
-- [tests/](tests/) `node:test` unit tests covering backlog types, brief parsing, PO/PM agent modes, specialist prompt building, specialist checks, and safe path handling
-- [examples/demo-project/README.md](examples/demo-project/README.md) complete demo fixture for the full local V1 workflow
-- [examples/rule-packs/README.md](examples/rule-packs/README.md) per-stack reference fixtures for the technical rule packs
-- [examples/specialist-responses/README.md](examples/specialist-responses/README.md) fixture examples of contract-compliant specialist responses
+Historical projects that only contain `CLAUDE.md` remain detectable during migration, but `AGENTS.md` is the canonical convention for new setups.
 
-## Recommended First Implementation Approach
+## Core CLI
 
-1. Keep the source of truth in Markdown and simple JSON examples.
-2. Start with one agent flow: `brief -> PO/PM -> backlog draft`.
-3. Use manual prompts and manual approval instead of API calls.
-4. Store backlog items in files before introducing a database.
-5. Add automation only after the input, output, and review contracts feel stable.
-
-## Non-Goals For This Stage
-
-- no real LLM integrations
-- no autonomous execution
-- no complex dashboard
-- no external API coupling
-
-## Local MVP Workflow
-
-Install dependencies:
+Install dependencies for this repository:
 
 ```bash
 pnpm install
-```
-
-Run type checking and unit tests:
-
-```bash
 pnpm typecheck
 pnpm test
 ```
 
-`pnpm test` runs the `node:test` suite under `tests/`, covering backlog types, brief parsing (including PO/PM agent modes), specialist prompt building, specialist response checks, and safe path handling.
-
-### 1. Generate a deterministic backlog draft
+The stable `ade` CLI includes the main local runtime surfaces:
 
 ```bash
-pnpm backlog:run
+ade init
+ade doctor
+ade config validate
+ade context generate
+ade context check
+ade context pack normal
+ade setup contract --json
+ade setup check --json
+ade issue plan --json
+ade delivery plan --json
+ade review --staged --json
+ade rules list
+ade fix --dry-run
 ```
 
-Default input:
+ADE commands are designed to work locally and deterministically. Provider calls are never implicit runtime magic: an orchestrator or interactive coding client explicitly supplies the provider when assisted execution is needed.
 
-```txt
-src/examples/sample-brief.md
-```
+## Project setup contract
 
-Default outputs:
-
-```txt
-outputs/sample-brief.backlog.json
-outputs/sample-brief.backlog.md
-```
-
-This command proves the basic flow locally:
-
-```txt
-brief -> PO/PM runner -> backlog draft
-```
-
-You can also pass a custom brief path and optional output directory:
+ADE publishes one machine-readable source of truth for repository readiness:
 
 ```bash
-node --experimental-strip-types src/index.ts path/to/brief.md outputs
+ade setup contract --json
+ade setup check --json
 ```
 
-### 2. Generate a manual PO/PM prompt
+The setup contract covers, among other things:
+
+- `ade.config.json`;
+- valid ADE configuration;
+- generated/fresh project context;
+- root `AGENTS.md` as the canonical agent instruction file;
+- documentation and ADR locations;
+- rule packs and configured tools;
+- GitHub workflow labels;
+- issue templates.
+
+ADE itself has no need to mutate GitHub during local setup inspection. Requirements that cannot be observed locally can be returned as `unverifiable`; an external consumer such as ADE Control Plane may supply remote observations and repair missing GitHub state.
+
+See [docs/PROJECT_SETUP_CONTRACT.md](docs/PROJECT_SETUP_CONTRACT.md).
+
+## Issue planning and implementation handoff
+
+ADE separates issue prose from executable delivery scope.
+
+An issue is planned through:
 
 ```bash
-pnpm prompt:po
+ade issue plan --json
 ```
 
-This command writes a provider-agnostic Markdown prompt under `outputs/`, ready to copy into ChatGPT, Codex, Claude, or another assistant manually.
+Typical outcomes are:
 
-The prompt asks for a fenced importable JSON response aligned with [docs/contracts/PO_PM_OUTPUT_CONTRACT.md](docs/contracts/PO_PM_OUTPUT_CONTRACT.md). A sample valid response lives at [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json).
+- `enrich` — the issue needs refinement before development;
+- `develop` — ADE returns a validated implementation handoff;
+- `wait` / `none` — a decision or other condition blocks implementation.
 
-You can also pass a custom brief path and optional output directory:
+A development-ready issue should contain at minimum:
 
-```bash
-node --experimental-strip-types src/promptPo.ts path/to/brief.md outputs
-```
+- a clear objective;
+- at least three acceptance criteria;
+- sufficient implementation context and constraints.
 
-### 3. Import a manually saved PO/PM AI response
+The structured `ade.implementation-handoff/v1` is authoritative for implementation scope. Free-form GitHub prose outside the handoff remains reference material.
 
-```bash
-pnpm import:po
-```
+## Issue enrichment
 
-By default, the importer reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates it against the PO/PM contract and backlog draft types, and writes:
+When ADE requests enrichment, the selected coding provider produces an improved issue body only. It should include:
 
-```txt
-outputs/sample-po-pm-output.normalized.backlog.json
-outputs/sample-po-pm-output.normalized.backlog.md
-```
+- objective;
+- at least three checkbox acceptance criteria;
+- relevant technical context;
+- constraints/risks where material.
 
-You can also pass a custom input path and optional output directory:
+An enrichment-only step must not modify repository files. The issue is replanned after enrichment and development starts only if ADE admits it.
 
-```bash
-node --experimental-strip-types src/importPo.ts path/to/po-pm-response.json outputs
-```
+## Specialist roles
 
-### 4. Generate a specialist prompt from an exported backlog item
+ADE specialist roles are delivery perspectives, not necessarily separate autonomous workers. The same provider may execute multiple bounded review passes when requested by ADE.
 
-```bash
-pnpm prompt:specialist
-```
+Supported perspectives include:
 
-The command accepts:
-
-1. a role name
-2. a backlog item Markdown file path
-3. an optional output directory
-
-Example:
-
-```bash
-node --experimental-strip-types src/promptSpecialist.ts frontend outputs/exported-items/story-002.md outputs
-```
-
-Supported roles:
-
+- `po-pm`
 - `ux-ui`
 - `frontend`
 - `backend`
@@ -220,406 +177,142 @@ Supported roles:
 - `data-analytics`
 - `customer-success`
 - `seo`
+- `cleanup`
 
-By default, the command reads the matching role template from `templates/`, reads the selected backlog item Markdown file, and writes a provider-agnostic prompt under `outputs/` using the format:
+The role model and boundaries are documented in [docs/AGENTS.md](docs/AGENTS.md) and [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md).
 
-```txt
-<item-id>.<role>.prompt.md
-```
+## Local backlog workflow
 
-For example:
+ADE still supports the documentation-first/manual workflow that predates the fully orchestrated issue lifecycle.
 
-```txt
-outputs/story-002.frontend.prompt.md
-```
-
-### 5. Run a deterministic backlog quality review
+Useful commands include:
 
 ```bash
+pnpm backlog:run
+pnpm prompt:po
+pnpm import:po
 pnpm backlog:review
-```
-
-By default, the review reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog shape first, then writes:
-
-```txt
-outputs/backlog-review.md
-outputs/backlog-review.json
-```
-
-The review reports simple deterministic findings such as missing acceptance criteria, missing task owner roles, orphan stories or tasks, weak descriptions, missing assumptions or open questions, and missing risk items.
-
-You can also pass a custom backlog JSON path and optional output directory:
-
-```bash
-node --experimental-strip-types src/reviewBacklog.ts path/to/backlog.json outputs
-```
-
-### 6. Export backlog items to local Markdown files
-
-```bash
 pnpm backlog:export
-```
-
-By default, the exporter reads [src/examples/sample-po-pm-output.json](src/examples/sample-po-pm-output.json), validates the backlog first, writes one Markdown file per item under `outputs/exported-items/`, and also generates `outputs/exported-items/manifest.json`.
-
-Each item file includes the item title, description, type, priority, status, owner role when present, parent ID when present, acceptance criteria for stories, assumptions and notes when present, and suggested labels.
-
-The manifest includes the source backlog path, export timestamp, exported item count, and one entry per exported Markdown file with the item ID, title, type, priority, status, owner role when present, parent ID when present, file path, and suggested labels.
-
-You can also pass a custom backlog JSON path and optional export directory:
-
-```bash
-node --experimental-strip-types src/exportBacklog.ts path/to/backlog.json outputs/exported-items
-```
-
-### 7. Generate batch specialist prompts from the export manifest
-
-```bash
+pnpm prompt:specialist <role> <item.md>
 pnpm prompt:specialists
-```
-
-By default, the command reads `outputs/exported-items/manifest.json`, maps supported `ownerRole` values to the matching specialist templates under [templates/](templates/), and writes provider-agnostic Markdown prompts under `outputs/specialist-prompts/`.
-
-It also writes:
-
-```txt
-outputs/specialist-prompts/index.json
-outputs/specialist-prompts/README.md
-```
-
-The generated index includes the source manifest path, generation timestamp, manifest item count, generated prompt count, skipped item count, and one entry per generated prompt with the item ID, item title, item type, owner role, specialist role, prompt file path, and source backlog item file path.
-
-The generated Markdown README makes the batch easy to inspect manually by summarizing the run and linking each generated prompt file.
-
-Supported role mappings:
-
-```txt
-ux_ui -> ux-ui
-frontend -> frontend
-backend -> backend
-qa -> qa
-tech_lead -> tech-lead
-legal_compliance -> legal-compliance
-security -> security
-devops -> devops
-data_analytics -> data-analytics
-customer_success -> customer-success
-seo -> seo
-```
-
-Items with missing or unsupported owner roles, such as `po_pm`, are skipped.
-
-Suggested output filenames:
-
-```txt
-outputs/specialist-prompts/task-003.ux-ui.prompt.md
-outputs/specialist-prompts/task-004.frontend.prompt.md
-```
-
-You can also pass a custom manifest path and optional output directory:
-
-```bash
-node --experimental-strip-types src/promptSpecialists.ts path/to/manifest.json outputs/specialist-prompts
-```
-
-### 8. Check local project status
-
-```bash
+pnpm specialist:check <response.md>
 pnpm project:status
-```
-
-By default, the command inspects local generated files under `outputs/` and prints a concise summary of whether the deterministic backlog draft, PO/PM prompt, normalized backlog, backlog review report, exported Markdown items, and export manifest exist.
-
-When available, it also reports the number of backlog review findings and the number of exported items, then suggests the next local step.
-
-The command also writes:
-
-```txt
-outputs/project-status.json
-```
-
-### 9. Check a specialist response locally
-
-```bash
-pnpm specialist:check
-```
-
-By default, the checker reads `examples/specialist-responses/frontend-story-002.md`, validates the response against the basic specialist response contract structure, and writes:
-
-```txt
-outputs/frontend-story-002.specialist-check.md
-outputs/frontend-story-002.specialist-check.json
-```
-
-The checker looks for:
-
-- `# Specialist Response`
-- required `##` sections such as `Role`, `Scope`, `Item Notes`, `Assumptions`, `Open Questions`, `Risks`, and `Suggested Backlog Updates`
-- a supported role value
-- at least one backlog item ID reference
-- weak or very short content
-- suspicious claims such as direct file edits, automatic status changes, remote issue creation, or automatic approval
-
-The intended specialist loop is:
-
-```txt
-specialist prompt -> manual assistant response saved as Markdown -> specialist:check -> human review
-```
-
-The checker is deterministic and structure-focused. It does not grade specialist quality semantically, approve work automatically, or decide whether a response should be accepted. A human still decides whether the response is accepted, revised, or rejected.
-
-You can also pass a custom specialist response Markdown path and optional output directory:
-
-```bash
-node --experimental-strip-types src/specialistCheck.ts examples/specialist-responses/frontend-story-002.md outputs
-```
-
-### 10. Validate the demo workflow
-
-```bash
 pnpm demo:validate
 ```
 
-This command runs the full local workflow against `examples/demo-project/` with explicit demo paths, then verifies that the expected backlog draft, prompt, normalized backlog, review outputs, export manifest, and project status files were generated under `outputs/demo-project/`.
+Generated prompts are provider-neutral and can be used with ChatGPT, Codex, Claude or another compatible assistant.
 
-## Specialist Loop Summary
+## GitHub workflow
 
-After a backlog item is exported to Markdown, it can go through a small, fully manual specialist loop before any implementation decision. This is the one-glance summary; each stage maps to the numbered commands above and to steps 8–12 of [docs/MANUAL_WORKFLOW.md](docs/MANUAL_WORKFLOW.md#specialist-loop-summary).
+ADE's GitHub workflow is no longer Claude-specific.
 
-```txt
-exported backlog item
--> specialist prompt
--> manual specialist response
--> local response check
--> human decision
+```text
+GitHub issue
+→ ADE plan
+→ optional enrichment
+→ implementation handoff
+→ selected provider
+→ ADE validation/reviews
+→ PR
+→ human merge
 ```
 
-| Stage | Command | Input | Output |
-|---|---|---|---|
-| Exported backlog item | `pnpm backlog:export` | backlog JSON | `outputs/exported-items/*.md` + `manifest.json` |
-| Specialist prompt | `pnpm prompt:specialist <role> <item.md>` (single) or `pnpm prompt:specialists` (batch from manifest) | exported item(s) | single: `outputs/<item-id>.<role>.prompt.md` · batch: `outputs/specialist-prompts/*.prompt.md` + `index.json` + `README.md` |
-| Manual specialist response | none — copied into an AI assistant by a human | generated prompt | a local `.md` file, e.g. under `examples/specialist-responses/` |
-| Local response check | `pnpm specialist:check <response.md>` | saved response `.md` | `outputs/<name>.specialist-check.md` + `.json` |
-| Human decision | none — accept, revise, or reject | check report + response | decision recorded outside the tool |
+For interactive/local use, the GitHub CLI can be used by the human or agent where permitted. In an orchestrated environment such as ADE Control Plane, the orchestrator owns Git/GitHub side effects and the coding provider must not duplicate them.
 
-Where things live:
+See [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md).
 
-- **Generated prompts** — single-item prompts default to `outputs/`; batch prompts to `outputs/specialist-prompts/` (with a machine-readable `index.json` and a browsable `README.md`).
-- **Saved specialist responses** — local Markdown. Example fixtures ship under [examples/specialist-responses/](examples/specialist-responses/README.md); your own responses can live there or at any path you pass to the checker.
-- **Check reports** — always written under `outputs/` as `<name>.specialist-check.md` and `<name>.specialist-check.json`.
+## ADE Control Plane integration
 
-What stays intentionally manual in V1: choosing which items get a specialist pass, copying a prompt into an assistant and saving its response (no external API, no model call from ADE), reading the check report, and deciding whether to accept, revise, or reject. The checker is deterministic and structure-focused — it never grades quality, approves work, or promotes an item. The human decision gate is always last.
+ADE Control Plane consumes ADE's versioned contracts instead of reconstructing ADE semantics.
 
-## The `ade` CLI
+The intended boundary is:
 
-`ade` is the stable command-line surface shared by humans, CI, hooks, IDEs and
-(later) AI agents. It works locally without any AI provider; a provider is never
-called implicitly.
+```text
+ADE Control Plane
+  ├─ scheduling / persistence / quotas
+  ├─ checkout/workspaces
+  ├─ provider dispatch
+  ├─ Git/GitHub side effects
+  └─ observability
+          ↓
+ADE runtime
+  ├─ setup/readiness
+  ├─ issue lifecycle
+  ├─ implementation handoff
+  ├─ rules / profiles / skills
+  └─ validation / reviews
+          ↓
+Codex OR Claude Code
+```
+
+This keeps the provider replaceable without forking the delivery model.
+
+## Project context and token budgeting
+
+ADE can generate deterministic project context and token-budgeted context packs:
 
 ```bash
-ade init                 # create ade.config.json with defaults
-ade doctor               # diagnose Node, config, tools, context
-ade config validate      # validate the resolved configuration
-ade context generate     # build the project context
-ade review --json        # deterministic review, machine-readable
-ade review --staged      # scope to staged changes
-ade rules list           # rules of the active packs (see docs/RULE_PACKS.md)
-ade fix --dry-run        # preview safe, mechanical fixes
+ade context generate
+ade context check
+ade context pack chill
+ade context pack normal
+ade context pack expert
 ```
 
-Review findings are normalized (`rule`, `severity`, `file`, `message`,
-`suggestion`, `origin`) and always state their `origin` — `deterministic`
-(ADE's own checks and tool orchestration) or `provider` (an optional adapter).
-Exit codes are documented and CI-friendly: `0` success, `1` problems found,
-`2` usage error. See [docs/CLI.md](docs/CLI.md) for the full reference,
-installation, the optional provider adapter, and security notes.
+Context packs include only the bounded material needed for a specific interaction and preserve a transparent manifest/provenance trail.
 
-## Project Configuration And Context
+See [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md).
 
-Two core commands make a project explicit and machine-readable, entirely
-locally and without any AI provider.
+## Rule packs and validation
 
-### Configuration — `ade config:print`
+ADE supports technical rule packs for stacks and cross-cutting concerns. Deterministic findings clearly identify their origin and can be used in CI without requiring any model provider.
 
-ADE reads an `ade.config.{ts,js,mjs,json}` (or `.ade/config.json`) from the
-project root. Configuration is modular and inheritable via `extends` (local
-preset files or npm specifiers), deterministically merged with **visible
-provenance**, and validated. It declares the pieces ADE orchestrates —
-`ignore`/`sensitive` globs, `tools`, deterministic `rules`, workflow
-`profiles` (e.g. `ci`, `local`, `agent`), context source locations, and output
-formats. It never stores secrets: a secret-like key (`apiKey`, `token`, …)
-is a validation error.
+See:
 
-```bash
-pnpm config:print
-# or: ade config:print [configPath] [outputDir]
-```
+- [docs/RULE_PACKS.md](docs/RULE_PACKS.md)
+- [docs/CLI.md](docs/CLI.md)
+- [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md)
 
-It prints the merged configuration with per-key provenance and writes
-`outputs/config/ade.config.resolved.json`. The resolver is a pure function, so
-the CLI, CI and MCP all get identical results. Exit code is `1` when the
-configuration has validation errors (unknown key, invalid enum, `extends`
-cycle, stored secret).
+## MCP
 
-Example `ade.config.json`:
-
-```json
-{
-  "extends": ["./presets/typescript.json"],
-  "ignore": [".env*", "dist/**", "node_modules/**"],
-  "sensitive": [".env*", "**/*.key"],
-  "profiles": {
-    "ci": { "mode": "deterministic" },
-    "agent": { "mode": "assisted", "context": "compact", "allowProvider": true }
-  }
-}
-```
-
-### Project context — `ade context:generate` / `check` / `print`
-
-ADE builds a compact, deterministic, versionable project context from local
-sources only — stack, workspaces/packages, modules, commands, active
-conventions, entry points, declared sensitive zones and ADR filenames. It reads
-structure and metadata, never file contents, environment values or secrets, and
-honours `.gitignore` plus the config's `ignore`/`sensitive` globs. Output is
-byte-stable on an unchanged repo.
-
-```bash
-pnpm context:generate   # writes outputs/context/context.{json,md}
-pnpm context:check      # absent (exit 2) | up-to-date (exit 0) | stale (exit 1); never writes
-pnpm context:print      # prints the stored context as Markdown
-```
-
-Freshness is tracked by a `fingerprint` (a content hash of the sources plus the
-resolved config) — no wall-clock timestamps — so `context:check` reports `stale`
-exactly when the config, rules or relevant sources change.
-
-### Context pack — `ade context:pack` (token budgeting)
-
-To reduce what an LLM would receive, ADE assembles a **context pack**: a minimal,
-budgeted bundle for a single interaction — the diff, applicable rules, a compact
-project/module context, and (in richer modes) neighbouring fragments and docs —
-plus a transparent manifest. ADE never calls a provider; it only prepares the
-context.
-
-```bash
-pnpm context:pack             # normal mode
-pnpm context:pack chill       # cheapest, least context
-pnpm context:pack expert outputs/changes.diff   # richest, with a diff
-```
-
-Three **modes** trade token cost for precision — `chill` (~4k budget), `normal`
-(~12k) and `expert` (~32k) — and map onto `ade.config` profiles so any single
-lever (budget, granularity, ignore/sensitive, rule scope) can be overridden. The
-generated `context-pack.manifest.json` shows included/excluded items with a
-`reason`, an indicative token estimate, any reductions applied, and the cache
-key. Packs are cached by the project fingerprint and invalidated automatically
-when config, rules or sources change.
-
-Full guide: [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md).
-
-See [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md) for the full list of V1
-workflows, their inputs/outputs, exit codes, and the tests that guard them.
-
-## Project setup contract
-
-ADE publishes one versioned, machine-readable answer to "what does a repository
-need to be fully configured for ADE?", so a consumer never hard-codes files,
-labels or workflow conventions:
-
-```bash
-ade setup contract --json     # what ADE requires, no repository involved
-ade setup check --json        # how this repository scores: ready | incomplete | invalid
-```
-
-Requirements carry a criticality (required, recommended, optional) and a scope.
-ADE has no GitHub access and never mutates a repository, so requirements it
-cannot observe locally — labels, remote settings — come back as `unverifiable`
-rather than missing; a caller with GitHub access passes `observedGithubLabels`
-to have them evaluated. Defaults and templates stay owned by ADE and are fetched
-by id rather than copied.
-
-Full reference: [docs/PROJECT_SETUP_CONTRACT.md](docs/PROJECT_SETUP_CONTRACT.md).
-
-## MCP server — `ade-mcp`
-
-ADE also runs as an MCP server, so an AI client you already use — Claude Code,
-Claude Desktop, Codex CLI, Cursor — can reach its context and rules directly:
+ADE also exposes a local MCP surface for clients that support it:
 
 ```bash
 ade-mcp --project-root /absolute/path/to/project
 ```
 
-The exposed tools are `ade_get_project_context`, `ade_list_rules`,
-`ade_explain_rule`, `ade_review_files`, `ade_review_git_diff`, `ade_doctor`,
-`ade_suggest_fix` and `ade_project_setup`. Each delegates to the same core as
-the equivalent `ade` command, so an agent, the CLI and the CI agree by
-construction.
+MCP exposes the same ADE core contracts; it does not add a second orchestration model and does not make a provider mandatory.
 
-MCP adds no intelligence to ADE: the server never calls an AI provider, needs no
-API key and opens no network connection. Your client supplies — and pays for —
-the model. All tools are read-only unless the server is started with
-`--allow-write`, every path is confined to the project root, and results are
-refused rather than truncated when they exceed their budget.
+See [docs/MCP.md](docs/MCP.md).
 
-The same core is importable, which is what guarantees that parity:
+## Repository map
 
-```js
-import { runProjectReview } from '@alelouet/ai-delivery-engine';
+- [`AGENTS.md`](AGENTS.md) — canonical provider-neutral coding-agent instructions
+- [`CLAUDE.md`](CLAUDE.md) — Claude Code adapter to `AGENTS.md`
+- [`ade.config.json`](ade.config.json) — ADE configuration for this repository
+- [`docs/AGENTS.md`](docs/AGENTS.md) — ADE specialist role model
+- [`docs/GITHUB_WORKFLOW.md`](docs/GITHUB_WORKFLOW.md) — provider-neutral GitHub delivery flow
+- [`docs/DELIVERY_HARNESS.md`](docs/DELIVERY_HARNESS.md) — provider-neutral execution request/result contract
+- [`docs/PROJECT_SETUP_CONTRACT.md`](docs/PROJECT_SETUP_CONTRACT.md) — project readiness contract
+- [`docs/V1_ROLE_HANDOFFS.md`](docs/V1_ROLE_HANDOFFS.md) — role handoff expectations
+- [`docs/V1_APPROVAL_GATES.md`](docs/V1_APPROVAL_GATES.md) — human approval gates
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — architecture
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — roadmap
+- [`templates/`](templates/) — specialist templates
+- [`src/github/`](src/github/) — GitHub integration domain
+- [`tests/`](tests/) — `node:test` suite
 
-const outcome = await runProjectReview({ projectRoot: '/absolute/path' });
-```
+## Human approval boundary
 
-Installation, per-client configuration (including Windows), the full tool
-reference and the safety bounds: [docs/MCP.md](docs/MCP.md).
+ADE is designed to automate preparation, implementation support, validation and review while retaining an explicit final approval boundary.
 
-## GitHub Issue Workflow (Claude Code)
+**ADE must never silently auto-merge generated work.**
 
-Beyond the local file-based loop, ADE also drives three GitHub automation loops through Claude Code and the `gh` CLI, defined in [CLAUDE.md](CLAUDE.md) and documented in full in [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md):
-
-1. **Issue enrichment** — Claude Code lists open GitHub issues, picks out the ones missing the `backlog-refined` or `ready-for-dev` labels, rewrites their descriptions with a clear objective, at least three acceptance criteria, and relevant technical context, splits oversized issues into sub-issues, and labels the result.
-2. **Issue development** — starting from a `ready-for-dev` issue, Claude Code creates a branch, implements the change, runs `pnpm typecheck && pnpm test`, generates Security, QA, and Tech Lead specialist reviews, opens a PR with those reviews embedded in the body, and comments on the issue with a link to the PR. If the issue is not yet enriched, this loop stops at a mandatory PO/PM gate and waits for explicit human validation before any branch or code is created.
-3. **Review and merge** — entirely manual: a human reviews the PR and merges it. ADE never merges automatically.
-
-Prerequisites: the [GitHub CLI](https://cli.github.com) (`gh auth login`) and Claude Code. Optionally set `GITHUB_REPO=<owner>/<repo>` to avoid repeating `--repo` on each command.
-
-Helper scripts:
-
-```bash
-# List issues that still need enrichment
-pnpm issues:enrich
-
-# Prepare a branch and specialist prompts for a ready-for-dev issue
-pnpm issue:dev <issue-number>
-```
-
-These scripts prepare local state (branch, prompts); Claude Code performs the actual enrichment, implementation, and review steps described above.
-
-## End-To-End Manual Loop
-
-The intended V1 usage is:
-
-```txt
-1. Write or choose a local brief
-2. Run pnpm backlog:run for a deterministic baseline
-3. Run pnpm prompt:po to generate a manual PO/PM prompt
-4. Copy the prompt into an AI assistant
-5. Save the AI response as a local JSON file
-6. Run pnpm import:po to validate and normalize it
-7. Run pnpm backlog:review to check backlog quality
-8. Run pnpm backlog:export to create one Markdown file per item
-9. Run pnpm prompt:specialists or pnpm prompt:specialist for the items you want to refine
-10. Save the manual specialist response as Markdown and run pnpm specialist:check
-11. Review the specialist check outputs and decide manually what to accept before implementation
-```
-
-This keeps the human in control while making each step repeatable and inspectable.
+A human remains responsible for the final PR review/merge decision unless a future product contract explicitly changes that policy.
 
 ## Releases
 
-- **Beta**: `pnpm release:beta` publishes an npm prerelease (`X.Y.Z-beta.N`, `beta` dist-tag) directly from your machine. It runs typecheck + tests first, then reverts the local version bump so `package.json` on `main` never carries a beta version. Install with `npm install @alelouet/ai-delivery-engine@beta`.
-- **Stable releases**: fully automated by GitHub Actions (`.github/workflows/release-please.yml`, powered by [release-please](https://github.com/googleapis/release-please)). It watches `main` for Conventional Commits (`feat:`, `fix:`, `feat!:`, ...), maintains a release PR with the next version bump and `CHANGELOG.md`, and on merge creates the git tag, the GitHub Release, and publishes to npm (`latest` dist-tag). Manual `npm version` / `npm publish` for stable releases is no longer used.
+- Beta: `pnpm release:beta`
+- Stable releases: release-please via `.github/workflows/release-please.yml`
 
-## Current Status
-
-AI Delivery Engine currently defines the product vision, agent roles, backlog model, workflow, MVP scope, and the first local semi-automatic PO/PM delivery loop. It also now drives a GitHub issue enrichment and development workflow through Claude Code, backed by a growing `node:test` unit test suite and capability-aware Front-end and Back-end role guidance.
+Production consumers should pin an exact compatible ADE version rather than rely on a floating `latest` runtime.

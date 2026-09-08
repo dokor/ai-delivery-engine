@@ -1,228 +1,268 @@
 # GitHub Workflow — AI Delivery Engine
 
-Ce document décrit les trois boucles d'automatisation GitHub disponibles dans ADE,
-la manière de les utiliser avec Claude Code, et les prérequis.
+Ce document décrit le workflow GitHub ADE de manière **provider-neutral**.
+
+ADE définit le cycle de livraison, les critères de readiness, les handoffs, les profils spécialistes et les gates de validation. Le coding agent utilisé pour exécuter une étape peut être Claude Code, Codex ou un autre provider compatible sans changer ces règles.
+
+Le fichier racine [`AGENTS.md`](../AGENTS.md) est la source de vérité commune. Un fichier provider-spécifique comme `CLAUDE.md` peut servir d'adaptateur, mais ne doit pas redéfinir le workflow.
+
+---
+
+## Vue d'ensemble
+
+```text
+Issue GitHub
+→ planification ADE
+→ enrichissement PO/PM si nécessaire
+→ handoff d'implémentation validé
+→ coding provider
+→ validations déterministes
+→ reviews spécialistes ADE
+→ corrections bornées
+→ PR
+→ review humaine
+→ merge humain
+```
+
+Le choix du provider ne doit jamais modifier :
+
+- les critères de readiness ;
+- l'objectif et le scope validés ;
+- les acceptance criteria ;
+- les profils spécialistes ;
+- les validations ;
+- la frontière de publication ;
+- le gate final de review humaine.
 
 ---
 
 ## Prérequis
 
-### 1. GitHub CLI (`gh`)
+### 1. ADE configuré
+
+Le repository doit être compatible avec le contrat de setup ADE :
 
 ```bash
-# Installation (macOS)
-brew install gh
+ade setup check --json
+```
 
-# Authentification
+Le setup recommandé comprend notamment :
+
+- `ade.config.json` ;
+- un contexte ADE généré et à jour ;
+- un root `AGENTS.md` provider-neutral ;
+- les labels GitHub requis ;
+- les templates d'issue recommandés.
+
+### 2. GitHub
+
+Pour un usage local/interactif, `gh` peut être utilisé :
+
+```bash
 gh auth login
-# → Choisir GitHub.com, HTTPS, login via navigateur
-
-# Vérifier l'accès
-gh repo view dokor/ai-delivery-engine
+gh repo view <owner>/<repo>
 ```
 
-### 2. Variable d'environnement (optionnelle)
+Dans ADE Control Plane, les opérations GitHub sont effectuées par l'orchestrateur via son GitHub App. Le coding provider ne doit alors pas reproduire ces mutations.
 
-```bash
-export GITHUB_REPO=dokor/ai-delivery-engine
-# ou pour Argos :
-export GITHUB_REPO=dokor/argos
-```
+### 3. Coding provider
 
-### 3. Reviewer GitHub par défaut (optionnel)
+ADE ne dépend pas d'un provider unique. Le runtime ou l'orchestrateur choisit explicitement le provider disponible, par exemple :
 
-Le workflow de notification utilise `GITHUB_REVIEW_USER` pour commenter et
-assigner la PR à la bonne personne. Pour utiliser l'utilisateur GitHub courant :
+- Codex ;
+- Claude Code.
 
-```bash
-export GITHUB_REVIEW_USER="$(gh api user --jq .login)"
-```
-
-Tu peux aussi définir explicitement un reviewer du repo :
-
-```bash
-export GITHUB_REVIEW_USER=<username-github>
-```
-
-### 4. Claude Code installé
-
-Claude Code (CLI Anthropic) est l'orchestrateur LLM. Il lit `CLAUDE.md` et applique
-les templates ADE. Installation : https://docs.claude.ai/claude-code
+Le provider doit recevoir le même handoff ADE et respecter `AGENTS.md`.
 
 ---
 
-## Boucle 1 — Enrichissement des issues
+## Boucle 1 — Enrichissement d'une issue
 
-**Objectif :** Prendre des issues vagues ou incomplètes et les transformer en issues
-actionables avec des critères d'acceptation clairs.
+**Objectif :** transformer une issue trop vague en issue actionnable sans commencer à coder.
 
-### Utilisation
-
-**Option A — Depuis le terminal puis Claude Code :**
-```bash
-# Voir quelles issues ont besoin d'enrichissement
-pnpm issues:enrich
-# → Affiche la liste des issues non raffinées
-
-# Puis dans Claude Code :
-# "Parcours ces issues GitHub et améliore leurs descriptions."
-```
-
-**Option B — Directement dans Claude Code :**
-```
-"Parcours les issues ouvertes de dokor/ai-delivery-engine
- et améliore leurs descriptions en appliquant le workflow 1 de CLAUDE.md."
-```
-
-### Ce que Claude Code fait
-
-1. `gh issue list` — récupère les issues ouvertes
-2. Filtre les issues sans label `backlog-refined`, `ready-for-dev`, `in-progress`
-3. Pour chaque issue :
-   - Génère une description améliorée (objectif, critères d'acceptation, contexte)
-   - Détermine le bon profil spécialiste ADE (`templates/`)
-   - Si l'issue est trop large (> 3 jours), découpe en sous-issues
-   - `gh issue edit` — met à jour la description
-   - `gh issue edit --add-label "backlog-refined"` — marque comme traitée
-4. Résume les changements
-
-### Labels utilisés
-
-| Label | Appliqué quand |
-|---|---|
-| `backlog-refined` | Issue enrichie par ADE |
-| `ready-for-dev` | Issue estimée et prête à développer (ajouté manuellement par toi) |
-
----
-
-## Boucle 2 — Développement d'une issue
-
-**Objectif :** Depuis une issue `ready-for-dev`, produire le code, les reviews
-spécialistes, et une PR prête pour review humaine.
-
-### Utilisation
-
-**Option A — Script de préparation :**
-```bash
-# Préparer l'environnement (branche, prompts)
-pnpm issue:dev 42
-# → Crée feat/issue-42-... , génère les prompts spécialistes
-
-# Puis dans Claude Code :
-# "Développe l'issue #42 en appliquant le workflow 2 de CLAUDE.md."
-```
-
-**Option B — Directement dans Claude Code :**
-```
-"Prends l'issue #42 du repo dokor/ai-delivery-engine
- et développe-la en appliquant le workflow 2 de CLAUDE.md."
-```
-
-### Ce que Claude Code fait
-
-1. `gh issue view <N>` — lit l'issue complète
-2. `gh issue edit --add-label "in-progress"` — marque en cours
-3. `git checkout -b feat/issue-<N>-<slug>` — crée la branche
-4. Planification Tech Lead (lit `templates/tech-lead.md`)
-5. Implémentation du code
-6. `pnpm typecheck && pnpm test` — validation
-7. Génère les reviews : Security, QA, Tech Lead (templates ADE)
-8. Applique les corrections suggérées par les reviews
-9. `pnpm typecheck && pnpm test` — validation finale
-10. `gh pr create` — crée la PR avec reviews incluses dans le body
-11. `gh issue comment` — commente l'issue avec le lien PR + `@${GITHUB_REVIEW_USER}`
-12. Labels : retire `in-progress`, ajoute `pr-ready`
-
-### Structure de la PR générée
-
-```markdown
-Closes #42
-
-## Résumé
-<changements en 2-3 lignes>
-
-## Fichiers modifiés
-- src/xxx.ts : ...
-
----
-
-## Security Review
-<findings + corrections apportées>
-
-## QA Review
-<cas couverts + risques résiduels>
-
-## Tech Lead Review
-<séquençage + dette technique>
-
----
-
-*Généré par AI Delivery Engine — review humaine requise avant merge.*
-```
-
----
-
-## Boucle 3 — Review et merge final (manuel)
-
-**Objectif :** l'utilisateur configuré via `GITHUB_REVIEW_USER` valide la PR et merge.
-
-### Notification reçue
-
-- Commentaire sur l'issue GitHub avec lien vers la PR
-- Label `pr-ready` sur l'issue
-- @mention dans le commentaire
-
-### Checklist de review humaine
-
-- [ ] Le code est correct et cohérent avec l'issue
-- [ ] `pnpm typecheck && pnpm test` passent en local
-- [ ] Les reviews spécialistes dans le body de la PR sont pertinentes
-- [ ] Les corrections suite aux reviews ont été appliquées
-- [ ] Pas de régression sur les fonctionnalités existantes
-
-### Merge
+ADE planifie d'abord l'issue :
 
 ```bash
-gh pr merge <PR_NUMBER> --squash --delete-branch
+ade issue plan --json
 ```
+
+Si ADE retourne `enrich`, le provider reçoit une instruction bornée d'enrichissement.
+
+Le résultat doit contenir au minimum :
+
+- un objectif clair ;
+- au moins trois critères d'acceptation ;
+- le contexte technique utile ;
+- les contraintes et risques pertinents.
+
+Pendant cette étape :
+
+- aucun fichier du repository ne doit être modifié ;
+- aucune branche de développement n'est nécessaire ;
+- l'issue est ensuite replannée par ADE ;
+- le développement ne démarre que si ADE retourne un handoff d'implémentation valide.
+
+Labels historiques utilisés par le workflow :
+
+| Label | Signification |
+| --- | --- |
+| `backlog-refined` | issue enrichie/refinée |
+| `ready-for-dev` | issue admise pour implémentation |
+| `needs-info` | information humaine nécessaire |
+
+---
+
+## Boucle 2 — Développement
+
+**Objectif :** implémenter exactement le handoff validé par ADE.
+
+Le contrat courant est `ade.implementation-handoff/v1`. Il contient notamment :
+
+- la révision de l'issue ;
+- l'objectif ;
+- le scope ;
+- les acceptance criteria ;
+- les contraintes ;
+- une éventuelle référence de décision humaine.
+
+Le handoff structuré est **autoritaire**. Le texte libre de l'issue reste du contexte de référence et ne peut pas élargir silencieusement le scope.
+
+### Exécution
+
+Le coding provider :
+
+1. lit `AGENTS.md` ;
+2. inspecte le handoff ADE ;
+3. réalise une planification technique bornée ;
+4. implémente le changement ;
+5. exécute les checks pertinents ;
+6. laisse ADE effectuer les validations et reviews configurées.
+
+Pour le repository ADE lui-même :
+
+```bash
+pnpm typecheck
+pnpm test
+```
+
+Quand un orchestrateur comme ADE Control Plane possède les opérations Git/GitHub, le provider ne doit pas commit, push, créer la PR ou modifier les labels de l'issue.
+
+---
+
+## Boucle 3 — Validation et reviews spécialistes
+
+Une implémentation produite par le provider n'est pas automatiquement publiable.
+
+ADE exécute ensuite :
+
+```text
+implémentation
+→ validation déterministe
+→ profils de review configurés
+→ corrections bornées si nécessaire
+→ nouvelle validation/review
+→ gate de publication
+```
+
+Les rôles spécialistes sont des perspectives de delivery, pas des workers obligatoirement distincts. Le même provider peut exécuter plusieurs passes bornées si ADE le demande.
+
+Les profils typiques incluent :
+
+- `tech-lead` ;
+- `qa` ;
+- `security` ;
+- `frontend` ;
+- `backend` ;
+- `devops` ;
+- `legal-compliance` ;
+- `data-analytics`.
+
+Le choix des profils vient d'ADE et du repository, pas du provider.
+
+---
+
+## Boucle 4 — Publication et review humaine
+
+Une fois le gate de publication ouvert :
+
+- la branche peut être commitée et poussée ;
+- une PR peut être créée ;
+- l'issue peut passer à l'état `pr-ready` / attente humaine selon l'intégration.
+
+Le merge reste toujours manuel.
+
+```text
+PR prête
+→ review humaine
+→ corrections éventuelles
+→ merge explicite
+```
+
+ADE ne doit pas utiliser un autre provider automatiquement pour contourner un échec du provider sélectionné. Un échec reste un échec traçable.
+
+---
+
+## Deux modes d'intégration
+
+### Mode interactif/local
+
+Un développeur peut lancer ADE et utiliser un coding agent depuis son terminal. Dans ce cas, le repository `AGENTS.md` décrit également la frontière Git/GitHub à respecter.
+
+### Mode orchestré — ADE Control Plane
+
+ADE Control Plane prend en charge :
+
+- scheduling ;
+- checkout/workspace ;
+- provider dispatch ;
+- persistance ;
+- Git et GitHub ;
+- quotas ;
+- reconciliation ;
+- observabilité.
+
+ADE reste responsable des semantics de delivery. Codex et Claude Code passent par le même handoff et le même cycle de validation/review.
 
 ---
 
 ## Architecture des fichiers
 
-```
+```text
 ai-delivery-engine/
-├── CLAUDE.md                    # Instructions pour Claude Code (orchestrateur)
+├── AGENTS.md                 # contrat agent provider-neutral canonique
+├── CLAUDE.md                 # adaptateur Claude Code vers AGENTS.md
+├── ade.config.json           # configuration ADE du repository
+├── docs/
+│   ├── AGENTS.md             # modèle des rôles spécialistes
+│   ├── GITHUB_WORKFLOW.md    # ce document
+│   ├── DELIVERY_HARNESS.md   # contrat d'exécution provider-neutral
+│   └── PROJECT_SETUP_CONTRACT.md
 ├── scripts/
-│   ├── issues-enrich.sh         # Liste les issues à enrichir
-│   └── issue-dev.sh             # Prépare le développement d'une issue
+│   ├── issues-enrich.sh
+│   └── issue-dev.sh
 ├── src/github/
-│   ├── github.types.ts          # Types TypeScript GitHub
-│   ├── fetchIssues.ts           # Récupération des issues via gh CLI
-│   ├── enrichIssue.ts           # Génération des prompts d'enrichissement
-│   ├── createPR.ts              # Création de PR avec reviews
-│   ├── postComment.ts           # Commentaires et labels GitHub
-│   └── index.ts                 # Re-exports
-└── templates/                   # Templates des 10 rôles spécialistes ADE
+└── templates/
 ```
 
 ---
 
-## Limites actuelles (V1)
+## Compatibilité historique
 
-- Les reviews spécialistes sont **simulées par Claude Code** (pas d'appel API externe).
-  En V2, chaque rôle pourrait appeler un LLM indépendant en parallèle.
-- Le merge est toujours manuel — aucun merge automatique n'est prévu.
-- Les issues enrichies nécessitent une **validation humaine** avant d'être marquées
-  `ready-for-dev` (Claude Code applique `backlog-refined`, pas `ready-for-dev`).
-- Ce workflow est conçu pour Claude Code CLI. Il ne fonctionne pas en mode Cowork
-  (qui n'a pas d'accès GitHub direct pour l'instant).
+Les anciens projets ADE peuvent encore posséder uniquement un `CLAUDE.md`. L'évaluateur de setup peut continuer à reconnaître ce cas pendant la migration, mais les nouveaux setups doivent utiliser `AGENTS.md` comme convention canonique.
+
+Une migration recommandée consiste à :
+
+1. déplacer les règles communes dans `AGENTS.md` ;
+2. réduire `CLAUDE.md` à un adaptateur qui renvoie vers `AGENTS.md` ;
+3. vérifier `ade setup check --json` ;
+4. valider une issue de test avec le provider choisi.
 
 ---
 
-## Roadmap V2
+## Références
 
-- Appels LLM parallèles pour chaque rôle spécialiste (vrai fan-out)
-- GitHub Actions : déclencher une review ADE automatique à chaque ouverture de PR
-- Webhook : détecter les nouvelles issues et enrichissement automatique
-- Mode `--dry-run` : simuler sans écrire sur GitHub
+- [`AGENTS.md`](../AGENTS.md) — contrat commun de coding agent
+- [`docs/AGENTS.md`](AGENTS.md) — rôles et perspectives ADE
+- [`docs/DELIVERY_HARNESS.md`](DELIVERY_HARNESS.md) — contrat provider-neutral d'exécution
+- [`docs/PROJECT_SETUP_CONTRACT.md`](PROJECT_SETUP_CONTRACT.md) — requirements d'un projet ADE
+- [`docs/V1_ROLE_HANDOFFS.md`](V1_ROLE_HANDOFFS.md) — handoffs entre rôles
