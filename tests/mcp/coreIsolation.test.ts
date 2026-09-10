@@ -153,13 +153,18 @@ describe('core isolation', () => {
   it('exposes the MCP entrypoint from the package', async () => {
     const pkg = JSON.parse(await readFile(join(REPO_ROOT, 'package.json'), 'utf8')) as {
       main?: string;
-      exports?: Record<string, string>;
+      types?: string;
+      exports?: Record<string, { default?: string; types?: string }>;
       bin?: Record<string, string>;
       files?: string[];
     };
 
     assert.equal(pkg.main, 'dist/api.js');
-    assert.equal(pkg.exports?.['.'], './dist/api.js');
+    assert.equal(pkg.types, './dist/api.d.ts');
+    assert.equal(pkg.exports?.['.']?.default, './dist/api.js');
+    assert.equal(pkg.exports?.['.']?.types, './dist/api.d.ts');
+    assert.equal(pkg.exports?.['./mcp']?.default, './dist/mcp/stdio.js');
+    assert.equal(pkg.exports?.['./mcp']?.types, './dist/mcp/stdio.d.ts');
     assert.equal(pkg.bin?.['ade-mcp'], 'src/mcp-server.js');
     assert.ok(
       pkg.files?.includes('src/mcp-server.js'),

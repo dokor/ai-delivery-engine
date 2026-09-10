@@ -4,9 +4,16 @@
   "description": "AI Delivery Engine orchestrates AI agents to transform project briefs into actionable delivery backlogs.",
   "type": "module",
   "main": "dist/api.js",
+  "types": "./dist/api.d.ts",
   "exports": {
-    ".": "./dist/api.js",
-    "./mcp": "./dist/mcp/stdio.js"
+    ".": {
+      "types": "./dist/api.d.ts",
+      "default": "./dist/api.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/stdio.d.ts",
+      "default": "./dist/mcp/stdio.js"
+    }
   },
   "bin": {
     "ade": "src/cli.js",
@@ -34,9 +41,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "validate": "pnpm typecheck && pnpm test && pnpm build && npm pack --dry-run",
-    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
+    "build": "node scripts/build.mjs && tsc --project tsconfig.build.json && node scripts/rewrite-declaration-imports.mjs",
+    "pack:check": "pnpm build && node scripts/check-pack.mjs",
+    "validate": "pnpm typecheck && pnpm test && pnpm pack:check",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm pack:check",
     "release:beta": "bash scripts/release-beta.sh",
     "backlog:export": "node --experimental-strip-types src/exportBacklog.ts",
     "backlog:review": "node --experimental-strip-types src/reviewBacklog.ts",
