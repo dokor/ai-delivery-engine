@@ -24,7 +24,14 @@ const output = execFileSync(npmCommand, npmArgs, {
   stdio: ['ignore', 'pipe', 'inherit']
 });
 
-const [pack] = JSON.parse(output);
+const parsedPack = JSON.parse(output);
+// npm <= 10 serializes `npm pack --json` as an array, while npm 11 emits the
+// single pack result as an object. Accept both forms because this guard runs in
+// the publishing workflow, which intentionally uses the current npm CLI.
+const pack = Array.isArray(parsedPack) ? parsedPack[0] : parsedPack;
+if (!pack || !Array.isArray(pack.files)) {
+  throw new TypeError('npm pack --dry-run --json returned an unexpected archive description.');
+}
 const packedFiles = new Set(pack.files.map(({ path }) => path));
 const requiredFiles = ['dist/api.d.ts', 'dist/mcp/stdio.d.ts'];
 const missingFiles = requiredFiles.filter((file) => !packedFiles.has(file));
