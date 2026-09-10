@@ -10,6 +10,21 @@
 
 * Consumers of the former `ade issue plan --json` lifecycle-only result should negotiate `ade.delivery-plan/v1` and declare an `implementationProfile` in `issueLifecycle.deliveryPlan`. An absent policy now returns the explicit `MISSING_DELIVERY_PLAN_POLICY` status rather than an inferred workflow.
 
+## [1.0.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.12.0...ai-delivery-engine-v1.0.0) (2026-09-10)
+
+
+### Features
+
+* publish TypeScript declarations ([7d6b2ea](https://github.com/dokor/ai-delivery-engine/commit/7d6b2ead4c1f97a6173e4e21265a79eca500aefb))
+* publish TypeScript declarations ([aba9705](https://github.com/dokor/ai-delivery-engine/commit/aba9705256ca620c8611c25693ca46db31175f81))
+
+
+### Bug Fixes
+
+* recover the stable 1.0.0 release baseline ([a2d3019](https://github.com/dokor/ai-delivery-engine/commit/a2d3019d443dfa496f89f4bd634708460c33b4bf))
+* recover the stable release baseline ([0b62bb9](https://github.com/dokor/ai-delivery-engine/commit/0b62bb9737d0381f125843f490019777fb705a31))
+* support npm 11 package checks for 1.0 release ([85dc223](https://github.com/dokor/ai-delivery-engine/commit/85dc223c2c7435b18d5863b1be172b554a0b9ed6))
+
 ## [0.12.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.11.0...ai-delivery-engine-v0.12.0) (2026-09-08)
 
 
