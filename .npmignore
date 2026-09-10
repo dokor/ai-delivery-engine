@@ -1,0 +1,5 @@
+# The runnable adoption fixture ships its source and configuration, never its
+# local dependency tree or generated ADE artifacts.
+examples/adopt-existing-project/node_modules/
+examples/adopt-existing-project/outputs/
+examples/adopt-existing-project/package-lock.json

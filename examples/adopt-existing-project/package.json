@@ -1,0 +1,17 @@
+{
+  "name": "ade-adoption-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "ade:check": "ade config validate",
+    "ade:context": "ade context generate",
+    "ade:review": "ade review"
+  },
+  "devDependencies": {
+    "@alelouet/ai-delivery-engine": "^0.12.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
