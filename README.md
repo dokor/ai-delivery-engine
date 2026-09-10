@@ -1,318 +1,108 @@
 # AI Delivery Engine
 
-AI Delivery Engine (**ADE**) is a documentation-first, local-first delivery runtime for coordinating AI-assisted software work with explicit contracts, deterministic validation and human approval gates.
+**AI Delivery Engine (ADE)** helps a software team turn AI-assisted work into a delivery process that can be reviewed, validated, and approved by people.
 
-ADE is **provider-neutral**. It does not define one workflow for Claude Code and another for Codex. The repository workflow, readiness rules, specialist perspectives, validation gates and publication boundaries are the same regardless of which compatible coding provider executes a step.
+It gives your repository a shared way to prepare work, give an AI coding agent the right context, run deterministic checks, and keep the final delivery decisions with humans. ADE is local-first and provider-neutral: it works with the coding client you choose, and never calls an AI provider by itself.
 
-The canonical coding-agent instruction file is the root [`AGENTS.md`](AGENTS.md). Provider-specific files such as [`CLAUDE.md`](CLAUDE.md) are adapters only and must defer to that common contract.
+## The problem it solves
 
-## What ADE owns
+AI tools are good at individual tasks, but a software change still needs a clear scope, relevant context, validation, review, and a human decision before it is merged. Without a shared process, teams often end up with disconnected prompts, unclear handoffs, and changes that are hard to audit.
 
-ADE turns ad hoc prompting into a repeatable delivery workflow by owning:
+ADE makes those handoffs explicit. It can help you:
 
-- project setup/readiness contracts;
-- project configuration and context;
-- issue planning and refinement/enrichment;
-- validated implementation handoffs;
-- technical rule packs;
-- specialist profiles and review instructions;
-- deterministic validation;
-- bounded correction/review loops;
-- explicit human approval boundaries.
+- set up a repository with an ADE configuration and an up-to-date project context;
+- review a codebase or staged changes with deterministic rules;
+- turn a brief into a reviewable backlog through a local, human-controlled workflow;
+- plan GitHub work into a validated implementation handoff before coding begins;
+- define the validation and specialist-review steps that must happen before a pull request is ready for human review.
 
-A coding provider implements the work ADE has admitted. It does not redefine the lifecycle.
+ADE is not an autonomous delivery platform. It does not silently contact an AI model, create remote resources on its own, or merge pull requests. Those boundaries are deliberate.
 
-## Provider-neutral delivery flow
+## How it fits into delivery
+
+Use ADE at the point where an idea becomes a change that someone can confidently review:
 
 ```text
-Issue / work request
-→ ADE planning
-→ refinement/enrichment when needed
-→ validated implementation handoff
-→ Codex / Claude Code / compatible coding provider
-→ deterministic validation
-→ ADE specialist reviews
-→ bounded corrections
-→ publication gate
-→ PR
-→ explicit human review / merge
+Brief or GitHub issue
+        ↓
+ADE clarifies the scope and prepares the delivery context
+        ↓
+Validated implementation handoff
+        ↓
+Your coding agent implements the admitted work
+        ↓
+Deterministic validation and specialist reviews
+        ↓
+Pull request → explicit human review and merge
 ```
 
-Provider choice must not alter:
+The coding provider can be Codex, Claude Code, Cursor, or another compatible client. The delivery rules, validation expectations, and human approval gates stay the same.
 
-- readiness criteria;
-- objective or scope;
-- acceptance criteria;
-- specialist selection;
-- validation requirements;
-- publication ownership;
-- final human merge approval.
+## Try it quickly
 
-## Agent instruction convention
+### Add ADE to an existing project
 
-New ADE-enabled repositories should expose a root `AGENTS.md` describing the commands, delivery gates, validation expectations and human approval boundaries that every coding agent must follow.
+From the root of a project running Node.js 22 or later:
 
-Provider-specific files are optional adapters:
-
-```text
-AGENTS.md        ← canonical ADE/repository agent contract
-CLAUDE.md        ← optional Claude Code adapter → AGENTS.md
-other provider   ← receives the same AGENTS.md + ADE handoff
+```bash
+npm install -D @alelouet/ai-delivery-engine
+npx ade init
+npx ade context generate
+npx ade review
 ```
 
-For an execution, use this authority order:
+This creates the local ADE configuration, maps the project into generated context files, then runs the configured deterministic review. No API key or AI provider is needed.
 
-1. platform and safety restrictions;
-2. the structured ADE execution / implementation handoff;
-3. the repository root `AGENTS.md`;
-4. repository-local technical documentation and ADE-selected skills;
-5. free-form issue/comment prose as reference material.
+Next, inspect and tailor `ade.config.json` for your stack (rule packs, paths to ignore, and paths that must remain sensitive). Then use `npx ade doctor` to check the local setup or `npx ade review --staged` before a commit.
 
-Historical projects that only contain `CLAUDE.md` remain detectable during migration, but `AGENTS.md` is the canonical convention for new setups.
+For installation options, configuration details, and every CLI command, see the [Getting Started guide](docs/GETTING_STARTED.md) and [CLI reference](docs/CLI.md).
 
-## Core CLI
+### Run the built-in demo from source
 
-Install dependencies for this repository:
+If you want to see the brief-to-backlog workflow end to end, clone this repository and run:
 
 ```bash
 pnpm install
+pnpm demo:validate
+```
+
+The demo takes a sample brief through backlog generation, PO/PM-response import, backlog review, item export, specialist-prompt generation, and local validation. Its inputs and generated artifacts are documented in the [demo guide](examples/demo-project/README.md).
+
+## Choose your starting point
+
+| If you want to… | Start here |
+| --- | --- |
+| Add deterministic context and review to a codebase | [Getting Started](docs/GETTING_STARTED.md) |
+| Understand or configure an `ade` command | [CLI reference](docs/CLI.md) |
+| Turn a brief into a reviewed delivery backlog | [Manual workflow](docs/MANUAL_WORKFLOW.md) |
+| Use a client such as Codex or Claude through MCP | [MCP integration](docs/MCP.md) |
+| Plan and deliver work from GitHub issues | [GitHub workflow](docs/GITHUB_WORKFLOW.md) |
+| Understand the roles, review points, and human gates | [Workflow](docs/WORKFLOW.md) and [role handoffs](docs/V1_ROLE_HANDOFFS.md) |
+
+## What to do next
+
+1. **Adopt ADE in one repository.** Start with `ade init`, generate the project context, and run a review. Keep the first configuration small and adjust it as you learn what your project needs.
+2. **Make the delivery policy visible.** Keep the root [`AGENTS.md`](AGENTS.md) in the repository so every coding agent receives the same readiness, validation, and publication rules.
+3. **Use explicit handoffs for implementation.** A GitHub issue or work request is planned first; only a development-ready handoff defines the scope a coding agent should implement.
+4. **Keep humans at the gates.** Review generated artifacts, decide what is ready, and merge pull requests explicitly. ADE supports those decisions; it does not replace them.
+
+## Key concepts and boundaries
+
+- **Local-first:** configuration, context, checks, and generated artifacts stay in your project. ADE does not make implicit network or model calls.
+- **Provider-neutral:** switch coding clients without changing your repository's delivery semantics.
+- **Deterministic by default:** the CLI can inspect configuration, generate context, and run rules without asking a model to make a decision.
+- **Human-controlled:** people approve important transitions, including readiness for implementation and pull-request merge.
+- **Documentation-first:** ADE uses clear contracts and reviewable files before adding automation.
+
+For the product rationale and longer-term direction, see the [vision](docs/VISION.md), [architecture](docs/ARCHITECTURE.md), and [roadmap](docs/ROADMAP.md).
+
+## Contributing
+
+This repository uses ADE itself. Before changing implementation code, read [`AGENTS.md`](AGENTS.md); it defines the required delivery gates and validation commands. At minimum, run:
+
+```bash
 pnpm typecheck
 pnpm test
 ```
 
-The stable `ade` CLI includes the main local runtime surfaces:
-
-```bash
-ade init
-ade doctor
-ade config validate
-ade context generate
-ade context check
-ade context pack normal
-ade setup contract --json
-ade setup check --json
-ade issue plan --json
-ade delivery plan --json
-ade review --staged --json
-ade rules list
-ade fix --dry-run
-```
-
-ADE commands are designed to work locally and deterministically. Provider calls are never implicit runtime magic: an orchestrator or interactive coding client explicitly supplies the provider when assisted execution is needed.
-
-## Project setup contract
-
-ADE publishes one machine-readable source of truth for repository readiness:
-
-```bash
-ade setup contract --json
-ade setup check --json
-```
-
-The setup contract covers, among other things:
-
-- `ade.config.json`;
-- valid ADE configuration;
-- generated/fresh project context;
-- root `AGENTS.md` as the canonical agent instruction file;
-- documentation and ADR locations;
-- rule packs and configured tools;
-- GitHub workflow labels;
-- issue templates.
-
-ADE itself has no need to mutate GitHub during local setup inspection. Requirements that cannot be observed locally can be returned as `unverifiable`; an external consumer such as ADE Control Plane may supply remote observations and repair missing GitHub state.
-
-See [docs/PROJECT_SETUP_CONTRACT.md](docs/PROJECT_SETUP_CONTRACT.md).
-
-## Issue planning and implementation handoff
-
-ADE separates issue prose from executable delivery scope.
-
-An issue is planned through:
-
-```bash
-ade issue plan --json
-```
-
-Typical outcomes are:
-
-- `enrich` — the issue needs refinement before development;
-- `develop` — ADE returns a validated implementation handoff;
-- `wait` / `none` — a decision or other condition blocks implementation.
-
-A development-ready issue should contain at minimum:
-
-- a clear objective;
-- at least three acceptance criteria;
-- sufficient implementation context and constraints.
-
-The structured `ade.implementation-handoff/v1` is authoritative for implementation scope. Free-form GitHub prose outside the handoff remains reference material.
-
-## Issue enrichment
-
-When ADE requests enrichment, the selected coding provider produces an improved issue body only. It should include:
-
-- objective;
-- at least three checkbox acceptance criteria;
-- relevant technical context;
-- constraints/risks where material.
-
-An enrichment-only step must not modify repository files. The issue is replanned after enrichment and development starts only if ADE admits it.
-
-## Specialist roles
-
-ADE specialist roles are delivery perspectives, not necessarily separate autonomous workers. The same provider may execute multiple bounded review passes when requested by ADE.
-
-Supported perspectives include:
-
-- `po-pm`
-- `ux-ui`
-- `frontend`
-- `backend`
-- `qa`
-- `tech-lead`
-- `legal-compliance`
-- `security`
-- `devops`
-- `data-analytics`
-- `customer-success`
-- `seo`
-- `cleanup`
-
-The role model and boundaries are documented in [docs/AGENTS.md](docs/AGENTS.md) and [docs/V1_ROLE_HANDOFFS.md](docs/V1_ROLE_HANDOFFS.md).
-
-## Local backlog workflow
-
-ADE still supports the documentation-first/manual workflow that predates the fully orchestrated issue lifecycle.
-
-Useful commands include:
-
-```bash
-pnpm backlog:run
-pnpm prompt:po
-pnpm import:po
-pnpm backlog:review
-pnpm backlog:export
-pnpm prompt:specialist <role> <item.md>
-pnpm prompt:specialists
-pnpm specialist:check <response.md>
-pnpm project:status
-pnpm demo:validate
-```
-
-Generated prompts are provider-neutral and can be used with ChatGPT, Codex, Claude or another compatible assistant.
-
-## GitHub workflow
-
-ADE's GitHub workflow is no longer Claude-specific.
-
-```text
-GitHub issue
-→ ADE plan
-→ optional enrichment
-→ implementation handoff
-→ selected provider
-→ ADE validation/reviews
-→ PR
-→ human merge
-```
-
-For interactive/local use, the GitHub CLI can be used by the human or agent where permitted. In an orchestrated environment such as ADE Control Plane, the orchestrator owns Git/GitHub side effects and the coding provider must not duplicate them.
-
-See [docs/GITHUB_WORKFLOW.md](docs/GITHUB_WORKFLOW.md).
-
-## ADE Control Plane integration
-
-ADE Control Plane consumes ADE's versioned contracts instead of reconstructing ADE semantics.
-
-The intended boundary is:
-
-```text
-ADE Control Plane
-  ├─ scheduling / persistence / quotas
-  ├─ checkout/workspaces
-  ├─ provider dispatch
-  ├─ Git/GitHub side effects
-  └─ observability
-          ↓
-ADE runtime
-  ├─ setup/readiness
-  ├─ issue lifecycle
-  ├─ implementation handoff
-  ├─ rules / profiles / skills
-  └─ validation / reviews
-          ↓
-Codex OR Claude Code
-```
-
-This keeps the provider replaceable without forking the delivery model.
-
-## Project context and token budgeting
-
-ADE can generate deterministic project context and token-budgeted context packs:
-
-```bash
-ade context generate
-ade context check
-ade context pack chill
-ade context pack normal
-ade context pack expert
-```
-
-Context packs include only the bounded material needed for a specific interaction and preserve a transparent manifest/provenance trail.
-
-See [docs/TOKEN_BUDGET.md](docs/TOKEN_BUDGET.md).
-
-## Rule packs and validation
-
-ADE supports technical rule packs for stacks and cross-cutting concerns. Deterministic findings clearly identify their origin and can be used in CI without requiring any model provider.
-
-See:
-
-- [docs/RULE_PACKS.md](docs/RULE_PACKS.md)
-- [docs/CLI.md](docs/CLI.md)
-- [docs/V1_CRITICAL_PATH.md](docs/V1_CRITICAL_PATH.md)
-
-## MCP
-
-ADE also exposes a local MCP surface for clients that support it:
-
-```bash
-ade-mcp --project-root /absolute/path/to/project
-```
-
-MCP exposes the same ADE core contracts; it does not add a second orchestration model and does not make a provider mandatory.
-
-See [docs/MCP.md](docs/MCP.md).
-
-## Repository map
-
-- [`AGENTS.md`](AGENTS.md) — canonical provider-neutral coding-agent instructions
-- [`CLAUDE.md`](CLAUDE.md) — Claude Code adapter to `AGENTS.md`
-- [`ade.config.json`](ade.config.json) — ADE configuration for this repository
-- [`docs/AGENTS.md`](docs/AGENTS.md) — ADE specialist role model
-- [`docs/GITHUB_WORKFLOW.md`](docs/GITHUB_WORKFLOW.md) — provider-neutral GitHub delivery flow
-- [`docs/DELIVERY_HARNESS.md`](docs/DELIVERY_HARNESS.md) — provider-neutral execution request/result contract
-- [`docs/PROJECT_SETUP_CONTRACT.md`](docs/PROJECT_SETUP_CONTRACT.md) — project readiness contract
-- [`docs/V1_ROLE_HANDOFFS.md`](docs/V1_ROLE_HANDOFFS.md) — role handoff expectations
-- [`docs/V1_APPROVAL_GATES.md`](docs/V1_APPROVAL_GATES.md) — human approval gates
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — architecture
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) — roadmap
-- [`templates/`](templates/) — specialist templates
-- [`src/github/`](src/github/) — GitHub integration domain
-- [`tests/`](tests/) — `node:test` suite
-
-## Human approval boundary
-
-ADE is designed to automate preparation, implementation support, validation and review while retaining an explicit final approval boundary.
-
-**ADE must never silently auto-merge generated work.**
-
-A human remains responsible for the final PR review/merge decision unless a future product contract explicitly changes that policy.
-
-## Releases
-
-- Beta: `pnpm release:beta`
-- Stable releases: release-please via `.github/workflows/release-please.yml`
-
-Production consumers should pin an exact compatible ADE version rather than rely on a floating `latest` runtime.
+For the complete project setup contract and GitHub delivery details, see [Project setup contract](docs/PROJECT_SETUP_CONTRACT.md) and [GitHub workflow](docs/GITHUB_WORKFLOW.md).
