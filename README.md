@@ -4,6 +4,8 @@
 
 It gives your repository a shared way to prepare work, give an AI coding agent the right context, run deterministic checks, and keep the final delivery decisions with humans. ADE is local-first and provider-neutral: it works with the coding client you choose, and never calls an AI provider by itself.
 
+[View the package on npm](https://www.npmjs.com/package/@alelouet/ai-delivery-engine) · [Try the adoption example](examples/adopt-existing-project/README.md) · [See how adoption is measured](docs/NPM_ADOPTION.md)
+
 ## The problem it solves
 
 AI tools are good at individual tasks, but a software change still needs a clear scope, relevant context, validation, review, and a human decision before it is merged. Without a shared process, teams often end up with disconnected prompts, unclear handoffs, and changes that are hard to audit.
@@ -55,7 +57,7 @@ This creates the local ADE configuration, maps the project into generated contex
 
 Next, inspect and tailor `ade.config.json` for your stack (rule packs, paths to ignore, and paths that must remain sensitive). Then use `npx ade doctor` to check the local setup or `npx ade review --staged` before a commit.
 
-For installation options, configuration details, and every CLI command, see the [Getting Started guide](docs/GETTING_STARTED.md) and [CLI reference](docs/CLI.md).
+For an annotated, copyable walkthrough using a small existing project, see the [adoption example](examples/adopt-existing-project/README.md). For installation options, configuration details, and every CLI command, see the [Getting Started guide](docs/GETTING_STARTED.md) and [CLI reference](docs/CLI.md).
 
 ### Run the built-in demo from source
 
@@ -78,6 +80,7 @@ The demo takes a sample brief through backlog generation, PO/PM-response import,
 | Use a client such as Codex or Claude through MCP | [MCP integration](docs/MCP.md) |
 | Plan and deliver work from GitHub issues | [GitHub workflow](docs/GITHUB_WORKFLOW.md) |
 | Understand the roles, review points, and human gates | [Workflow](docs/WORKFLOW.md) and [role handoffs](docs/V1_ROLE_HANDOFFS.md) |
+| See a minimal project configured for ADE | [Adoption example](examples/adopt-existing-project/README.md) |
 
 ## What to do next
 

@@ -2,6 +2,17 @@
   "name": "@alelouet/ai-delivery-engine",
   "version": "0.12.0",
   "description": "AI Delivery Engine orchestrates AI agents to transform project briefs into actionable delivery backlogs.",
+  "keywords": [
+    "ai",
+    "ai-agents",
+    "cli",
+    "code-review",
+    "developer-tools",
+    "mcp",
+    "project-context",
+    "software-delivery",
+    "typescript"
+  ],
   "type": "module",
   "main": "dist/api.js",
   "types": "./dist/api.d.ts",
