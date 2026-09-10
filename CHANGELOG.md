@@ -10,6 +10,19 @@
 
 * Consumers of the former `ade issue plan --json` lifecycle-only result should negotiate `ade.delivery-plan/v1` and declare an `implementationProfile` in `issueLifecycle.deliveryPlan`. An absent policy now returns the explicit `MISSING_DELIVERY_PLAN_POLICY` status rather than an inferred workflow.
 
+## [1.1.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v1.0.0...ai-delivery-engine-v1.1.0) (2026-09-10)
+
+
+### Features
+
+* **ci:** dogfood deterministic ADE review ([9dc772e](https://github.com/dokor/ai-delivery-engine/commit/9dc772e0480f3b940010420b446ae5839810aae1))
+* **ci:** dogfood deterministic ADE review ([99da578](https://github.com/dokor/ai-delivery-engine/commit/99da578efdeb6bfe6ae72b26aff2527f4b13b98c))
+
+
+### Bug Fixes
+
+* **cli:** accept package-manager argument separators ([2de850a](https://github.com/dokor/ai-delivery-engine/commit/2de850a4333df8934097bcdd7662a3b08ad93665))
+
 ## [1.0.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.12.0...ai-delivery-engine-v1.0.0) (2026-09-10)
 
 
