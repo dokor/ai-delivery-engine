@@ -10,6 +10,24 @@
 
 * Consumers of the former `ade issue plan --json` lifecycle-only result should negotiate `ade.delivery-plan/v1` and declare an `implementationProfile` in `issueLifecycle.deliveryPlan`. An absent policy now returns the explicit `MISSING_DELIVERY_PLAN_POLICY` status rather than an inferred workflow.
 
+## [1.0.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.12.0...ai-delivery-engine-v1.0.0) (2026-09-10)
+
+
+### Stable release
+
+* establish the stable local ADE runtime contract: CLI, local MCP server,
+  deterministic configuration/context/review commands, manual delivery
+  workflow, and versioned setup and delivery-plan JSON surfaces;
+* retain local-first, provider-neutral and human-controlled boundaries;
+  provider calls, autonomous execution, deployment, and Codex/Claude skill
+  adapters remain outside the 1.0 scope.
+
+
+### Features
+
+* publish TypeScript declarations ([7d6b2ea](https://github.com/dokor/ai-delivery-engine/commit/7d6b2ead4c1f97a6173e4e21265a79eca500aefb))
+* publish TypeScript declarations ([aba9705](https://github.com/dokor/ai-delivery-engine/commit/aba9705256ca620c8611c25693ca46db31175f81))
+
 ## [0.12.0](https://github.com/dokor/ai-delivery-engine/compare/ai-delivery-engine-v0.11.0...ai-delivery-engine-v0.12.0) (2026-09-08)
 
 
