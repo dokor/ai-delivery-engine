@@ -97,6 +97,8 @@ export interface AdeConfig {
   sensitive?: string[];
   /** Tools to orchestrate. */
   tools?: string[];
+  /** Repository-relative paths to local skills a delivery consumer may use. */
+  skills?: string[];
   /** Deterministic project rules. */
   rules?: AdeRule[];
   /** Technical rule packs to activate (e.g. `development`, `frontend/next`, `backend/java`). */
@@ -122,6 +124,7 @@ export interface ResolvedAdeConfig {
   ignore: string[];
   sensitive: string[];
   tools: string[];
+  skills: string[];
   rules: AdeRule[];
   packs: string[];
   profiles: Record<string, AdeProfile>;

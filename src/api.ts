@@ -96,8 +96,12 @@ export {
 } from './setup/requirements.ts';
 export { evaluateProjectSetup } from './setup/evaluate.ts';
 export { writeProjectSetupEvaluation } from './setup/writer.ts';
-export { PROJECT_SETUP_CONTRACT_VERSION } from './setup/setup.types.ts';
+export {
+  PROJECT_SETUP_CONTRACT_VERSION,
+  SETUP_CAPABILITY_SNAPSHOT_VERSION
+} from './setup/setup.types.ts';
 export type {
+  DeclaredSkillEvaluation,
   EvaluateProjectSetupOptions,
   ProjectReadiness,
   ProjectSetupContract,
@@ -110,7 +114,11 @@ export type {
   RequirementScope,
   RequirementStatus,
   RequirementTemplate,
-  SetupRequirement
+  SetupRequirement,
+  SetupCapabilityEvaluation,
+  SetupCapabilityId,
+  SetupCapabilitySnapshot,
+  SetupCapabilityStatus
 } from './setup/setup.types.ts';
 
 // --- Diagnostics -------------------------------------------------------------

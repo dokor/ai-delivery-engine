@@ -1,5 +1,5 @@
 import { access, stat } from 'node:fs/promises';
-import { basename, resolve } from 'node:path';
+import { basename, isAbsolute, relative, resolve, sep } from 'node:path';
 
 import { getAdeVersion } from '../cli/packageInfo.ts';
 import type { ConfigResolution } from '../config/config.types.ts';
@@ -9,12 +9,16 @@ import { runDoctor, type DoctorReport } from '../doctor/runDoctor.ts';
 import { getSetupRequirements } from './requirements.ts';
 import {
   PROJECT_SETUP_CONTRACT_VERSION,
+  SETUP_CAPABILITY_SNAPSHOT_VERSION,
+  type DeclaredSkillEvaluation,
   type EvaluateProjectSetupOptions,
   type ExecutionCapabilityEvaluation,
   type ProjectReadiness,
   type ProjectSetupEvaluation,
   type RequirementEvaluation,
   type RequirementStatus,
+  type SetupCapabilityEvaluation,
+  type SetupCapabilitySnapshot,
   type SetupRequirement
 } from './setup.types.ts';
 
@@ -218,6 +222,150 @@ function resolveExecutionCapabilities(resolution: ConfigResolution): ExecutionCa
   ];
 }
 
+function hasConfigurationErrors(resolution: ConfigResolution): boolean {
+  return resolution.issues.some((issue) => issue.severity === 'error');
+}
+
+function isContainedBy(projectRoot: string, candidate: string): boolean {
+  const pathFromRoot = relative(projectRoot, candidate);
+  return pathFromRoot === '' || (!pathFromRoot.startsWith(`..${sep}`) && pathFromRoot !== '..' && !isAbsolute(pathFromRoot));
+}
+
+async function evaluateDeclaredSkills(
+  projectRoot: string,
+  skills: string[]
+): Promise<DeclaredSkillEvaluation[]> {
+  return Promise.all(
+    skills.map(async (declaredPath) => {
+      const candidate = resolve(projectRoot, declaredPath);
+      if (!isContainedBy(projectRoot, candidate)) {
+        return {
+          path: declaredPath,
+          status: 'invalid',
+          detail: 'The declared skill path resolves outside the repository.',
+          remediation: 'Use a repository-relative path that stays inside this checkout.'
+        };
+      }
+      if (!(await pathExists(candidate))) {
+        return {
+          path: declaredPath,
+          status: 'missing',
+          detail: 'The declared skill path does not exist in the repository.',
+          remediation: 'Create the local skill or remove its declaration from ade.config.json.'
+        };
+      }
+      return { path: declaredPath, status: 'available', detail: 'The declared skill path exists in the repository.' };
+    })
+  );
+}
+
+function resolveSnapshotCapabilities(
+  resolution: ConfigResolution,
+  doctor: DoctorReport
+): SetupCapabilityEvaluation[] {
+  const configurationInvalid = hasConfigurationErrors(resolution);
+  const node = doctor.checks.find((check) => check.name === 'Node version');
+  const profiles = resolution.config.profiles;
+  const lifecycle = resolution.config.issueLifecycle;
+  const enrichment = lifecycle.enrichment;
+  const delivery = lifecycle.deliveryPlan;
+  const implementationProfile = delivery?.implementationProfile;
+  const reviewProfiles = delivery?.reviewProfiles ?? [];
+  const validationRuleIds = delivery?.validationRuleIds ?? [];
+  const missingReviewProfiles = reviewProfiles.filter((id) => !profiles[id]);
+  const ruleIds = new Set(resolution.config.rules.map((rule) => rule.id));
+  const missingValidationRules = validationRuleIds.filter((id) => !ruleIds.has(id));
+
+  const statusWhenConfigurationInvalid = (): 'invalid' | undefined =>
+    configurationInvalid ? 'invalid' : undefined;
+  const resolve = (
+    id: Exclude<SetupCapabilityEvaluation['id'], 'runtime.node-version' | 'config.resolution'>,
+    available: boolean,
+    missingDetail: string,
+    invalidDetail?: string
+  ): SetupCapabilityEvaluation => {
+    const invalid = statusWhenConfigurationInvalid();
+    if (invalid) return { id, status: invalid, detail: 'ADE configuration has validation errors.' };
+    if (invalidDetail) return { id, status: 'invalid', detail: invalidDetail };
+    return available
+      ? { id, status: 'available', detail: 'Resolved from the repository ADE configuration.' }
+      : { id, status: 'missing', detail: missingDetail };
+  };
+
+  const enrichmentProfile = enrichment?.profile;
+  const enrichmentInvalid = enrichment?.enabled === true && enrichmentProfile !== undefined && !profiles[enrichmentProfile];
+  const deliveryInvalid = implementationProfile !== undefined && !profiles[implementationProfile];
+  const invocationsInvalid = deliveryInvalid || missingReviewProfiles.length > 0 || missingValidationRules.length > 0;
+
+  return [
+    {
+      id: 'runtime.node-version',
+      status: node?.status === 'fail' ? 'unsupported' : 'available',
+      detail: node?.detail ?? 'Doctor did not report a Node version check.'
+    },
+    {
+      id: 'config.resolution',
+      status: configurationInvalid ? 'invalid' : 'available',
+      detail: configurationInvalid ? 'ADE configuration has validation errors.' : 'ADE configuration resolved successfully.'
+    },
+    resolve('issue-plan', true, 'No issue lifecycle is configured.'),
+    resolve(
+      'issue-enrichment',
+      enrichment?.enabled === true && Boolean(enrichmentProfile && profiles[enrichmentProfile]),
+      'Enable issueLifecycle.enrichment and select an existing profile.',
+      enrichmentInvalid ? `Configured enrichment profile "${enrichmentProfile}" does not exist.` : undefined
+    ),
+    resolve(
+      'delivery-plan',
+      Boolean(implementationProfile && profiles[implementationProfile]),
+      'Configure issueLifecycle.deliveryPlan.implementationProfile.',
+      deliveryInvalid ? `Configured implementation profile "${implementationProfile}" does not exist.` : undefined
+    ),
+    resolve('deterministic-review', true, 'Resolve ADE configuration before deterministic review.'),
+    resolve(
+      'profile-invocations',
+      Boolean(implementationProfile && profiles[implementationProfile]) && !invocationsInvalid,
+      'Configure a delivery plan with an existing implementation profile.',
+      invocationsInvalid
+        ? `Unresolvable delivery references: ${[
+            ...(deliveryInvalid ? [`profile:${implementationProfile}`] : []),
+            ...missingReviewProfiles.map((id) => `profile:${id}`),
+            ...missingValidationRules.map((id) => `rule:${id}`)
+          ].join(', ')}.`
+        : undefined
+    )
+  ];
+}
+
+async function buildCapabilitySnapshot(
+  projectRoot: string,
+  resolution: ConfigResolution,
+  doctor: DoctorReport,
+  nodeVersion: string
+): Promise<SetupCapabilitySnapshot> {
+  const capabilities = resolveSnapshotCapabilities(resolution, doctor);
+  const node = doctor.checks.find((check) => check.name === 'Node version');
+  return {
+    version: SETUP_CAPABILITY_SNAPSHOT_VERSION,
+    runtime: {
+      adeVersion: getAdeVersion(),
+      nodeVersion,
+      status: node?.status === 'fail' ? 'unsupported' : 'available'
+    },
+    config: {
+      status: hasConfigurationErrors(resolution) ? 'invalid' : 'available',
+      sourceIds: [...resolution.sources].sort(),
+      profileIds: Object.keys(resolution.config.profiles).sort(),
+      ruleIds: resolution.config.rules.map((rule) => rule.id).sort()
+    },
+    declaredSkills: await evaluateDeclaredSkills(projectRoot, resolution.config.skills),
+    capabilities,
+    missingCapabilityIds: capabilities.filter((capability) => capability.status === 'missing').map((capability) => capability.id),
+    invalidCapabilityIds: capabilities.filter((capability) => capability.status === 'invalid').map((capability) => capability.id),
+    unsupportedCapabilityIds: capabilities.filter((capability) => capability.status === 'unsupported').map((capability) => capability.id)
+  };
+}
+
 function renderMarkdown(evaluation: Omit<ProjectSetupEvaluation, 'markdown'>): string {
   const lines: string[] = [
     `# ADE project setup — ${evaluation.projectName}`,
@@ -269,7 +417,7 @@ export async function evaluateProjectSetup(
   const generatedAt = options.generatedAt ?? new Date().toISOString();
 
   const resolution = await resolveConfig({ cwd: projectRoot });
-  const doctor = await runDoctor({ projectRoot });
+  const doctor = await runDoctor({ projectRoot, nodeVersion: options.nodeVersion });
   const contextDir = resolution.config.context.outputDir ?? 'outputs/context';
   const contextState = (await checkContext(projectRoot, resolution.config, contextDir)).state;
 
@@ -319,6 +467,12 @@ export async function evaluateProjectSetup(
   ];
   const executionCapabilities = resolveExecutionCapabilities(resolution);
   const missingExecutionCapabilityIds = executionCapabilities.filter((capability) => capability.status === 'missing').map((capability) => capability.id);
+  const capabilitySnapshot = await buildCapabilitySnapshot(
+    projectRoot,
+    resolution,
+    doctor,
+    options.nodeVersion ?? process.versions.node
+  );
 
   const withoutMarkdown: Omit<ProjectSetupEvaluation, 'markdown'> = {
     version: PROJECT_SETUP_CONTRACT_VERSION,
@@ -333,6 +487,7 @@ export async function evaluateProjectSetup(
     unverifiableIds,
     executionCapabilities,
     missingExecutionCapabilityIds,
+    capabilitySnapshot,
     summaryLines
   };
 
