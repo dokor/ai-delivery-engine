@@ -1,6 +1,6 @@
 import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { realpath, symlink, writeFile } from 'node:fs/promises';
+import { realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -132,22 +132,35 @@ describe('toConfinedRelativePath', () => {
     );
   });
 
-  it('refuses a symlink pointing out of the project root', async () => {
+  it('refuses a symlink pointing out of the project root', async (context) => {
     project = await createTempProject();
     const root = await realpath(project.dir);
 
     const outside = join(tmpdir(), `ade-outside-${process.pid}.txt`);
     await writeFile(outside, 'secret\n', 'utf8');
-    await symlink(outside, join(root, 'escape.txt'));
-
-    await assert.rejects(
-      () => toConfinedRelativePath('escape.txt', root),
-      (error: unknown) => {
-        assert.ok(error instanceof McpBoundaryError);
-        assert.match(error.message, /outside the project root/);
-        return true;
+    try {
+      try {
+        await symlink(outside, join(root, 'escape.txt'));
+      } catch (error: unknown) {
+        const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
+        if (process.platform === 'win32' && (code === 'EPERM' || code === 'EACCES')) {
+          context.skip('Windows does not permit symbolic-link creation for this account.');
+          return;
+        }
+        throw error;
       }
-    );
+
+      await assert.rejects(
+        () => toConfinedRelativePath('escape.txt', root),
+        (error: unknown) => {
+          assert.ok(error instanceof McpBoundaryError);
+          assert.match(error.message, /outside the project root/);
+          return true;
+        }
+      );
+    } finally {
+      await rm(outside, { force: true });
+    }
   });
 
   it('refuses an empty path', async () => {
