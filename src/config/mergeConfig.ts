@@ -11,6 +11,7 @@ export function emptyResolvedConfig(): ResolvedAdeConfig {
     ignore: [],
     sensitive: [],
     tools: [],
+    skills: [],
     rules: [],
     packs: [],
     profiles: {},
@@ -91,6 +92,11 @@ export function mergeConfigLayer(
   if (layer.tools !== undefined) {
     accumulator.tools = unionStrings(accumulator.tools, layer.tools);
     recordProvenance(provenance, 'tools', sourceLabel);
+  }
+
+  if (layer.skills !== undefined) {
+    accumulator.skills = unionStrings(accumulator.skills, layer.skills);
+    recordProvenance(provenance, 'skills', sourceLabel);
   }
 
   if (layer.packs !== undefined) {

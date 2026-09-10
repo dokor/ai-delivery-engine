@@ -145,6 +145,22 @@ satisfied — there is nothing to fix on a satisfied one.
 The JSON is stable: two evaluations of an unchanged repository with the same
 `generatedAt` produce byte-identical output.
 
+## Capability snapshot
+
+`ade setup check --json` also returns `capabilitySnapshot`, independently
+versioned as **`ade.setup-capabilities/v1`**. It is the bounded, read-only
+handoff for an automation that needs to decide whether it can invoke ADE in
+this checkout. It contains the ADE and Node versions, resolved config source,
+profile and rule ids, and explicit verdicts for issue planning, enrichment,
+delivery planning, deterministic review and profile invocations.
+
+The snapshot separates `missingCapabilityIds`, `invalidCapabilityIds` and
+`unsupportedCapabilityIds`; consumers must not infer a capability from issue
+text. Optional repository-local skills can be declared with `skills` in ADE
+configuration. Each is reported as `available`, `missing`, or `invalid` when
+it resolves outside the repository, along with safe remediation. ADE never
+reads a declared skill outside the checkout.
+
 ## Reused, not reimplemented
 
 The evaluation delegates to the commands that already own each check:

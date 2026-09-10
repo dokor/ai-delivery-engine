@@ -28,6 +28,7 @@ describe('resolveConfig', () => {
     project = await createTempProject();
     await project.writeJson('ade.config.json', {
       tools: ['test'],
+      skills: ['skills/review.md'],
       profiles: { ci: { mode: 'deterministic' } }
     });
 
@@ -35,9 +36,12 @@ describe('resolveConfig', () => {
 
     assert.deepEqual(resolution.sources, ['ade.config.json']);
     assert.deepEqual(resolution.config.tools, ['test']);
+    assert.deepEqual(resolution.config.skills, ['skills/review.md']);
     assert.equal(resolution.config.profiles.ci?.mode, 'deterministic');
     const toolsProvenance = resolution.provenance.find((p) => p.key === 'tools');
     assert.deepEqual(toolsProvenance?.sources, ['ade.config.json']);
+    const skillsProvenance = resolution.provenance.find((p) => p.key === 'skills');
+    assert.deepEqual(skillsProvenance?.sources, ['ade.config.json']);
   });
 
   it('merges presets before the root config (root wins on scalars, arrays union)', async () => {

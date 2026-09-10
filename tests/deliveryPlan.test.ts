@@ -8,7 +8,7 @@ const issue = (body: string, labels: string[] = []) => ({ number: 152, title: 'E
 
 function configuration(): ResolvedAdeConfig {
   return {
-    ignore: [], sensitive: [], tools: [], packs: ['development'], context: {}, thresholds: {}, output: {},
+    ignore: [], sensitive: [], tools: [], skills: [], packs: ['development'], context: {}, thresholds: {}, output: {},
     profiles: {
       implementation: { mode: 'assisted', context: 'full', allowProvider: true },
       security: { mode: 'assisted', context: 'compact', allowProvider: true },

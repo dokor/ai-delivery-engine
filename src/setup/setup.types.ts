@@ -121,6 +121,51 @@ export type ExecutionCapabilityEvaluation = {
   detail: string;
 };
 
+/** Independently versioned, machine-readable readiness snapshot for a checkout. */
+export const SETUP_CAPABILITY_SNAPSHOT_VERSION = 'ade.setup-capabilities/v1' as const;
+
+export type SetupCapabilityStatus = 'available' | 'missing' | 'invalid' | 'unsupported';
+
+export type SetupCapabilityId =
+  | 'runtime.node-version'
+  | 'config.resolution'
+  | 'issue-plan'
+  | 'issue-enrichment'
+  | 'delivery-plan'
+  | 'deterministic-review'
+  | 'profile-invocations';
+
+export type SetupCapabilityEvaluation = {
+  id: SetupCapabilityId;
+  status: SetupCapabilityStatus;
+  detail: string;
+};
+
+export type DeclaredSkillEvaluation = {
+  /** The path exactly as declared in the resolved ADE configuration. */
+  path: string;
+  status: 'available' | 'missing' | 'invalid';
+  detail: string;
+  /** Safe, local remediation when the path cannot be used. */
+  remediation?: string;
+};
+
+export type SetupCapabilitySnapshot = {
+  version: typeof SETUP_CAPABILITY_SNAPSHOT_VERSION;
+  runtime: { adeVersion: string; nodeVersion: string; status: 'available' | 'unsupported' };
+  config: {
+    status: 'available' | 'invalid';
+    sourceIds: string[];
+    profileIds: string[];
+    ruleIds: string[];
+  };
+  declaredSkills: DeclaredSkillEvaluation[];
+  capabilities: SetupCapabilityEvaluation[];
+  missingCapabilityIds: SetupCapabilityId[];
+  invalidCapabilityIds: SetupCapabilityId[];
+  unsupportedCapabilityIds: SetupCapabilityId[];
+};
+
 export type ProjectSetupEvaluation = {
   version: ProjectSetupContractVersion;
   adeVersion: string;
@@ -141,6 +186,8 @@ export type ProjectSetupEvaluation = {
   executionCapabilities: ExecutionCapabilityEvaluation[];
   /** Exact unavailable execution capability ids, safe to persist and display. */
   missingExecutionCapabilityIds: string[];
+  /** Bounded, resolved capability data for automation consumers. */
+  capabilitySnapshot: SetupCapabilitySnapshot;
   summaryLines: string[];
   markdown: string;
 };
@@ -164,4 +211,6 @@ export type EvaluateProjectSetupOptions = {
   observedGithubLabels?: string[];
   /** Injectable clock, so reports are reproducible in tests and demos. */
   generatedAt?: string;
+  /** Injectable runtime version, primarily for deterministic compatibility checks. */
+  nodeVersion?: string;
 };

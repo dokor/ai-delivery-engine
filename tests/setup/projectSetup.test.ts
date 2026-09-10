@@ -11,7 +11,10 @@ import {
   getSetupTemplate,
   projectSetupContractToJson
 } from '../../src/setup/requirements.ts';
-import { PROJECT_SETUP_CONTRACT_VERSION } from '../../src/setup/setup.types.ts';
+import {
+  PROJECT_SETUP_CONTRACT_VERSION,
+  SETUP_CAPABILITY_SNAPSHOT_VERSION
+} from '../../src/setup/setup.types.ts';
 import { collectProjectContext } from '../../src/context/collectContext.ts';
 import { writeContext } from '../../src/context/renderContext.ts';
 import { resolveConfig } from '../../src/config/loadConfig.ts';
@@ -148,6 +151,15 @@ describe('evaluating a ready repository', () => {
     assert.deepEqual(evaluation.missingRequiredIds, []);
     assert.deepEqual(evaluation.missingExecutionCapabilityIds, []);
     assert.ok(evaluation.executionCapabilities.every((capability) => capability.status === 'available'));
+    assert.equal(evaluation.capabilitySnapshot.version, SETUP_CAPABILITY_SNAPSHOT_VERSION);
+    assert.equal(evaluation.capabilitySnapshot.config.status, 'available');
+    assert.deepEqual(evaluation.capabilitySnapshot.invalidCapabilityIds, []);
+    assert.deepEqual(evaluation.capabilitySnapshot.unsupportedCapabilityIds, []);
+    assert.deepEqual(
+      evaluation.capabilitySnapshot.config.profileIds,
+      ['chill', 'ci', 'expert', 'local', 'normal']
+    );
+    assert.ok(evaluation.capabilitySnapshot.capabilities.every((capability) => capability.status === 'available'));
     assert.deepEqual(evaluation.configurationErrors, []);
     assert.equal(evaluation.generatedAt, AT);
   });
@@ -259,6 +271,52 @@ describe('evaluating a repository with a broken configuration', () => {
     assert.equal(evaluation.readiness, 'invalid');
     assert.ok(evaluation.configurationErrors.length > 0);
     assert.match(evaluation.markdown, /Readiness cannot be assessed/);
+    assert.equal(evaluation.capabilitySnapshot.config.status, 'invalid');
+    assert.ok(evaluation.capabilitySnapshot.invalidCapabilityIds.includes('config.resolution'));
+  });
+
+  it('reports declared skills without following paths outside the repository', async () => {
+    const root = await readyProject();
+    await project?.write('skills/planning.md', '# Planning skill\n');
+    await project?.write(
+      'ade.config.json',
+      `${JSON.stringify({
+        ...JSON.parse(defaultConfigJson()),
+        skills: ['skills/planning.md', 'missing.md', '../outside.md'],
+        issueLifecycle: {
+          enrichment: { enabled: true, profile: 'local' },
+          deliveryPlan: { implementationProfile: 'local', reviewProfiles: ['ci'] }
+        }
+      }, null, 2)}\n`
+    );
+
+    const evaluation = await evaluateProjectSetup({ projectRoot: root, generatedAt: AT });
+
+    assert.deepEqual(
+      evaluation.capabilitySnapshot.declaredSkills.map((skill) => [skill.path, skill.status]),
+      [
+        ['skills/planning.md', 'available'],
+        ['missing.md', 'missing'],
+        ['../outside.md', 'invalid']
+      ]
+    );
+    assert.match(
+      evaluation.capabilitySnapshot.declaredSkills[2]?.remediation ?? '',
+      /repository-relative/
+    );
+  });
+
+  it('distinguishes an unsupported Node runtime from invalid configuration', async () => {
+    const root = await readyProject();
+    const evaluation = await evaluateProjectSetup({
+      projectRoot: root,
+      generatedAt: AT,
+      nodeVersion: '20.0.0'
+    });
+
+    assert.equal(evaluation.capabilitySnapshot.runtime.status, 'unsupported');
+    assert.deepEqual(evaluation.capabilitySnapshot.unsupportedCapabilityIds, ['runtime.node-version']);
+    assert.equal(evaluation.capabilitySnapshot.config.status, 'available');
   });
 });
 
