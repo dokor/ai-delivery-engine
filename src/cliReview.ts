@@ -27,6 +27,10 @@ function parseArgs(argv: string[]): ReviewArgs {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     switch (arg) {
+      // Package managers can forward their own argument separator to scripts
+      // (for example, pnpm 9 on GitHub Actions). It is not an ADE argument.
+      case '--':
+        break;
       case '--staged':
         args.staged = true;
         break;

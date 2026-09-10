@@ -95,6 +95,16 @@ describe('CLI: review', () => {
     assert.equal(result.scope.kind, 'project');
   });
 
+  it('accepts a package-manager argument separator before --json', async () => {
+    project = await createTempProject();
+    await scaffold(project);
+    runAde('contextGenerate.ts', [], project.dir);
+
+    const run = runAde('cliReview.ts', ['--', '--json'], project.dir);
+    assert.equal(run.status, 0, run.stderr);
+    assert.equal(JSON.parse(run.stdout).summary.error, 0);
+  });
+
   it('exits 1 when the config has an error (secret)', async () => {
     project = await createTempProject();
     await scaffold(project);
