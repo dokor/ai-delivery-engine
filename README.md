@@ -108,4 +108,12 @@ pnpm typecheck
 pnpm test
 ```
 
+### ADE review in CI
+
+Every pull request also runs `pnpm review -- --json` against this repository.
+It is a deterministic, provider-free self-review: `error` findings fail the
+check, while `warn` findings remain visible without blocking the pull request.
+This lets the repository dogfood the same local-first review boundary it asks
+adopters to use.
+
 For the complete project setup contract and GitHub delivery details, see [Project setup contract](docs/PROJECT_SETUP_CONTRACT.md) and [GitHub workflow](docs/GITHUB_WORKFLOW.md).
